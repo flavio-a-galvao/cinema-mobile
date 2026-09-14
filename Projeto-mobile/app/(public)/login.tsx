@@ -1,4 +1,5 @@
 import { isAxiosError } from 'axios';
+import { Redirect } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Keyboard, StyleSheet, Text } from 'react-native';
 import { Button } from '@/components/Button';
@@ -18,20 +19,18 @@ function getLoginErrorMessage(error: unknown): string {
 }
 
 export default function LoginScreen() {
-  const { signIn, isLoading } = useAuth();
+  const { signIn, isLoading, authState } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const pending = useRef(false);
 
   async function handleSignIn(): Promise<void> {
     if (isLoading || pending.current) return;
     setSubmitted(true);
     setError(null);
-    setSuccess(false);
     if (!email.trim() || !senha.trim()) return;
 
     pending.current = true;
@@ -41,7 +40,6 @@ export default function LoginScreen() {
       await signIn(email.trim(), senha);
       setSenha('');
       setSubmitted(false);
-      setSuccess(true);
     } catch (error: unknown) {
       setError(getLoginErrorMessage(error));
     } finally {
@@ -54,6 +52,10 @@ export default function LoginScreen() {
     return <Screen><Loading message="Verificando sessão..." /></Screen>;
   }
 
+  if (authState.status === 'authenticated') {
+    return <Redirect href="/account" />;
+  }
+
   return (
     <Screen>
       <Text accessibilityRole="header" style={styles.title}>Entrar no Cinema App</Text>
@@ -61,7 +63,7 @@ export default function LoginScreen() {
         label="Email"
         placeholder="seu@email.com"
         value={email}
-        onChangeText={(value) => { setEmail(value); setError(null); setSuccess(false); }}
+        onChangeText={(value) => { setEmail(value); setError(null); }}
         keyboardType="email-address"
         autoCapitalize="none"
         autoCorrect={false}
@@ -73,7 +75,7 @@ export default function LoginScreen() {
         label="Senha"
         placeholder="Digite sua senha"
         value={senha}
-        onChangeText={(value) => { setSenha(value); setError(null); setSuccess(false); }}
+        onChangeText={(value) => { setSenha(value); setError(null); }}
         secureTextEntry
         autoCapitalize="none"
         autoCorrect={false}
@@ -85,12 +87,10 @@ export default function LoginScreen() {
       />
       {error && <ErrorState message={error} />}
       <Button title={isSubmitting ? 'Entrando...' : 'Entrar'} loading={isSubmitting} onPress={() => { void handleSignIn(); }} />
-      {success && <Text accessibilityLiveRegion="polite" style={styles.message}>Login realizado com sucesso.</Text>}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   title: { ...theme.typography.heading, color: theme.colors.text },
-  message: { ...theme.typography.body, color: theme.colors.text },
 });

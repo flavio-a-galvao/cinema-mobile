@@ -1,10 +1,11 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState, type PropsWithChildren } from 'react';
-import { login } from '@/services/authService';
-import { removeToken, saveToken } from '@/services/authStorage';
-import type { AuthState } from '@/types/auth';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
+import { login, restoreSession } from '@/services/authService';
+import { removeToken, saveToken, saveUser } from '@/services/authStorage';
+import type { AuthState, LoginResponse } from '@/types/auth';
 
 type AuthContextValue = {
   authState: AuthState;
+  isLoading: boolean;
   signIn: (email: string, senha: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -18,8 +19,29 @@ const unauthenticatedState: AuthState = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [authState, setAuthState] = useState<AuthState>(unauthenticatedState);
-  const operationPending = useRef(false);
+  const [authState, setAuthState] = useState<AuthState>({ status: 'loading', user: null, token: null });
+  const operationPending = useRef(true);
+  const restoration = useRef<Promise<LoginResponse | null> | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    // Reutiliza a leitura quando o StrictMode repete a execução do efeito.
+    restoration.current ??= restoreSession();
+    void restoration.current.then(
+      (session) => {
+        if (active) {
+          setAuthState(session ? { status: 'authenticated', ...session } : unauthenticatedState);
+        }
+      },
+      () => {
+        if (active) setAuthState(unauthenticatedState);
+      },
+    ).finally(() => {
+      if (active) operationPending.current = false;
+    });
+
+    return () => { active = false; };
+  }, []);
 
   const signIn = useCallback(async (email: string, senha: string): Promise<void> => {
     if (operationPending.current) {
@@ -29,6 +51,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     operationPending.current = true;
     try {
       const session = await login(email, senha);
+      await saveUser(session.user);
       await saveToken(session.token);
       setAuthState({ status: 'authenticated', ...session });
     } finally {
@@ -50,7 +73,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   }, []);
 
-  const value = useMemo(() => ({ authState, signIn, signOut }), [authState, signIn, signOut]);
+  const value = useMemo(() => ({ authState, isLoading: authState.status === 'loading', signIn, signOut }), [authState, signIn, signOut]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

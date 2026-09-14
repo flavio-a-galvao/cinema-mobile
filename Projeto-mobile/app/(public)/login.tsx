@@ -1,5 +1,5 @@
 import { isAxiosError } from 'axios';
-import { Redirect } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Keyboard, StyleSheet, Text } from 'react-native';
 import { Button } from '@/components/Button';
@@ -87,6 +87,7 @@ export default function LoginScreen() {
       />
       {error && <ErrorState message={error} />}
       <Button title={isSubmitting ? 'Entrando...' : 'Entrar'} loading={isSubmitting} onPress={() => { void handleSignIn(); }} />
+      <Button title="Criar conta" disabled={isSubmitting} onPress={() => router.push('/register')} />
     </Screen>
   );
 }

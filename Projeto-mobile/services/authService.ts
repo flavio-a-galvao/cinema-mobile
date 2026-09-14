@@ -1,9 +1,19 @@
 import { getApi } from '@/services/api';
 import { getToken, getUser, removeToken } from '@/services/authStorage';
-import type { AuthUser, LoginResponse } from '@/types/auth';
+import type { AuthUser, LoginResponse, RegisterInput, RegisterResponse } from '@/types/auth';
 
 export async function login(email: string, senha: string): Promise<LoginResponse> {
   const response = await getApi().post<LoginResponse>('/auth/login', { email, senha });
+  return response.data;
+}
+
+export async function register({ nome, cpf, email, senha }: RegisterInput): Promise<RegisterResponse> {
+  const response = await getApi().post<RegisterResponse>('/users', {
+    nome: nome.trim(),
+    cpf: cpf.replace(/\D/g, ''),
+    email: email.trim().toLowerCase(),
+    senha,
+  });
   return response.data;
 }
 

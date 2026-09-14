@@ -1,0 +1,94 @@
+.sobre-page {
+  max-width: 1120px;
+  margin: 2rem auto;
+  padding: 0 1rem 2rem;
+  display: grid;
+  gap: 1.4rem;
+}
+
+.sobre-hero {
+  position: relative;
+  min-height: 390px;
+  border-radius: 18px;
+  overflow: hidden;
+  background-image: url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1600&q=80");
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.35);
+}
+
+.sobre-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 75% 10%, rgba(245, 158, 11, 0.28), transparent 40%),
+    linear-gradient(120deg, rgba(2, 6, 23, 0.82), rgba(30, 41, 59, 0.65));
+}
+
+.sobre-conteudo {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  padding: 2.2rem;
+  color: #f8fafc;
+}
+
+.sobre-tag {
+  display: inline-block;
+  margin: 0;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  color: #fde68a;
+  font-size: 0.8rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.sobre-conteudo h1 {
+  margin: 0.75rem 0 0.6rem;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: #fff;
+}
+
+.sobre-conteudo p {
+  margin: 0;
+  line-height: 1.7;
+  color: #e2e8f0;
+}
+
+.sobre-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.9rem;
+}
+
+.sobre-cards article {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+.sobre-cards h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.07rem;
+}
+
+.sobre-cards p {
+  margin: 0.6rem 0 0;
+  color: #475569;
+  line-height: 1.55;
+}
+
+@media (max-width: 700px) {
+  .sobre-hero {
+    min-height: 330px;
+  }
+
+  .sobre-conteudo {
+    padding: 1.4rem;
+  }
+}

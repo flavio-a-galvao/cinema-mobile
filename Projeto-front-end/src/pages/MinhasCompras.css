@@ -1,0 +1,91 @@
+.compras-page {
+  padding: 24px;
+}
+
+.compras-card {
+  max-width: 960px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.compras-subtitle {
+  margin-top: 4px;
+  color: #4b5563;
+}
+
+.compras-resumo {
+  margin: 16px 0;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.compras-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.compra-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+  background: #f9fafb;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.compra-item h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.compra-item p {
+  margin: 4px 0;
+}
+
+.compra-qr {
+  width: 126px;
+  height: 126px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 6px;
+  display: grid;
+  grid-template-columns: repeat(21, 1fr);
+  grid-template-rows: repeat(21, 1fr);
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+.qr-cell {
+  display: block;
+  background: #ffffff;
+}
+
+.qr-cell-dark {
+  background: #111827;
+}
+
+.compras-erro {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .compra-item {
+    flex-direction: column;
+  }
+
+  .compra-qr {
+    width: 100%;
+    max-width: 210px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+}

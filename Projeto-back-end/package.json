@@ -1,0 +1,47 @@
+{
+  "name": "projeto-back-end",
+  "version": "1.0.0",
+  "description": "- `npm init -y`\r - `npm i sequelize pg pg-hstore dotenv`\r - `npm i express`\r - `npm i -D nodemon sequelize-cli`\r - `mkdir src`\r - `cd .\\src\\`\r - `npx sequelize-cli init`\r - `cd ..`\r - `npm i -D typescript ts-node-dev @types/node @types/express`",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:verbose": "vitest run --reporter=verbose",
+    "test:failfast": "vitest run --reporter=verbose --bail=1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nondrack/Projeto-back-end.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/nondrack/Projeto-back-end/issues"
+  },
+  "homepage": "https://github.com/nondrack/Projeto-back-end#readme",
+  "dependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.18.2",
+    "pg": "^8.20.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.8"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "nodemon": "^3.1.14",
+    "sequelize-cli": "^6.6.5",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}

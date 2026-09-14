@@ -1,0 +1,17 @@
+{
+  "name": "projeto-3-periodo",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "commitlint": "^17.0.0",
+    "@commitlint/cli": "^17.0.0",
+    "@commitlint/config-conventional": "^17.0.0",
+    "husky": "^8.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npx --no-install commitlint --edit $HUSKY_GIT_PARAMS",
+      "pre-push": "cd Projeto-front-end && npm run test:e2e:up-test-env && npm run e2e && npm run test:e2e:down-test-env"
+    }
+  }
+}

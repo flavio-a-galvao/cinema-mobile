@@ -1,0 +1,63 @@
+{
+  "name": "loja-3d-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^13.5.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.1",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "dev": "react-scripts start",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed --project=chromium",
+    "e2e": "playwright test e2e/cinema.spec.ts --headed --project=chromium --reporter=list",
+    "test:e2e:up-test-env": "cd .. && docker-compose -f docker-compose.yml -f docker-compose.test.yml up -d database backend frontend nginx",
+    "test:e2e:down-test-env": "cd .. && docker-compose -f docker-compose.yml -f docker-compose.test.yml down",
+    "test:e2e:view": "npm run test:e2e:up-test-env && npm run e2e && npm run test:e2e:down-test-env && cd .. && docker compose up -d",
+    "test:e2e:headed:chromium": "playwright test --headed --project=chromium",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:login": "playwright test cinema.spec.ts -g 'Login'",
+    "test:e2e:cadastro": "playwright test cinema.spec.ts -g 'Cadastro'",
+    "test:e2e:filmes": "playwright test cinema.spec.ts -g 'CRUD Filmes'",
+    "test:e2e:sessoes": "playwright test cinema.spec.ts -g 'CRUD Sessões'"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^4.9.5"
+  }
+}

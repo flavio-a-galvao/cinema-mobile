@@ -1,0 +1,82 @@
+services:
+  database:
+    image: mysql:9.1.0
+    container_name: meu-mysql
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./Projeto-back-end/banco.sql:/docker-entrypoint-initdb.d/banco.sql:ro
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./Projeto-back-end
+      dockerfile: Dockerfile
+    container_name: back_service
+    env_file:
+      - .env
+    environment:
+      PORT: ${PORT:-3000}
+      DB_HOST: ${DB_HOST:-database}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    volumes:
+      - ./Projeto-back-end/src:/app/src
+    depends_on:
+      - database
+    networks:
+      - app-network
+    restart: on-failure
+
+  frontend:
+    build:
+      context: ./Projeto-front-end
+      dockerfile: Dockerfile
+    container_name: frontend-container
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3000
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_API_URL=https://cinema.local/api
+    volumes:
+      - ./Projeto-front-end/src:/app/src
+      - ./Projeto-front-end/public:/app/public
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: on-failure
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - app-network
+    restart: on-failure
+
+volumes:
+  mysql-data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge

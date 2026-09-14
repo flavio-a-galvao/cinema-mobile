@@ -8,7 +8,6 @@ interface UserRequestBody {
     cpf?: string;
     email?: string;
     senha?: string;
-    tipo_usuario?: string;
 }
 
 interface NormalizedUserInput {
@@ -149,7 +148,7 @@ class UsersController {
             cpf: input.cpf,
             email: input.email,
             senha: senhaHash,
-            tipo_usuario: payload.tipo_usuario,
+            tipo_usuario: "cliente",
         });
 
         return res.status(201).json(UsersController.serializeUser(user));

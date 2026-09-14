@@ -12,10 +12,10 @@ import { useAuth } from '@/contexts/AuthContext';
 
 function getLoginErrorMessage(error: unknown): string {
   if (isAxiosError(error)) {
-    if (error.response?.status === 401) return 'Email ou senha incorretos. Confira os dados e tente novamente.';
-    if (!error.response) return 'Não foi possível conectar. Verifique sua conexão e tente novamente.';
+    if (error.response?.status === 401) return 'E-mail ou senha inválidos.';
+    if (!error.response) return 'Não foi possível conectar ao servidor.';
   }
-  return 'Não foi possível entrar agora. Tente novamente em instantes.';
+  return 'Não foi possível entrar. Tente novamente.';
 }
 
 export default function LoginScreen() {

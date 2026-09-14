@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Cinema App",
+    "slug": "cinema-mobile",
+    "version": "1.0.0",
+    "scheme": "cinema-mobile",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar"
+    ]
+  }
+}

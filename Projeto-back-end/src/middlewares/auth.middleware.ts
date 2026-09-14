@@ -40,9 +40,11 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 
 export function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const request = req as AuthenticatedRequest;
-  const role = String(request.authUser?.tipo_usuario || "").toLowerCase();
+  if (!request.authUser) {
+    return res.status(401).json({ message: "Autenticacao necessaria." });
+  }
 
-  if (role !== "admin" && role !== "adm") {
+  if (request.authUser.tipo_usuario !== "admin") {
     return res.status(403).json({ message: "Acesso restrito para administradores." });
   }
 

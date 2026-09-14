@@ -11,6 +11,7 @@ export default function WelcomeScreen() {
       <Text accessibilityRole="header" style={styles.title}>Cinema App</Text>
       <Text style={styles.description}>Projeto mobile configurado. Uma nova experiência de cinema começa aqui.</Text>
       <Button title="Testar componentes" onPress={() => router.push('/components')} />
+      <Button title="Entrar" onPress={() => router.push('/login')} />
     </Screen>
   );
 }

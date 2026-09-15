@@ -6,6 +6,7 @@ import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Loading } from '@/components/Loading';
+import { MovieSessions } from '@/components/MovieSessions';
 import { Screen } from '@/components/Screen';
 import { theme } from '@/constants/theme';
 import { getMovieById } from '@/services/movieService';
@@ -55,6 +56,7 @@ function MovieDetails({ id }: { id: number }) {
       <Text style={styles.text}>Lançamento: {releaseDate && !Number.isNaN(releaseDate.getTime()) ? releaseDate.toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'Não informado'}</Text>
       <Text accessibilityRole="header" style={styles.subtitle}>Sinopse</Text>
       <Text style={styles.text}>{movie.sinopse || 'Sinopse não disponível.'}</Text>
+      <MovieSessions key={movie.id_filme} movieId={movie.id_filme} />
     </>
   );
 }

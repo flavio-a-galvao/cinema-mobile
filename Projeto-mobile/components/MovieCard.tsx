@@ -1,3 +1,5 @@
+import { router } from 'expo-router';
+import { Button } from '@/components/Button';
 import { StyleSheet, Text, View } from 'react-native';
 import { theme } from '@/constants/theme';
 import type { Movie } from '@/types/movie';
@@ -12,6 +14,7 @@ export function MovieCard({ movie }: MovieCardProps) {
       {movie.classificacao_etaria ? <Text style={styles.metadata}>Classificação: {movie.classificacao_etaria}</Text> : null}
       {movie.duracao != null ? <Text style={styles.metadata}>Duração: {movie.duracao} min</Text> : null}
       {movie.sinopse ? <Text style={styles.synopsis} numberOfLines={3}>{movie.sinopse}</Text> : null}
+      <Button title="Ver detalhes" accessibilityLabel={`Ver detalhes de ${movie.titulo}`} onPress={() => router.push(`./movies/${movie.id_filme}`)} />
     </View>
   );
 }

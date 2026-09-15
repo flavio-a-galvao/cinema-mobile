@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Loading } from '@/components/Loading';
@@ -18,16 +18,29 @@ export function SessionSeats({ sessionId }: { sessionId: number }) {
   const token = authState.token;
   const [state, setState] = useState<SeatsState>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   useEffect(() => {
     if (!token) return;
     let active = true;
     void listSessionSeats(sessionId, token).then(
-      (seats) => { if (active) setState({ status: 'success', seats }); },
+      (seats) => {
+        if (active) {
+          setSelectedIds([]);
+          setState({ status: 'success', seats });
+        }
+      },
       () => { if (active) setState({ status: 'error' }); },
     );
     return () => { active = false; };
   }, [sessionId, token, attempt]);
+
+  function toggleSeat(seat: SessionSeat): void {
+    if (seat.occupied) return;
+    setSelectedIds((current) => current.includes(seat.id_assento)
+      ? current.filter((id) => id !== seat.id_assento)
+      : [...current, seat.id_assento]);
+  }
 
   return (
     <View style={styles.container}>
@@ -40,17 +53,30 @@ export function SessionSeats({ sessionId }: { sessionId: number }) {
       {state.status === 'success' && (state.seats.length === 0 ? (
         <EmptyState title="Nenhum assento disponível para consulta" message="Não há assentos cadastrados para a sala desta sessão." />
       ) : (
-        <View style={styles.grid}>
-          {state.seats.map((seat) => (
-            <View key={seat.id_assento} style={[styles.seat, seat.occupied ? styles.occupied : styles.available]}>
-              <Text style={seat.occupied ? styles.occupiedText : styles.availableText}>
-                {seat.fila || ''}{seat.numero || `Assento ${seat.id_assento}`}
-              </Text>
-              <Text style={seat.occupied ? styles.occupiedText : styles.availableText}>
-                {seat.occupied ? 'Ocupado' : 'Disponível'}
-              </Text>
-            </View>
-          ))}
+        <View style={styles.container}>
+          <Text accessibilityLiveRegion="polite" style={styles.count}>Assentos selecionados: {selectedIds.length}</Text>
+          <View style={styles.grid}>
+            {state.seats.map((seat) => {
+              const selected = !seat.occupied && selectedIds.includes(seat.id_assento);
+              const label = `${seat.fila || ''}${seat.numero || `Assento ${seat.id_assento}`}`;
+              const status = seat.occupied ? 'Ocupado' : selected ? 'Selecionado' : 'Disponível';
+              const textStyle = seat.occupied ? styles.occupiedText : selected ? styles.selectedText : styles.availableText;
+              return (
+                <Pressable
+                  key={seat.id_assento}
+                  accessibilityRole="checkbox"
+                  accessibilityLabel={`${label}, ${status}`}
+                  accessibilityState={{ disabled: seat.occupied, checked: selected }}
+                  disabled={seat.occupied}
+                  onPress={() => toggleSeat(seat)}
+                  style={[styles.seat, seat.occupied ? styles.occupied : selected ? styles.selected : styles.available]}
+                >
+                  <Text style={textStyle}>{label}</Text>
+                  <Text style={textStyle}>{status}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
       ))}
     </View>
@@ -62,8 +88,11 @@ const styles = StyleSheet.create({
   title: { ...theme.typography.heading, color: theme.colors.text },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm },
   seat: { flexGrow: 1, flexShrink: 1, padding: theme.spacing.md, gap: theme.spacing.xs, borderRadius: theme.radius.sm, borderWidth: theme.sizes.borderWidth },
-  available: { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary },
+  available: { backgroundColor: theme.colors.background, borderColor: theme.colors.primary },
+  selected: { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary },
   occupied: { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-  availableText: { ...theme.typography.caption, color: theme.colors.onPrimary, textAlign: 'center' },
+  selectedText: { ...theme.typography.caption, color: theme.colors.onPrimary, textAlign: 'center' },
+  count: { ...theme.typography.body, color: theme.colors.text },
+  availableText: { ...theme.typography.caption, color: theme.colors.primary, textAlign: 'center' },
   occupiedText: { ...theme.typography.caption, color: theme.colors.muted, textAlign: 'center' },
 });

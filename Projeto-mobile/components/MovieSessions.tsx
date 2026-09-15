@@ -1,3 +1,5 @@
+import { router } from 'expo-router';
+import { Button } from '@/components/Button';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { EmptyState } from '@/components/EmptyState';
@@ -55,6 +57,7 @@ export function MovieSessions({ movieId }: { movieId: number }) {
           <Text style={styles.text}>Data e horário: {formatSchedule(session.horario)}</Text>
           <Text style={styles.text}>Sala (ID): {session.id_sala ?? 'Não informada'}</Text>
           <Text style={styles.text}>Preço: {formatPrice(session.preco)}</Text>
+          <Button title="Selecionar sessão" accessibilityLabel={`Selecionar sessão ${session.id_sessao}`} onPress={() => router.push(`../sessions/${session.id_sessao}`)} />
         </View>
       )))}
     </View>

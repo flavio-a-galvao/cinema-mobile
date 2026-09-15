@@ -3,17 +3,21 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Loading } from '@/components/Loading';
+import { TicketSummary } from '@/components/TicketSummary';
 import { theme } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
 import { listSessionSeats } from '@/services/seatService';
 import type { SessionSeat } from '@/types/seat';
+import type { MovieSession } from '@/types/session';
+
+const MAX_TICKETS = 10;
 
 type SeatsState =
   | { status: 'loading' }
   | { status: 'error' }
   | { status: 'success'; seats: SessionSeat[] };
 
-export function SessionSeats({ sessionId }: { sessionId: number }) {
+export function SessionSeats({ sessionId, price }: { sessionId: number; price: MovieSession['preco'] }) {
   const { authState } = useAuth();
   const token = authState.token;
   const [state, setState] = useState<SeatsState>({ status: 'loading' });
@@ -39,7 +43,7 @@ export function SessionSeats({ sessionId }: { sessionId: number }) {
     if (seat.occupied) return;
     setSelectedIds((current) => current.includes(seat.id_assento)
       ? current.filter((id) => id !== seat.id_assento)
-      : [...current, seat.id_assento]);
+      : current.length < MAX_TICKETS ? [...current, seat.id_assento] : current);
   }
 
   return (
@@ -54,10 +58,12 @@ export function SessionSeats({ sessionId }: { sessionId: number }) {
         <EmptyState title="Nenhum assento disponível para consulta" message="Não há assentos cadastrados para a sala desta sessão." />
       ) : (
         <View style={styles.container}>
-          <Text accessibilityLiveRegion="polite" style={styles.count}>Assentos selecionados: {selectedIds.length}</Text>
+          <Text accessibilityLiveRegion="polite" style={styles.count}>Assentos selecionados: {selectedIds.length} / {MAX_TICKETS}</Text>
+          <Text style={styles.count}>Ao alterar os assentos, as quantidades voltam para inteira.</Text>
           <View style={styles.grid}>
             {state.seats.map((seat) => {
               const selected = !seat.occupied && selectedIds.includes(seat.id_assento);
+              const disabled = seat.occupied || (!selected && selectedIds.length >= MAX_TICKETS);
               const label = `${seat.fila || ''}${seat.numero || `Assento ${seat.id_assento}`}`;
               const status = seat.occupied ? 'Ocupado' : selected ? 'Selecionado' : 'Disponível';
               const textStyle = seat.occupied ? styles.occupiedText : selected ? styles.selectedText : styles.availableText;
@@ -66,8 +72,8 @@ export function SessionSeats({ sessionId }: { sessionId: number }) {
                   key={seat.id_assento}
                   accessibilityRole="checkbox"
                   accessibilityLabel={`${label}, ${status}`}
-                  accessibilityState={{ disabled: seat.occupied, checked: selected }}
-                  disabled={seat.occupied}
+                  accessibilityState={{ disabled, checked: selected }}
+                  disabled={disabled}
                   onPress={() => toggleSeat(seat)}
                   style={[styles.seat, seat.occupied ? styles.occupied : selected ? styles.selected : styles.available]}
                 >
@@ -77,6 +83,9 @@ export function SessionSeats({ sessionId }: { sessionId: number }) {
               );
             })}
           </View>
+          {selectedIds.length > 0 && (
+            <TicketSummary key={selectedIds.join(',')} seats={state.seats.filter((seat) => selectedIds.includes(seat.id_assento))} price={price} />
+          )}
         </View>
       ))}
     </View>

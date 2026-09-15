@@ -1,3 +1,4 @@
+import { UniqueConstraintError } from "sequelize";
 import { Request, Response } from "express";
 import Cliente from "../models/Cliente";
 
@@ -75,15 +76,22 @@ class ClientesController {
       return res.status(400).json({ message: ClientesController.REQUIRED_MESSAGE });
     }
 
-    const upsertResult = await ClientesController.upsertByEmail(
-      emailNormalizado,
-      nomeNormalizado,
-      cpf,
-      telefone,
-      data_nascimento,
-    );
+    try {
+      const upsertResult = await ClientesController.upsertByEmail(
+        emailNormalizado,
+        nomeNormalizado,
+        cpf,
+        telefone,
+        data_nascimento,
+      );
 
-    return res.status(upsertResult.created ? 201 : 200).json(upsertResult.cliente);
+      return res.status(upsertResult.created ? 201 : 200).json(upsertResult.cliente);
+    } catch (error) {
+      if (error instanceof UniqueConstraintError) {
+        return res.status(409).json({ message: "Email ou CPF ja cadastrado para outro cliente." });
+      }
+      throw error;
+    }
   }
 
   static async getMyProfile(req: AuthenticatedRequest, res: Response) {
@@ -107,8 +115,15 @@ class ClientesController {
       return res.status(400).json({ message: ClientesController.REQUIRED_MESSAGE });
     }
 
-    const upsertResult = await ClientesController.upsertByEmail(email, nome, undefined, telefone, data_nascimento);
-    return res.status(upsertResult.created ? 201 : 200).json(upsertResult.cliente);
+    try {
+      const upsertResult = await ClientesController.upsertByEmail(email, nome, undefined, telefone, data_nascimento);
+      return res.status(upsertResult.created ? 201 : 200).json(upsertResult.cliente);
+    } catch (error) {
+      if (error instanceof UniqueConstraintError) {
+        return res.status(409).json({ message: "Email ou CPF ja cadastrado para outro cliente." });
+      }
+      throw error;
+    }
   }
 }
 

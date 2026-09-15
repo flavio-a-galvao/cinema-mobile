@@ -27,6 +27,7 @@ Cliente.init(
     },
     email: {
       type: DataTypes.STRING,
+      unique: true,
     },
     telefone: {
       type: DataTypes.STRING,

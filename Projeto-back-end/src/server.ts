@@ -1,6 +1,7 @@
 import app from "./app";
 import sequelize from "./config/database";
 import { DataTypes } from "sequelize";
+import { ensureClientesEmailUnique } from "./utils/ensureClientesEmailUnique";
 
 const port = 3000;
 
@@ -65,6 +66,7 @@ async function startServer() {
   try {
     await waitForDatabase();
     await ensureUsuariosCpfColumn();
+    await ensureClientesEmailUnique(sequelize.getQueryInterface());
     await sequelize.sync();
 
     app.listen(port, () => {

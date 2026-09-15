@@ -6,6 +6,7 @@ import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Loading } from '@/components/Loading';
+import { MovieCard } from '@/components/MovieCard';
 import { theme } from '@/constants/theme';
 import * as movieService from '@/services/movieService';
 import type { Movie } from '@/types/movie';
@@ -67,15 +68,7 @@ export default function CatalogScreen() {
         ListEmptyComponent={!isLoading && !refreshing && !error ? (
           <EmptyState title="Nenhum filme disponível" message="Puxe para atualizar e consultar o catálogo novamente." />
         ) : null}
-        renderItem={({ item }) => (
-          <View style={styles.movie}>
-            <Text accessibilityRole="header" style={styles.movieTitle}>{item.titulo}</Text>
-            {item.genero ? <Text style={styles.metadata}>Gênero: {item.genero}</Text> : null}
-            {item.classificacao_etaria ? <Text style={styles.metadata}>Classificação: {item.classificacao_etaria}</Text> : null}
-            {item.duracao != null ? <Text style={styles.metadata}>Duração: {item.duracao} min</Text> : null}
-            {item.sinopse ? <Text style={styles.synopsis} numberOfLines={3}>{item.sinopse}</Text> : null}
-          </View>
-        )}
+        renderItem={({ item }) => <MovieCard movie={item} />}
       />
     </SafeAreaView>
   );
@@ -86,8 +79,4 @@ const styles = StyleSheet.create({
   content: { flexGrow: 1, width: '100%', maxWidth: theme.sizes.contentMaxWidth, alignSelf: 'center', padding: theme.spacing.lg, gap: theme.spacing.md },
   header: { gap: theme.spacing.md },
   title: { ...theme.typography.heading, color: theme.colors.text },
-  movie: { padding: theme.spacing.md, gap: theme.spacing.sm, borderRadius: theme.radius.md, backgroundColor: theme.colors.surface },
-  movieTitle: { ...theme.typography.label, color: theme.colors.text },
-  metadata: { ...theme.typography.caption, color: theme.colors.muted },
-  synopsis: { ...theme.typography.body, color: theme.colors.text },
 });

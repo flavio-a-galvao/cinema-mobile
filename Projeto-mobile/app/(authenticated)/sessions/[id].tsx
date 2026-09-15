@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Loading } from '@/components/Loading';
 import { Screen } from '@/components/Screen';
+import { SessionSeats } from '@/components/SessionSeats';
 import { theme } from '@/constants/theme';
 import { getMovieById } from '@/services/movieService';
 import { getSessionById } from '@/services/sessionService';
@@ -70,6 +71,7 @@ function SessionDetails({ id }: { id: number }) {
       <Text style={styles.text}>Horário: {validDate?.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) ?? 'Não informado'}</Text>
       <Text style={styles.text}>Sala (ID): {session.id_sala ?? 'Não informada'}</Text>
       <Text style={styles.text}>Preço: {Number.isFinite(price) ? price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Não informado'}</Text>
+      <SessionSeats key={session.id_sessao} sessionId={session.id_sessao} />
     </>
   );
 }

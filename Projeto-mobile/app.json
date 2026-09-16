@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Cinema App",
+    "name": "Cinemax",
     "slug": "cinema-mobile",
     "version": "1.0.0",
     "scheme": "cinema-mobile",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true
     },

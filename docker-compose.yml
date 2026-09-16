@@ -34,6 +34,7 @@ services:
       DB_PASS: ${DB_PASS}
     volumes:
       - ./Projeto-back-end/src:/app/src
+      - posters-data:/app/uploads/posters
     depends_on:
       - database
     networks:
@@ -76,6 +77,8 @@ services:
     restart: on-failure
 
 volumes:
+  posters-data:
+    driver: local
   mysql-data:
     driver: local
 

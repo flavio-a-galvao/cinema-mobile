@@ -16,6 +16,8 @@ for (const name of ['auth', 'users', 'clientes', 'compras', 'filmes', 'salas', '
     }));
 }
 
+vi.doMock('../src/controllers/posters.controller', () => ({ uploadPoster: controller }));
+
 let server: Server;
 let baseURL: string;
 beforeAll(async () => {

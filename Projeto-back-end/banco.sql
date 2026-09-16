@@ -124,8 +124,8 @@ VALUES
 
 INSERT INTO filmes (titulo,genero,classificacao_etaria,duracao,sinopse,poster_url,data_lancamento)
 VALUES
-('Vingadores','Ação','12',140,'Heróis salvando o mundo','https://i.imgur.com/8w1NikM.jpg','2019-04-25'),
-('Batman','Ação','14',150,'História do cavaleiro das trevas','https://i.imgur.com/cH3kBRq.jpg','2022-03-04');
+('Vingadores','Ação','12',140,'Heróis salvando o mundo',NULL,'2019-04-25'),
+('Batman','Ação','14',150,'História do cavaleiro das trevas',NULL,'2022-03-04');
 
 INSERT INTO salas (nome,capacidade)
 VALUES

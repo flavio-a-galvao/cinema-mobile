@@ -11,6 +11,9 @@ import SessoesController from './controllers/sessoes.controller';
 import IngressosController from './controllers/ingressos.controller';
 import PagamentosController from './controllers/pagamentos.controller';
 
+import { POSTER_DIRECTORY, receivePoster } from './middlewares/posterUpload';
+import { uploadPoster } from './controllers/posters.controller';
+
 const app = express();
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -22,6 +25,10 @@ app.use((req, res, next) => {
     next();
 });
 app.use(express.json());
+app.use('/posters', express.static(POSTER_DIRECTORY, {
+    dotfiles: 'deny', index: false,
+    setHeaders: (res) => { res.setHeader('X-Content-Type-Options', 'nosniff'); },
+}));
 
 const router: Router = Router();
 
@@ -57,6 +64,7 @@ router.get('/clientes/:id', requireAuth, requireAdmin, ClientesController.getByI
 router.get('/me/compras', requireAuth, ComprasController.findMyPurchases);
 
 router.get('/filmes', requireAuth, requireAdmin, FilmesController.findAll);
+router.post('/filmes/:id/poster', requireAuth, requireAdmin, receivePoster, uploadPoster);
 router.post('/filmes', requireAuth, requireAdmin, FilmesController.create);
 router.get('/filmes/:id', requireAuth, requireAdmin, FilmesController.getById);
 router.put('/filmes/:id', requireAuth, requireAdmin, FilmesController.update);

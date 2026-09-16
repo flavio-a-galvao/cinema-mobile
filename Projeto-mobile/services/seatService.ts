@@ -2,7 +2,7 @@ import { getApi } from '@/services/api';
 import { getSessionById } from '@/services/sessionService';
 import type { Seat, SessionSeat } from '@/types/seat';
 
-type SeatOccupancy = { id_sessao: number; id_assento: number };
+type SeatOccupancy = { id_assento: number };
 
 export async function listSessionSeats(sessionId: number, token: string): Promise<SessionSeat[]> {
   const session = await getSessionById(sessionId);
@@ -10,12 +10,11 @@ export async function listSessionSeats(sessionId: number, token: string): Promis
 
   const [seats, tickets] = await Promise.all([
     getApi().get<Seat[]>('/catalogo/assentos'),
-    getApi().get<SeatOccupancy[]>('/ingressos', {
+    getApi().get<SeatOccupancy[]>(`/sessoes/${sessionId}/ocupacao`, {
       headers: { Authorization: `Bearer ${token}` },
     }),
   ]);
   const occupiedIds = new Set(tickets.data
-    .filter((ticket) => ticket.id_sessao === sessionId)
     .map((ticket) => ticket.id_assento));
 
   return seats.data

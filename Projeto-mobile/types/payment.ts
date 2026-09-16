@@ -3,6 +3,11 @@ export type CreatePaymentInput = { id_ingresso: number; valor: number; metodo_pa
 export type Payment = Omit<CreatePaymentInput, 'valor'> & { id_pagamento: number; valor: number | string; data_pagamento: string | null };
 export type Purchase = {
   id: number;
+  status: 'ativo' | 'cancelado';
+  sala: string;
+  horario: string | null;
+  podeCancelar: boolean;
+  canceladoEm: string | null;
   filme: string;
   sessao: string;
   assento: string;

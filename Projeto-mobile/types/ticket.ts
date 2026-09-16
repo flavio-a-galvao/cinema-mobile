@@ -9,9 +9,13 @@ export type CreateTicketInput = {
 
 /** Resposta JSON de POST /ingressos. */
 export type Ticket = {
+  status: 'ativo' | 'cancelado';
+  cancelado_em: string | null;
   id_ingresso: number;
   id_sessao: number;
   id_cliente: number;
   id_assento: number;
   data_compra: string | null;
 };
+
+export type CreateTicketsInput = { id_sessao: number; id_cliente: number; id_assentos: number[]; qtdInteira: number; qtdMeia: number };

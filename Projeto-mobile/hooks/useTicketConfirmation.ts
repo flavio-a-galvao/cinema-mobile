@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { getMyClient, upsertMyClient } from '@/services/clientService';
-import { createTicket } from '@/services/ticketService';
+import { createTickets } from '@/services/ticketService';
 import type { SessionSeat } from '@/types/seat';
 import type { Ticket } from '@/types/ticket';
 
@@ -72,21 +72,16 @@ export function useTicketConfirmation({ sessionId, seats, qtdInteira, qtdMeia, v
         throw cause;
       });
       if (!Number.isSafeInteger(client.id_cliente) || client.id_cliente <= 0) throw new Error('Cliente inválido.');
-      for (const seat of seats) {
-        ticketRequested = true;
-        const ticket = await createTicket({ id_sessao: sessionId, id_cliente: client.id_cliente, id_assento: seat.id_assento }, token);
-        saved.push(ticket);
-        setCreated([...saved]);
-      }
+      ticketRequested = true;
+      saved.push(...await createTickets({ id_sessao: sessionId, id_cliente: client.id_cliente, id_assentos: seats.map(seat => seat.id_assento), qtdInteira, qtdMeia }, token));
+      setCreated([...saved]);
       setCheckout({ userId: user.id_usuario, tickets: saved, seatLabels: Object.fromEntries(seats.map(seat => [seat.id_assento, seatLabel(seat)])), qtdInteira, qtdMeia, fullCents, halfCents, status: 'ready', payments: [] });
       setComplete(true);
     } catch (cause: unknown) {
       if (ticketRequested) {
         setStopped(true);
         const uncertain = !isAxiosError(cause) || !cause.response || cause.response.status >= 500;
-        setError(`${saved.length} ingresso(s) com criação confirmada. ${uncertain
-          ? 'A última solicitação pode ter sido processada, mas não foi possível confirmar a resposta.'
-          : 'Não foi possível criar o próximo ingresso; o assento pode estar ocupado.'} A operação foi interrompida. Os ingressos já criados não foram desfeitos. Confira seus ingressos antes de iniciar outra confirmação.`);
+        setError(uncertain ? 'Não foi possível confirmar a resposta da compra. Confira Meus Ingressos antes de tentar novamente.' : 'A compra não foi concluída. Um assento pode ter sido ocupado ou a sessão já começou. Atualize a sessão para escolher novamente.');
       } else {
         onLockChange(false);
         setError('Não foi possível obter seu cadastro de cliente. Tente novamente.');

@@ -1,3 +1,4 @@
+import { useIsFocused } from 'expo-router';
 import { seatLabel } from '@/utils/seatLabel';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -23,6 +24,7 @@ export function SessionSeats({ sessionId, price }: { sessionId: number; price: M
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const { authState } = useAuth();
+  const focused = useIsFocused();
   const token = authState.token;
   const [state, setState] = useState<SeatsState>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
@@ -30,19 +32,20 @@ export function SessionSeats({ sessionId, price }: { sessionId: number; price: M
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token || !focused) return;
     let active = true;
     void listSessionSeats(sessionId, token).then(
       (seats) => {
         if (active) {
           setSelectedIds([]);
+          setConfirmationLocked(false);
           setState({ status: 'success', seats });
         }
       },
       () => { if (active) setState({ status: 'error' }); },
     );
     return () => { active = false; };
-  }, [sessionId, token, attempt]);
+  }, [sessionId, token, attempt, focused]);
 
   function toggleSeat(seat: SessionSeat): void {
     if (confirmationLocked || seat.occupied) return;
@@ -76,7 +79,7 @@ export function SessionSeats({ sessionId, price }: { sessionId: number; price: M
                   const selected = !seat.occupied && selectedIds.includes(seat.id_assento);
                   const disabled = confirmationLocked || seat.occupied || (!selected && selectedIds.length >= MAX_TICKETS);
                   const label = seatLabel(seat);
-                  return <Pressable key={seat.id_assento} accessibilityRole="checkbox" accessibilityLabel={label + ', ' + (seat.occupied ? 'Ocupado' : selected ? 'Selecionado' : 'Disponível')} accessibilityState={{ disabled, checked: selected }} disabled={disabled} onPress={() => toggleSeat(seat)} style={[styles.seat, seat.occupied ? styles.occupied : selected ? styles.selected : styles.available]}>
+                  return <Pressable key={seat.id_assento} accessibilityRole="checkbox" accessibilityLabel={label + ', ' + (seat.occupied ? 'Ocupado' : selected ? 'Selecionado' : 'Disponível')} accessibilityState={{ disabled, checked: selected }} disabled={disabled} onPress={() => toggleSeat(seat)} style={[styles.seat, Number(seat.numero) === 5 && styles.aisle, seat.occupied ? styles.occupied : selected ? styles.selected : styles.available]}>
                     <Text numberOfLines={1} adjustsFontSizeToFit style={seat.occupied ? styles.occupiedText : selected ? styles.selectedText : styles.availableText}>{label}</Text>
                   </Pressable>;
                 })}
@@ -102,6 +105,7 @@ const createStyles = (theme: AppTheme) => StyleSheet.create({
   map: { flexGrow: 1, justifyContent: 'center', paddingVertical: theme.spacing.lg },
   row: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm },
   rowLabel: { ...theme.typography.caption, color: theme.colors.muted, marginRight: theme.spacing.md },
+  aisle: { marginLeft: theme.spacing.lg },
   seat: { width: theme.sizes.seat, height: theme.sizes.seat, alignItems: 'center', justifyContent: 'center', borderRadius: theme.radius.sm, borderWidth: theme.sizes.borderWidth, padding: theme.spacing.xs },
   available: { backgroundColor: theme.colors.background, borderColor: theme.colors.primary },
   selected: { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary },

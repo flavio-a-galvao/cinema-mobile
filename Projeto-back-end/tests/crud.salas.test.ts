@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import SalasController from "../src/controllers/salas.controller";
+import Assento from '../src/models/Assento';
 import Sala from "../src/models/Sala";
 
 vi.mock("../src/models/Sala", () => ({
@@ -9,6 +10,9 @@ vi.mock("../src/models/Sala", () => ({
     create: vi.fn(),
   },
 }));
+
+vi.mock('../src/models/Assento', () => ({ default: { count: vi.fn().mockResolvedValue(0) } }));
+vi.mock('../src/config/database', () => ({ default: { transaction: vi.fn(async callback => callback({ LOCK: { UPDATE: 'UPDATE' } })) } }));
 
 function createResponse() {
   const res: any = {
@@ -63,5 +67,35 @@ describe("🏛️ CRUD DE SALAS", () => {
     await SalasController.delete(req as any, res);
 
     expect(res.status, "⚠️ O SISTEMA NAO RETORNOU 404 AO REMOVER SALA INEXISTENTE!").toHaveBeenCalledWith(404);
+  });
+});
+
+
+describe('Validação e integridade de salas', () => {
+  beforeEach(() => { vi.clearAllMocks(); (Assento.count as any).mockResolvedValue(0); });
+  it('edita nome e capacidade', async () => {
+    const room = { id_sala: 1, update: vi.fn() }; (Sala.findByPk as any).mockResolvedValue(room);
+    const res = createResponse();
+    await SalasController.update({ params: { id: '1' }, body: { nome: 'Sala Coral', capacidade: 48 } } as any, res);
+    expect(res.status).toHaveBeenCalledWith(200); expect(room.update).toHaveBeenCalledWith({ nome: 'Sala Coral', capacidade: 48 }, expect.anything());
+  });
+  it('exclui sala sem dependências', async () => {
+    const room = { destroy: vi.fn() }; (Sala.findByPk as any).mockResolvedValue(room);
+    const res = createResponse(); await SalasController.delete({ params: { id: '1' } } as any, res);
+    expect(room.destroy).toHaveBeenCalledOnce(); expect(res.status).toHaveBeenCalledWith(200);
+  });
+  it('dependência impede exclusão com 409', async () => {
+    (Sala.findByPk as any).mockResolvedValue({ destroy: vi.fn().mockRejectedValue({ name: 'SequelizeForeignKeyConstraintError' }) });
+    const res = createResponse(); await SalasController.delete({ params: { id: '1' } } as any, res);
+    expect(res.status).toHaveBeenCalledWith(409);
+  });
+  it('não reduz capacidade abaixo dos assentos existentes', async () => {
+    const room = { id_sala: 1, update: vi.fn() }; (Sala.findByPk as any).mockResolvedValue(room); (Assento.count as any).mockResolvedValue(48);
+    const res = createResponse(); await SalasController.update({ params: { id: '1' }, body: { capacidade: 20 } } as any, res);
+    expect(res.status).toHaveBeenCalledWith(409); expect(room.update).not.toHaveBeenCalled();
+  });
+  it.each([{ nome: '', capacidade: 48 }, { nome: 'Sala', capacidade: -1 }, { nome: 'Sala', capacidade: 2.5 }])('rejeita dados inválidos', async body => {
+    const res = createResponse(); await SalasController.create({ body } as any, res);
+    expect(res.status).toHaveBeenCalledWith(400); expect(Sala.create).not.toHaveBeenCalled();
   });
 });

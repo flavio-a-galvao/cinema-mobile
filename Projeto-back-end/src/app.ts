@@ -5,6 +5,7 @@ import { requireAdmin, requireAuth } from './middlewares/auth.middleware';
 import ClientesController from './controllers/clientes.controller';
 import ComprasController from './controllers/compras.controller';
 import FilmesController from './controllers/filmes.controller';
+import { generateRoomSeats } from './controllers/salasAssentos.controller';
 import SalasController from './controllers/salas.controller';
 import AssentosController from './controllers/assentos.controller';
 import SessoesController from './controllers/sessoes.controller';
@@ -71,6 +72,7 @@ router.put('/filmes/:id', requireAuth, requireAdmin, FilmesController.update);
 router.delete('/filmes/:id', requireAuth, requireAdmin, FilmesController.delete);
 
 router.get('/salas', requireAuth, requireAdmin, SalasController.findAll);
+router.post('/salas/:id/assentos/gerar', requireAuth, requireAdmin, generateRoomSeats);
 router.post('/salas', requireAuth, requireAdmin, SalasController.create);
 router.get('/salas/:id', requireAuth, requireAdmin, SalasController.getById);
 router.put('/salas/:id', requireAuth, requireAdmin, SalasController.update);

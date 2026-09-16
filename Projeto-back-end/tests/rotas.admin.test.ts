@@ -16,6 +16,8 @@ for (const name of ['auth', 'users', 'clientes', 'compras', 'filmes', 'salas', '
     }));
 }
 
+vi.doMock('../src/controllers/salasAssentos.controller', () => ({ generateRoomSeats: controller }));
+
 vi.doMock('../src/controllers/posters.controller', () => ({ uploadPoster: controller }));
 
 let server: Server;
@@ -42,6 +44,7 @@ const administrativeRoutes = [
         { method: 'PUT', path: `/${resource}/1` },
         { method: 'DELETE', path: `/${resource}/1` },
     ]),
+    { method: 'POST', path: '/salas/1/assentos/gerar' },
     { method: 'POST', path: '/assentos' },
     { method: 'POST', path: '/clientes' },
 ];

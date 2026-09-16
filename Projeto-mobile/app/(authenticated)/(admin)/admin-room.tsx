@@ -1,0 +1,63 @@
+import { useEffect, useRef, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import { StyleSheet, Text } from 'react-native';
+import { Screen } from '@/components/Screen';
+import { Button } from '@/components/Button';
+import { Input } from '@/components/Input';
+import { Loading } from '@/components/Loading';
+import { ErrorState } from '@/components/ErrorState';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import type { AppTheme } from '@/constants/theme';
+import { adminRoutes } from '@/constants/routes';
+import { listRooms, saveRoom, generateSeats } from '@/services/adminCinemaService';
+import { adminError } from '@/utils/adminFeedback';
+function RoomEditor({ id }: { id?: number }) {
+  const { theme } = useTheme(); const styles = createStyles(theme); const { authState } = useAuth(); const token = authState.token;
+  const [savedId, setSavedId] = useState(id); const [nome, setNome] = useState(''); const [capacidade, setCapacidade] = useState('48'); const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(!!id); const [loadError, setLoadError] = useState(''); const [attempt, setAttempt] = useState(0);
+  const [pending, setPending] = useState<'save' | 'generate' | null>(null); const busy = useRef(false); const [dirty, setDirty] = useState(!id);
+  const [error, setError] = useState(''); const [message, setMessage] = useState('');
+  useEffect(() => {
+    if (!id || !token) return; let active = true;
+    void listRooms(token).then(rooms => {
+      if (!active) return; const room = rooms.find(item => item.id_sala === id);
+      if (!room) { setLoadError('Sala não encontrada.'); return; }
+      setNome(room.nome ?? ''); setCapacidade(String(room.capacidade)); setTotal(room.quantidade_assentos); setDirty(false); setLoadError('');
+    }, cause => { if (active) setLoadError(adminError(cause)); }).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [id, token, attempt]);
+  async function save() {
+    if (!token || busy.current) return;
+    const capacity = Number(capacidade);
+    if (!nome.trim() || !Number.isInteger(capacity) || capacity <= 0 || capacity > 2147483647) { setError('Informe um nome e uma capacidade inteira positiva.'); return; }
+    if (capacity < total) { setError('A capacidade não pode ser menor que os assentos cadastrados.'); return; }
+    busy.current = true; setPending('save'); setError(''); setMessage('');
+    try { const room = await saveRoom({ nome: nome.trim(), capacidade: capacity }, token, savedId); setSavedId(room.id_sala); setDirty(false); setMessage('Sala salva com sucesso.'); }
+    catch (cause) { setError(adminError(cause)); } finally { busy.current = false; setPending(null); }
+  }
+  async function generate() {
+    if (!token || !savedId || busy.current || dirty) return; busy.current = true; setPending('generate'); setError(''); setMessage('');
+    try { const result = await generateSeats(savedId, token); setTotal(result.total); setMessage(result.criados ? result.criados + ' assentos criados. Total: ' + result.total + '.' : 'Os assentos A1–F8 já estão cadastrados. Nenhuma duplicação.'); }
+    catch (cause) { setError(adminError(cause)); } finally { busy.current = false; setPending(null); }
+  }
+  if (loading) return <Screen><Loading /></Screen>;
+  if (loadError) return <Screen><ErrorState message={loadError} onRetry={() => { setLoading(true); setAttempt(value => value + 1); }} /><Button title="Voltar" onPress={() => router.replace(adminRoutes.rooms)} /></Screen>;
+  return <Screen><Text style={styles.title}>{savedId ? 'Editar sala' : 'Nova sala'}</Text>
+    <Input label="Nome da sala" value={nome} maxLength={255} editable={!pending} onChangeText={value => { setNome(value); setDirty(true); setMessage(''); }} />
+    <Input label="Capacidade" value={capacidade} keyboardType="number-pad" editable={!pending} onChangeText={value => { setCapacidade(value); setDirty(true); setMessage(''); }} />
+    <Text style={styles.text}>Assentos cadastrados: {total}</Text>
+    {!!error && <ErrorState message={error} />}{!!message && <Text style={styles.text} accessibilityRole="alert">{message}</Text>}
+    <Button title="Salvar sala" loading={pending === 'save'} disabled={pending !== null} onPress={() => { void save(); }} />
+    <Text style={styles.title}>Mapa de assentos</Text><Text style={styles.text}>Fileiras A a F, com 8 assentos por fileira. A geração completa somente os lugares que faltam e preserva os existentes.</Text>
+    {dirty && <Text style={styles.text}>Salve a sala antes de gerar os assentos.</Text>}
+    <Button title="Gerar assentos A1–F8" variant="secondary" loading={pending === 'generate'} disabled={!savedId || dirty || pending !== null} onPress={() => { void generate(); }} />
+    <Button title="Voltar às salas" variant="link" disabled={pending !== null} onPress={() => router.replace(adminRoutes.rooms)} />
+  </Screen>;
+}
+export default function AdminRoomScreen() {
+  const { id } = useLocalSearchParams<{ id?: string }>(); const roomId = id ? Number(id) : undefined;
+  if (roomId !== undefined && (!Number.isSafeInteger(roomId) || roomId <= 0)) return <Screen><ErrorState message="Sala não encontrada." /><Button title="Voltar" onPress={() => router.replace(adminRoutes.rooms)} /></Screen>;
+  return <RoomEditor key={id ?? 'new'} id={roomId} />;
+}
+const createStyles = (theme: AppTheme) => StyleSheet.create({ title: { ...theme.typography.heading, color: theme.colors.text }, text: { ...theme.typography.body, color: theme.colors.muted } });

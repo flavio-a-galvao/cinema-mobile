@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import { Alert, Platform, StyleSheet, Text, View } from 'react-native';
 import { isAxiosError } from 'axios';
+import { AdminSections } from '@/components/AdminSections';
 import { Screen } from '@/components/Screen';
 import { Button } from '@/components/Button';
 import { MoviePoster } from '@/components/MoviePoster';
@@ -47,6 +48,7 @@ export default function AdminScreen() {
     Alert.alert('Excluir filme', message, [{ text: 'Voltar', style: 'cancel' }, { text: 'Excluir', style: 'destructive', onPress: () => { void remove(movie); } }]);
   }
   return <Screen>
+    <AdminSections current="movies" />
     <Text style={styles.title}>Gerenciar filmes</Text>
     <Button title="Novo filme" disabled={pending !== null} onPress={() => router.push(adminMovieRoute())} />
     {!!message && <Text accessibilityRole="alert" style={styles.text}>{message}</Text>}

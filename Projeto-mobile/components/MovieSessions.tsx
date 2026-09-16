@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, useIsFocused } from 'expo-router';
 import { sessionRoute } from '@/constants/routes';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -34,16 +34,18 @@ export function MovieSessions({ movieId }: { movieId: number }) {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const [state, setState] = useState<SessionsState>({ status: 'loading' });
+  const focused = useIsFocused();
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
+    if (!focused) return;
     let active = true;
     void listSessionsByMovie(movieId).then(
       (sessions) => { if (active) setState({ status: 'success', sessions }); },
       () => { if (active) setState({ status: 'error' }); },
     );
     return () => { active = false; };
-  }, [movieId, attempt]);
+  }, [movieId, attempt, focused]);
 
   return (
     <View style={styles.container}>

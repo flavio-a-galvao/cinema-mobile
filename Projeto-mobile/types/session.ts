@@ -6,3 +6,5 @@ export type MovieSession = {
   horario: string | null;
   preco: string | number | null;
 };
+
+export type SessionInput = { id_filme: number; id_sala: number; horario: string; preco: number };

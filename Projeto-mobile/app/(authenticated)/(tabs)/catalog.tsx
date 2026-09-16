@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { EmptyState } from '@/components/EmptyState';
@@ -23,7 +24,7 @@ export default function CatalogScreen() {
     const currentRequest = ++requestId.current;
     await movieService.listMovies().then(
       (data) => {
-        if (currentRequest === requestId.current) setMovies(data);
+        if (currentRequest === requestId.current) { setMovies(data); setError(null); }
       },
       () => {
         if (currentRequest === requestId.current) {
@@ -38,10 +39,10 @@ export default function CatalogScreen() {
     });
   }, []);
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     void fetchMovies();
     return () => { requestId.current += 1; };
-  }, [fetchMovies]);
+  }, [fetchMovies]));
 
   function loadMovies(refresh = false): void {
     setError(null);

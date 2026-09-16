@@ -1,7 +1,7 @@
 import { MoviePoster } from '@/components/MoviePoster';
 import { routes } from '@/constants/routes';
 import { isAxiosError } from 'axios';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useIsFocused } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { Button } from '@/components/Button';
@@ -23,9 +23,11 @@ function MovieDetails({ id }: { id: number }) {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const [state, setState] = useState<MovieState>({ status: 'loading' });
+  const focused = useIsFocused();
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
+    if (!focused) return;
     let active = true;
     void getMovieById(id).then(
       (movie) => { if (active) setState({ status: 'success', movie }); },
@@ -36,7 +38,7 @@ function MovieDetails({ id }: { id: number }) {
       },
     );
     return () => { active = false; };
-  }, [id, attempt]);
+  }, [id, attempt, focused]);
 
   if (state.status === 'loading') return <Loading message="Carregando filme..." />;
   if (state.status === 'notFound') {

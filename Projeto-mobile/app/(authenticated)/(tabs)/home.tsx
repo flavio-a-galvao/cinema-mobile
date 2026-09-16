@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, useIsFocused } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Screen } from '@/components/Screen';
@@ -15,8 +15,9 @@ import type { Movie } from '@/types/movie';
 import { listMovies } from '@/services/movieService';
 export default function HomeScreen() {
  const { theme } = useTheme(); const styles = createStyles(theme); const { authState } = useAuth();
+ const focused = useIsFocused();
  const [movies, setMovies] = useState<Movie[] | null>(null); const [error, setError] = useState(false); const [attempt, setAttempt] = useState(0);
- useEffect(() => { let active = true; void listMovies().then(data => { if(active) setMovies(data); }, () => { if(active) setError(true); }); return () => { active = false; }; }, [attempt]);
+ useEffect(() => { if (!focused) return; let active = true; void listMovies().then(data => { if(active) { setMovies(data); setError(false); } }, () => { if(active) setError(true); }); return () => { active = false; }; }, [attempt, focused]);
  return <Screen><Text style={styles.brand}>Cinemax</Text><Text style={styles.muted}>Olá, {authState.user?.nome.split(' ')[0]}.</Text>
  <View style={styles.hero}><Text style={styles.title}>Sua próxima história começa aqui.</Text><Text style={styles.muted}>Encontre um filme. Escolha sua sessão. Viva o cinema.</Text><Button title="Explorar filmes" onPress={() => router.navigate(routes.catalog)} /></View>
  <Text accessibilityRole="header" style={styles.title}>No catálogo</Text>

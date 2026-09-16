@@ -10,3 +10,5 @@ export type Movie = {
   /** Data serializada em JSON, não uma instância de Date. */
   data_lancamento: string | null;
 };
+
+export type MovieInput = Omit<Movie, 'id_filme' | 'poster_url'>;

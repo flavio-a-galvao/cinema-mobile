@@ -35,6 +35,7 @@ export default function AccountScreen() {
       <Text style={styles.message}>Olá, {authState.user?.nome}.</Text>
       <Text style={styles.message}>Sua sessão está ativa. Esta é uma tela temporária do Cinema App.</Text>
       <Button title="Ver catálogo de filmes" disabled={isSigningOut} onPress={() => router.push('./catalog')} />
+      <Button title="Meus Ingressos" disabled={isSigningOut} onPress={() => router.push('./my-tickets')} />
       {authState.user?.tipo_usuario === 'admin' && (
         <Button title="Área administrativa" disabled={isSigningOut} onPress={() => router.push('./admin')} />
       )}

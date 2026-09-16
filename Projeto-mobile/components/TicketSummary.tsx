@@ -1,5 +1,6 @@
+import { useTicketConfirmation } from '@/hooks/useTicketConfirmation';
 import { useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { ErrorState } from '@/components/ErrorState';
 import { theme } from '@/constants/theme';
@@ -7,6 +8,8 @@ import type { SessionSeat } from '@/types/seat';
 import type { MovieSession } from '@/types/session';
 
 type TicketSummaryProps = {
+  sessionId: number;
+  onLockChange: (locked: boolean) => void;
   seats: SessionSeat[];
   price: MovieSession['preco'];
 };
@@ -15,7 +18,7 @@ function money(cents: number): string {
   return (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-export function TicketSummary({ seats, price }: TicketSummaryProps) {
+export function TicketSummary({ sessionId, seats, price, onLockChange }: TicketSummaryProps) {
   const [qtdMeia, setQtdMeia] = useState(0);
   const qtdInteira = seats.length - qtdMeia;
   const numericPrice = price === null || String(price).trim() === '' ? NaN : Number(price);
@@ -23,6 +26,8 @@ export function TicketSummary({ seats, price }: TicketSummaryProps) {
   const precoInteira = Math.round(numericPrice * 100);
   const precoMeia = Math.round(precoInteira / 2);
   const valorTotal = qtdInteira * precoInteira + qtdMeia * precoMeia;
+  const { confirm, pending, error, created, stopped, complete } = useTicketConfirmation({ sessionId, seats, qtdInteira, qtdMeia, validPrice, onLockChange });
+  const locked = pending || stopped || complete;
 
   return (
     <View style={styles.container}>
@@ -31,8 +36,8 @@ export function TicketSummary({ seats, price }: TicketSummaryProps) {
       <Text style={styles.text}>Inteiras: {qtdInteira}</Text>
       <Text style={styles.text}>Meias: {qtdMeia}</Text>
       <Text style={styles.text}>Total de ingressos: {qtdInteira + qtdMeia}</Text>
-      <Button title="Trocar uma inteira por meia" disabled={qtdInteira === 0} onPress={() => setQtdMeia((value) => Math.min(seats.length, value + 1))} />
-      <Button title="Trocar uma meia por inteira" disabled={qtdMeia === 0} onPress={() => setQtdMeia((value) => Math.max(0, value - 1))} />
+      <Button title="Trocar uma inteira por meia" disabled={locked || qtdInteira === 0} onPress={() => setQtdMeia((value) => Math.min(seats.length, value + 1))} />
+      <Button title="Trocar uma meia por inteira" disabled={locked || qtdMeia === 0} onPress={() => setQtdMeia((value) => Math.max(0, value - 1))} />
       {validPrice ? (
         <>
           <Text style={styles.text}>Preço da inteira: {money(precoInteira)}</Text>
@@ -40,9 +45,11 @@ export function TicketSummary({ seats, price }: TicketSummaryProps) {
           <Text accessibilityLiveRegion="polite" style={styles.title}>Valor total: {money(valorTotal)}</Text>
         </>
       ) : <ErrorState message="Preço da sessão indisponível. Não é possível avançar." />}
-      <Button title="Avançar" disabled={!validPrice || seats.length === 0} onPress={() => {
-        Alert.alert('Resumo conferido', 'A próxima etapa estará disponível em breve. Nenhum ingresso foi criado e nenhum assento foi reservado.');
-      }} />
+      {error && <ErrorState message={error} />}
+      {stopped && created.map((ticket) => (
+        <Text key={ticket.id_ingresso} style={styles.text}>Ingresso #{ticket.id_ingresso} — assento ID {ticket.id_assento}</Text>
+      ))}
+      <Button title={pending ? 'Confirmando...' : 'Confirmar ingressos'} loading={pending} disabled={locked || !validPrice || seats.length === 0 || seats.length > 10 || qtdInteira + qtdMeia !== seats.length} onPress={() => { void confirm(); }} />
     </View>
   );
 }

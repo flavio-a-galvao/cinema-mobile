@@ -22,6 +22,7 @@ export function SessionSeats({ sessionId, price }: { sessionId: number; price: M
   const token = authState.token;
   const [state, setState] = useState<SeatsState>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
+  const [confirmationLocked, setConfirmationLocked] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   useEffect(() => {
@@ -40,7 +41,7 @@ export function SessionSeats({ sessionId, price }: { sessionId: number; price: M
   }, [sessionId, token, attempt]);
 
   function toggleSeat(seat: SessionSeat): void {
-    if (seat.occupied) return;
+    if (confirmationLocked || seat.occupied) return;
     setSelectedIds((current) => current.includes(seat.id_assento)
       ? current.filter((id) => id !== seat.id_assento)
       : current.length < MAX_TICKETS ? [...current, seat.id_assento] : current);
@@ -63,7 +64,7 @@ export function SessionSeats({ sessionId, price }: { sessionId: number; price: M
           <View style={styles.grid}>
             {state.seats.map((seat) => {
               const selected = !seat.occupied && selectedIds.includes(seat.id_assento);
-              const disabled = seat.occupied || (!selected && selectedIds.length >= MAX_TICKETS);
+              const disabled = confirmationLocked || seat.occupied || (!selected && selectedIds.length >= MAX_TICKETS);
               const label = `${seat.fila || ''}${seat.numero || `Assento ${seat.id_assento}`}`;
               const status = seat.occupied ? 'Ocupado' : selected ? 'Selecionado' : 'Disponível';
               const textStyle = seat.occupied ? styles.occupiedText : selected ? styles.selectedText : styles.availableText;
@@ -84,7 +85,7 @@ export function SessionSeats({ sessionId, price }: { sessionId: number; price: M
             })}
           </View>
           {selectedIds.length > 0 && (
-            <TicketSummary key={selectedIds.join(',')} seats={state.seats.filter((seat) => selectedIds.includes(seat.id_assento))} price={price} />
+            <TicketSummary sessionId={sessionId} onLockChange={setConfirmationLocked} key={selectedIds.join(',')} seats={state.seats.filter((seat) => selectedIds.includes(seat.id_assento))} price={price} />
           )}
         </View>
       ))}

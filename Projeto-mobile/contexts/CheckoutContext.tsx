@@ -5,6 +5,7 @@ import type { Payment } from '@/types/payment';
 export type Checkout = {
   userId: number;
   tickets: Ticket[];
+  seatLabels: Record<number, string>;
   qtdInteira: number;
   qtdMeia: number;
   fullCents: number;

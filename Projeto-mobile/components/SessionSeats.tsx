@@ -1,10 +1,12 @@
+import { seatLabel } from '@/utils/seatLabel';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { Loading } from '@/components/Loading';
 import { TicketSummary } from '@/components/TicketSummary';
-import { theme } from '@/constants/theme';
+import type { AppTheme } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { listSessionSeats } from '@/services/seatService';
 import type { SessionSeat } from '@/types/seat';
@@ -18,6 +20,8 @@ type SeatsState =
   | { status: 'success'; seats: SessionSeat[] };
 
 export function SessionSeats({ sessionId, price }: { sessionId: number; price: MovieSession['preco'] }) {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
   const { authState } = useAuth();
   const token = authState.token;
   const [state, setState] = useState<SeatsState>({ status: 'loading' });
@@ -61,29 +65,25 @@ export function SessionSeats({ sessionId, price }: { sessionId: number; price: M
         <View style={styles.container}>
           <Text accessibilityLiveRegion="polite" style={styles.count}>Assentos selecionados: {selectedIds.length} / {MAX_TICKETS}</Text>
           <Text style={styles.count}>Ao alterar os assentos, as quantidades voltam para inteira.</Text>
-          <View style={styles.grid}>
-            {state.seats.map((seat) => {
-              const selected = !seat.occupied && selectedIds.includes(seat.id_assento);
-              const disabled = confirmationLocked || seat.occupied || (!selected && selectedIds.length >= MAX_TICKETS);
-              const label = `${seat.fila || ''}${seat.numero || `Assento ${seat.id_assento}`}`;
-              const status = seat.occupied ? 'Ocupado' : selected ? 'Selecionado' : 'Disponível';
-              const textStyle = seat.occupied ? styles.occupiedText : selected ? styles.selectedText : styles.availableText;
-              return (
-                <Pressable
-                  key={seat.id_assento}
-                  accessibilityRole="checkbox"
-                  accessibilityLabel={`${label}, ${status}`}
-                  accessibilityState={{ disabled, checked: selected }}
-                  disabled={disabled}
-                  onPress={() => toggleSeat(seat)}
-                  style={[styles.seat, seat.occupied ? styles.occupied : selected ? styles.selected : styles.available]}
-                >
-                  <Text style={textStyle}>{label}</Text>
-                  <Text style={textStyle}>{status}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
+          <View style={styles.screenLine}><Text style={styles.count}>TELA DO CINEMA</Text></View>
+          <View style={styles.legend}><Text style={styles.availableText}>□ Disponível</Text><Text style={styles.selectedLegend}>■ Selecionado</Text><Text style={styles.occupiedText}>× Ocupado</Text></View>
+          <ScrollView horizontal contentContainerStyle={styles.map} showsHorizontalScrollIndicator>
+            <View style={styles.container}>
+            {[...new Set(state.seats.map(seat => seat.fila || '—'))].sort().map(row => (
+              <View key={row} style={styles.row}>
+                <Text style={styles.rowLabel}>{row}</Text>
+                {state.seats.filter(seat => (seat.fila || '—') === row).sort((a,b) => (a.numero || '').localeCompare(b.numero || '', undefined, { numeric: true })).map(seat => {
+                  const selected = !seat.occupied && selectedIds.includes(seat.id_assento);
+                  const disabled = confirmationLocked || seat.occupied || (!selected && selectedIds.length >= MAX_TICKETS);
+                  const label = seatLabel(seat);
+                  return <Pressable key={seat.id_assento} accessibilityRole="checkbox" accessibilityLabel={label + ', ' + (seat.occupied ? 'Ocupado' : selected ? 'Selecionado' : 'Disponível')} accessibilityState={{ disabled, checked: selected }} disabled={disabled} onPress={() => toggleSeat(seat)} style={[styles.seat, seat.occupied ? styles.occupied : selected ? styles.selected : styles.available]}>
+                    <Text numberOfLines={1} adjustsFontSizeToFit style={seat.occupied ? styles.occupiedText : selected ? styles.selectedText : styles.availableText}>{label}</Text>
+                  </Pressable>;
+                })}
+              </View>
+            ))}
+            </View>
+          </ScrollView>
           {selectedIds.length > 0 && (
             <TicketSummary sessionId={sessionId} onLockChange={setConfirmationLocked} key={selectedIds.join(',')} seats={state.seats.filter((seat) => selectedIds.includes(seat.id_assento))} price={price} />
           )}
@@ -93,11 +93,16 @@ export function SessionSeats({ sessionId, price }: { sessionId: number; price: M
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: AppTheme) => StyleSheet.create({
   container: { gap: theme.spacing.md },
   title: { ...theme.typography.heading, color: theme.colors.text },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm },
-  seat: { flexGrow: 1, flexShrink: 1, padding: theme.spacing.md, gap: theme.spacing.xs, borderRadius: theme.radius.sm, borderWidth: theme.sizes.borderWidth },
+  screenLine: { borderTopWidth: theme.spacing.xs, borderColor: theme.colors.border, borderRadius: theme.radius.lg, padding: theme.spacing.md, alignItems: 'center' },
+  legend: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.md },
+  selectedLegend: { ...theme.typography.caption, color: theme.colors.primary },
+  map: { flexGrow: 1, justifyContent: 'center', paddingVertical: theme.spacing.lg },
+  row: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm },
+  rowLabel: { ...theme.typography.caption, color: theme.colors.muted, marginRight: theme.spacing.md },
+  seat: { width: theme.sizes.seat, height: theme.sizes.seat, alignItems: 'center', justifyContent: 'center', borderRadius: theme.radius.sm, borderWidth: theme.sizes.borderWidth, padding: theme.spacing.xs },
   available: { backgroundColor: theme.colors.background, borderColor: theme.colors.primary },
   selected: { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary },
   occupied: { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },

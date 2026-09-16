@@ -1,3 +1,5 @@
+import { seatLabel } from '@/utils/seatLabel';
+import { routes } from '@/constants/routes';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { usePreventRemove } from 'expo-router/react-navigation';
 import { isAxiosError } from 'axios';
@@ -36,7 +38,7 @@ export function useTicketConfirmation({ sessionId, seats, qtdInteira, qtdMeia, v
   });
   useEffect(() => {
     if (complete && !pending) {
-      router.replace('../payment');
+      router.replace(routes.payment);
     }
   }, [complete, pending]);
 
@@ -76,7 +78,7 @@ export function useTicketConfirmation({ sessionId, seats, qtdInteira, qtdMeia, v
         saved.push(ticket);
         setCreated([...saved]);
       }
-      setCheckout({ userId: user.id_usuario, tickets: saved, qtdInteira, qtdMeia, fullCents, halfCents, status: 'ready', payments: [] });
+      setCheckout({ userId: user.id_usuario, tickets: saved, seatLabels: Object.fromEntries(seats.map(seat => [seat.id_assento, seatLabel(seat)])), qtdInteira, qtdMeia, fullCents, halfCents, status: 'ready', payments: [] });
       setComplete(true);
     } catch (cause: unknown) {
       if (ticketRequested) {

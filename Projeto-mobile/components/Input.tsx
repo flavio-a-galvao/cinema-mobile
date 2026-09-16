@@ -1,13 +1,17 @@
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
-import { theme } from '@/constants/theme';
+import { Pressable, StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
+import type { AppTheme } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 
 type InputProps = Omit<TextInputProps, 'style'> & {
   label: string;
   error?: string;
 };
 
-export function Input({ label, error, onFocus, onBlur, editable = true, ...props }: InputProps) {
+export function Input({ label, error, onFocus, onBlur, editable = true, secureTextEntry = false, ...props }: InputProps) {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  const [showPassword, setShowPassword] = useState(false);
   const [focused, setFocused] = useState(false);
 
   return (
@@ -16,6 +20,7 @@ export function Input({ label, error, onFocus, onBlur, editable = true, ...props
       <TextInput
         {...props}
         editable={editable}
+        secureTextEntry={secureTextEntry && !showPassword}
         accessibilityLabel={props.accessibilityLabel ?? label}
         accessibilityHint={error ?? props.accessibilityHint}
         placeholderTextColor={theme.colors.muted}
@@ -24,12 +29,13 @@ export function Input({ label, error, onFocus, onBlur, editable = true, ...props
         onBlur={(event) => { setFocused(false); onBlur?.(event); }}
         style={[styles.input, focused && styles.focused, !!error && styles.invalid, !editable && styles.disabled]}
       />
+      {secureTextEntry && <Pressable accessibilityRole="button" accessibilityLabel={showPassword ? 'Ocultar senha' : 'Mostrar senha'} disabled={!editable} onPress={() => setShowPassword(value => !value)} style={styles.toggle}><Text style={styles.toggleLabel}>{showPassword ? 'Ocultar senha' : 'Mostrar senha'}</Text></Pressable>}
       {!!error && <Text accessibilityRole="alert" style={styles.error}>{error}</Text>}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: AppTheme) => StyleSheet.create({
   container: { gap: theme.spacing.sm },
   label: { ...theme.typography.label, color: theme.colors.text },
   input: {
@@ -43,6 +49,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
   },
+  toggle: { minHeight: theme.sizes.controlMinHeight, justifyContent: 'center', alignSelf: 'flex-end' },
+  toggleLabel: { ...theme.typography.caption, color: theme.colors.primary },
   focused: { borderColor: theme.colors.primary },
   invalid: { borderColor: theme.colors.error },
   disabled: { opacity: theme.opacity.disabled },

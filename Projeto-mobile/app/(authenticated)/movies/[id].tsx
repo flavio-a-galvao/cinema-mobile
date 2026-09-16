@@ -1,3 +1,5 @@
+import { MoviePoster } from '@/components/MoviePoster';
+import { routes } from '@/constants/routes';
 import { isAxiosError } from 'axios';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -8,7 +10,8 @@ import { ErrorState } from '@/components/ErrorState';
 import { Loading } from '@/components/Loading';
 import { MovieSessions } from '@/components/MovieSessions';
 import { Screen } from '@/components/Screen';
-import { theme } from '@/constants/theme';
+import type { AppTheme } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { getMovieById } from '@/services/movieService';
 import type { Movie } from '@/types/movie';
 
@@ -17,6 +20,8 @@ type MovieState =
   | { status: 'success'; movie: Movie };
 
 function MovieDetails({ id }: { id: number }) {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
   const [state, setState] = useState<MovieState>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
 
@@ -49,6 +54,7 @@ function MovieDetails({ id }: { id: number }) {
 
   return (
     <>
+      <MoviePoster url={movie.poster_url} title={movie.titulo} large />
       <Text accessibilityRole="header" style={styles.title}>{movie.titulo}</Text>
       <Text style={styles.text}>Gênero: {movie.genero || 'Não informado'}</Text>
       <Text style={styles.text}>Classificação: {movie.classificacao_etaria || 'Não informada'}</Text>
@@ -68,7 +74,7 @@ export default function MovieDetailsScreen() {
 
   return (
     <Screen>
-      <Button title="Voltar ao catálogo" onPress={() => router.replace('../catalog')} />
+      <Button variant="link" title="← Filmes" onPress={() => router.replace(routes.catalog)} />
       {validId ? <MovieDetails key={movieId} id={movieId} /> : (
         <EmptyState title="Filme não encontrado" message="O identificador do filme é inválido." />
       )}
@@ -76,7 +82,7 @@ export default function MovieDetailsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: AppTheme) => StyleSheet.create({
   title: { ...theme.typography.heading, color: theme.colors.text },
   subtitle: { ...theme.typography.label, color: theme.colors.text },
   text: { ...theme.typography.body, color: theme.colors.text },

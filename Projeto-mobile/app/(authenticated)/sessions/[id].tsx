@@ -1,3 +1,4 @@
+import { routes } from '@/constants/routes';
 import { isAxiosError } from 'axios';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -8,7 +9,8 @@ import { ErrorState } from '@/components/ErrorState';
 import { Loading } from '@/components/Loading';
 import { Screen } from '@/components/Screen';
 import { SessionSeats } from '@/components/SessionSeats';
-import { theme } from '@/constants/theme';
+import type { AppTheme } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { getMovieById } from '@/services/movieService';
 import { getSessionById } from '@/services/sessionService';
 import type { MovieSession } from '@/types/session';
@@ -20,6 +22,8 @@ type SessionState =
   | { status: 'success'; session: MovieSession; movieTitle: string };
 
 function SessionDetails({ id }: { id: number }) {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
   const [state, setState] = useState<SessionState>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
 
@@ -34,7 +38,7 @@ function SessionDetails({ id }: { id: number }) {
             movieTitle = movie.titulo;
           } catch (error: unknown) {
             if (isAxiosError(error) && error.response?.status === 404) {
-              movieTitle = `Filme indisponível (ID: ${session.id_filme})`;
+              movieTitle = 'Filme indisponível';
             } else {
               if (active) setState({ status: 'error' });
               return;
@@ -69,7 +73,7 @@ function SessionDetails({ id }: { id: number }) {
       <Text accessibilityRole="header" style={styles.title}>{movieTitle}</Text>
       <Text style={styles.text}>Data: {validDate?.toLocaleDateString('pt-BR') ?? 'Não informada'}</Text>
       <Text style={styles.text}>Horário: {validDate?.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) ?? 'Não informado'}</Text>
-      <Text style={styles.text}>Sala (ID): {session.id_sala ?? 'Não informada'}</Text>
+      <Text style={styles.text}>Sala {session.id_sala ?? 'Não informada'}</Text>
       <Text style={styles.text}>Preço: {Number.isFinite(price) ? price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Não informado'}</Text>
       <SessionSeats key={session.id_sessao} sessionId={session.id_sessao} price={session.preco} />
     </>
@@ -77,17 +81,19 @@ function SessionDetails({ id }: { id: number }) {
 }
 
 export default function SessionDetailsScreen() {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
   const { id } = useLocalSearchParams<{ id: string | string[] }>();
   const sessionId = typeof id === 'string' && /^\d+$/.test(id) ? Number(id) : NaN;
   const validId = Number.isSafeInteger(sessionId) && sessionId > 0;
 
   return (
     <Screen>
-      <Button title="Voltar" onPress={() => {
+      <Button variant="link" title="← Voltar" onPress={() => {
         if (router.canGoBack()) router.back();
-        else router.replace('../catalog');
+        else router.replace(routes.catalog);
       }} />
-      <Text accessibilityRole="header" style={styles.title}>Detalhes da sessão</Text>
+      <Text accessibilityRole="header" style={styles.title}>Sua sessão</Text>
       {validId ? <SessionDetails key={sessionId} id={sessionId} /> : (
         <EmptyState title="Sessão não encontrada" message="O identificador da sessão é inválido." />
       )}
@@ -95,7 +101,7 @@ export default function SessionDetailsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: AppTheme) => StyleSheet.create({
   title: { ...theme.typography.heading, color: theme.colors.text },
   text: { ...theme.typography.body, color: theme.colors.text },
 });

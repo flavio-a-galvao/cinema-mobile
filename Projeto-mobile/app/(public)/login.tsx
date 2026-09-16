@@ -1,3 +1,4 @@
+import { routes } from '@/constants/routes';
 import { isAxiosError } from 'axios';
 import { Redirect, router } from 'expo-router';
 import { useRef, useState } from 'react';
@@ -7,7 +8,8 @@ import { ErrorState } from '@/components/ErrorState';
 import { Input } from '@/components/Input';
 import { Loading } from '@/components/Loading';
 import { Screen } from '@/components/Screen';
-import { theme } from '@/constants/theme';
+import type { AppTheme } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 
 function getLoginErrorMessage(error: unknown): string {
@@ -19,6 +21,8 @@ function getLoginErrorMessage(error: unknown): string {
 }
 
 export default function LoginScreen() {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
   const { signIn, isLoading, authState } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -53,12 +57,12 @@ export default function LoginScreen() {
   }
 
   if (authState.status === 'authenticated') {
-    return <Redirect href="/account" />;
+    return <Redirect href={routes.home} />;
   }
 
   return (
     <Screen>
-      <Text accessibilityRole="header" style={styles.title}>Entrar no Cinema App</Text>
+      <Text accessibilityRole="header" style={styles.title}>Cinemax</Text>
       <Input
         label="Email"
         placeholder="seu@email.com"
@@ -87,11 +91,11 @@ export default function LoginScreen() {
       />
       {error && <ErrorState message={error} />}
       <Button title={isSubmitting ? 'Entrando...' : 'Entrar'} loading={isSubmitting} onPress={() => { void handleSignIn(); }} />
-      <Button title="Criar conta" disabled={isSubmitting} onPress={() => router.push('/register')} />
+      <Button variant="link" title="Criar conta" disabled={isSubmitting} onPress={() => router.push('/register')} />
     </Screen>
   );
 }
 
-const styles = StyleSheet.create({
-  title: { ...theme.typography.heading, color: theme.colors.text },
+const createStyles = (theme: AppTheme) => StyleSheet.create({
+  title: { ...theme.typography.title, color: theme.colors.primary },
 });

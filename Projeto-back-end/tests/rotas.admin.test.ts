@@ -10,7 +10,7 @@ const controller = vi.fn((_req: Request, res: Response) => res.sendStatus(204));
 for (const name of ['auth', 'users', 'clientes', 'compras', 'filmes', 'salas', 'assentos', 'sessoes', 'ingressos', 'pagamentos']) {
     vi.doMock(`../src/controllers/${name}.controller`, () => ({
         default: Object.fromEntries(
-            ['login', 'findAll', 'getById', 'create', 'update', 'delete', 'getMyProfile', 'upsertMyProfile', 'findMyPurchases']
+            ['createBatch', 'cancel', 'occupancy', 'login', 'findAll', 'getById', 'create', 'update', 'delete', 'getMyProfile', 'upsertMyProfile', 'findMyPurchases']
                 .map((method) => [method, controller]),
         ),
     }));

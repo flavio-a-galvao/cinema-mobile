@@ -1,3 +1,4 @@
+import { ensureIngressosSchema } from './utils/ensureIngressosSchema';
 import app from "./app";
 import sequelize from "./config/database";
 import { DataTypes } from "sequelize";
@@ -67,6 +68,7 @@ async function startServer() {
     await waitForDatabase();
     await ensureUsuariosCpfColumn();
     await ensureClientesEmailUnique(sequelize.getQueryInterface());
+    await ensureIngressosSchema(sequelize);
     await sequelize.sync();
 
     app.listen(port, () => {

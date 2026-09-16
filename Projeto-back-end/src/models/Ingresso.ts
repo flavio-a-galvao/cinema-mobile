@@ -7,6 +7,8 @@ class Ingresso extends Model {
   declare id_cliente: number;
   declare id_assento: number;
   declare data_compra: Date;
+  declare status: 'ativo' | 'cancelado';
+  declare cancelado_em: Date | null;
 }
 
 Ingresso.init(
@@ -25,6 +27,8 @@ Ingresso.init(
     id_assento: {
       type: DataTypes.INTEGER,
     },
+    status: { type: DataTypes.ENUM('ativo', 'cancelado'), allowNull: false, defaultValue: 'ativo' },
+    cancelado_em: { type: DataTypes.DATE, allowNull: true },
     data_compra: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,

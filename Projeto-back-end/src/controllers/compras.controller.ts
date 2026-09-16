@@ -1,3 +1,4 @@
+import Sala from '../models/Sala';
 import { Request, Response } from "express";
 import { Model, Op } from "sequelize";
 import Assento from "../models/Assento";
@@ -20,6 +21,7 @@ interface ResourceMaps {
   sessoesMap: Map<number, Model>;
   filmesMap: Map<number, Model>;
   assentosMap: Map<number, Model>;
+  salasMap: Map<number, Model>;
 }
 
 class ComprasController {
@@ -45,8 +47,10 @@ class ComprasController {
       Assento.findAll({ where: { id_assento: { [Op.in]: assentoIds } } }),
     ]);
     const filmeIds = [...new Set(sessoes.map((s) => Number(s.get("id_filme"))))];
+    const salas = await Sala.findAll({ where: { id_sala: { [Op.in]: [...new Set(sessoes.map(s => Number(s.get('id_sala'))))] } } });
     const filmes = await Filme.findAll({ where: { id_filme: { [Op.in]: filmeIds } } });
     return {
+      salasMap: new Map(salas.map(s => [Number(s.get('id_sala')), s])),
       pagamentosMap: new Map(pagamentos.map((p) => [Number(p.get("id_ingresso")), p])),
       sessoesMap: new Map(sessoes.map((s) => [Number(s.get("id_sessao")), s])),
       filmesMap: new Map(filmes.map((f) => [Number(f.get("id_filme")), f])),
@@ -62,6 +66,11 @@ class ComprasController {
     const pagamento = maps.pagamentosMap.get(idIngresso);
     return {
       id: idIngresso,
+      status: String(ingresso.get('status') || 'ativo'),
+      canceladoEm: ingresso.get('cancelado_em'),
+      horario: sessao?.get('horario') || null,
+      sala: String(maps.salasMap.get(Number(sessao?.get('id_sala')))?.get('nome') || 'Sala não informada'),
+      podeCancelar: ingresso.get('status') !== 'cancelado' && new Date(String(sessao?.get('horario'))).getTime() > Date.now(),
       filme: String(filme?.get("titulo") || "Filme nao encontrado"),
       sessao: sessao?.get("horario")
         ? new Date(String(sessao.get("horario"))).toLocaleString("pt-BR")

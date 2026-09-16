@@ -1,3 +1,4 @@
+import sequelize from '../config/database';
 import { Request, Response } from "express";
 import Cliente from "../models/Cliente";
 import Ingresso from "../models/Ingresso";
@@ -45,15 +46,19 @@ class PagamentosController {
   }
 
   static async create(req: AuthenticatedRequest, res: Response) {
+    const result = await sequelize.transaction(async transaction => {
     const { id_ingresso } = req.body;
-    const ingresso = await Ingresso.findByPk(Number(id_ingresso));
-    if (!ingresso) return res.status(400).json({ message: "Ingresso invalido para pagamento." });
+    const ingresso = await Ingresso.findByPk(Number(id_ingresso), { transaction, lock: transaction.LOCK.UPDATE });
+    if (!ingresso) return { status: 400, body: { message: "Ingresso invalido para pagamento." } };
+    if (ingresso.get('status') === 'cancelado') return { status: 409, body: { message: 'Ingresso cancelado não pode receber pagamento.' } };
     const email = await PagamentosController.clienteEmailOf(Number(ingresso.get("id_cliente")));
     const role = PagamentosController.normalizeRole(req);
     if (!PagamentosController.isAdmin(role) && email !== PagamentosController.normalizeEmail(req))
-      return res.status(403).json({ message: "Voce nao pode registrar pagamento para outro usuario." });
-    const pagamento = await Pagamento.create(PagamentosController.buildPayload(req.body as Record<string, unknown>));
-    return res.status(201).json(pagamento);
+      return { status: 403, body: { message: "Voce nao pode registrar pagamento para outro usuario." } };
+    const pagamento = await Pagamento.create(PagamentosController.buildPayload(req.body as Record<string, unknown>), { transaction });
+    return { status: 201, body: pagamento };
+    });
+    return res.status(result.status).json(result.body);
   }
 }
 

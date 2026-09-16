@@ -15,6 +15,8 @@ vi.mock("../src/models/Pagamento", () => ({
 vi.mock("../src/models/Ingresso", () => ({ default: { findByPk: vi.fn() } }));
 vi.mock("../src/models/Cliente", () => ({ default: { findByPk: vi.fn() } }));
 
+vi.mock('../src/config/database', () => ({ default: { transaction: async (callback: any) => callback({ LOCK: { UPDATE: 'UPDATE' } }) } }));
+
 function createResponse() {
   const res: any = {
     status: vi.fn().mockReturnThis(),
@@ -68,4 +70,11 @@ describe("💳 CRUD DE PAGAMENTOS", () => {
 
     expect(res.status).toHaveBeenCalledWith(201);
   });
+});
+
+it('bloqueia pagamento de ingresso cancelado', async () => {
+ (Ingresso as any).findByPk.mockResolvedValue({ get: (field: string) => field === 'status' ? 'cancelado' : 1 });
+ (Pagamento as any).create.mockClear(); const res=createResponse();
+ await PagamentosController.create({ body: { id_ingresso:1 }, authUser: { email:'user@mail.com' } } as any,res);
+ expect(res.status).toHaveBeenCalledWith(409); expect(Pagamento.create).not.toHaveBeenCalled();
 });

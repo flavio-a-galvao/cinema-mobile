@@ -80,6 +80,9 @@ router.delete('/sessoes/:id', requireAuth, requireAdmin, SessoesController.delet
 
 router.get('/ingressos', requireAuth, IngressosController.findAll);
 router.post('/ingressos', requireAuth, IngressosController.create);
+router.post('/ingressos/lote', requireAuth, IngressosController.createBatch);
+router.patch('/ingressos/:id/cancelar', requireAuth, IngressosController.cancel);
+router.get('/sessoes/:id/ocupacao', requireAuth, IngressosController.occupancy);
 router.get('/ingressos/:id', requireAuth, requireAdmin, IngressosController.getById);
 
 router.get('/pagamentos', requireAuth, requireAdmin, PagamentosController.findAll);

@@ -1,3 +1,4 @@
+import { useCheckout } from '@/contexts/CheckoutContext';
 import { usePreventRemove } from 'expo-router/react-navigation';
 import { isAxiosError } from 'axios';
 import { router } from 'expo-router';
@@ -15,11 +16,14 @@ type ConfirmationInput = {
   qtdInteira: number;
   qtdMeia: number;
   validPrice: boolean;
+  fullCents: number;
+  halfCents: number;
   onLockChange: (locked: boolean) => void;
 };
 
-export function useTicketConfirmation({ sessionId, seats, qtdInteira, qtdMeia, validPrice, onLockChange }: ConfirmationInput) {
+export function useTicketConfirmation({ sessionId, seats, qtdInteira, qtdMeia, validPrice, fullCents, halfCents, onLockChange }: ConfirmationInput) {
   const { authState } = useAuth();
+  const { setCheckout } = useCheckout();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [created, setCreated] = useState<Ticket[]>([]);
@@ -32,9 +36,9 @@ export function useTicketConfirmation({ sessionId, seats, qtdInteira, qtdMeia, v
   });
   useEffect(() => {
     if (complete && !pending) {
-      router.replace({ pathname: '../ticket-confirmation', params: { tickets: JSON.stringify(created) } });
+      router.replace('../payment');
     }
-  }, [complete, pending, created]);
+  }, [complete, pending]);
 
   async function confirm(): Promise<void> {
     if (busy.current || stopped || complete) return;
@@ -72,6 +76,7 @@ export function useTicketConfirmation({ sessionId, seats, qtdInteira, qtdMeia, v
         saved.push(ticket);
         setCreated([...saved]);
       }
+      setCheckout({ userId: user.id_usuario, tickets: saved, qtdInteira, qtdMeia, fullCents, halfCents, status: 'ready', payments: [] });
       setComplete(true);
     } catch (cause: unknown) {
       if (ticketRequested) {

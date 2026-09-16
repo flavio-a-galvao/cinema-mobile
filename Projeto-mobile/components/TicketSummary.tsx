@@ -26,7 +26,7 @@ export function TicketSummary({ sessionId, seats, price, onLockChange }: TicketS
   const precoInteira = Math.round(numericPrice * 100);
   const precoMeia = Math.round(precoInteira / 2);
   const valorTotal = qtdInteira * precoInteira + qtdMeia * precoMeia;
-  const { confirm, pending, error, created, stopped, complete } = useTicketConfirmation({ sessionId, seats, qtdInteira, qtdMeia, validPrice, onLockChange });
+  const { confirm, pending, error, created, stopped, complete } = useTicketConfirmation({ sessionId, seats, qtdInteira, qtdMeia, validPrice, fullCents: precoInteira, halfCents: precoMeia, onLockChange });
   const locked = pending || stopped || complete;
 
   return (

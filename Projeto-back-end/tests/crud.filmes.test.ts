@@ -92,3 +92,16 @@ describe('Persistência do CRUD pelo model', () => {
     expect(res.status).toHaveBeenCalledWith(400); expect(Filme.create).not.toHaveBeenCalled();
   });
 });
+
+describe('Limites reais do MySQL',()=>{
+ beforeEach(()=>vi.clearAllMocks());
+ it.each([['titulo',150],['genero',50],['classificacao_etaria',10]] as const)('valida limite de %s em criação e edição',async(field,limit)=>{
+  const movie={update:vi.fn()}; (Filme.findByPk as any).mockResolvedValue(movie);
+  for(const method of ['create','update'] as const){
+   const res=createResponse(); await FilmesController[method]({params:{id:'1'},body:{titulo:'Filme',[field]:'x'.repeat(limit+1)}} as any,res);
+   expect(res.status).toHaveBeenCalledWith(400);
+  }
+  expect(Filme.create).not.toHaveBeenCalled();expect(movie.update).not.toHaveBeenCalled();
+  const res=createResponse(); await FilmesController.create({body:{titulo:'Filme',[field]:'x'.repeat(limit)}} as any,res);expect(res.status).toHaveBeenCalledWith(201);
+ });
+});

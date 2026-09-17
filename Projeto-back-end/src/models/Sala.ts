@@ -15,7 +15,8 @@ Sala.init(
       primaryKey: true,
     },
     nome: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
+      validate: { len: [1, 50] },
     },
     capacidade: {
       type: DataTypes.INTEGER,

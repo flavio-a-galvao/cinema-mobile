@@ -30,10 +30,10 @@ class FilmesController {
 
   private static validate(body: FilmePayload | undefined, creating: boolean): string | null {
     if (!body || typeof body !== 'object' || Array.isArray(body)) return 'Informe os dados do filme.';
-    if ((creating || body.titulo !== undefined) && (typeof body.titulo !== 'string' || !body.titulo.trim() || body.titulo.length > 255)) return 'Informe um título válido de até 255 caracteres.';
-    for (const field of ['genero', 'classificacao_etaria', 'poster_url']) {
+    if ((creating || body.titulo !== undefined) && (typeof body.titulo !== 'string' || !body.titulo.trim() || body.titulo.length > 150)) return 'Informe um título válido de até 150 caracteres.';
+    for (const [field, limit] of Object.entries({ genero: 50, classificacao_etaria: 10, poster_url: 255 })) {
       const value = body[field];
-      if (value != null && (typeof value !== 'string' || value.length > 255)) return 'Campo de texto inválido: ' + field;
+      if (value != null && (typeof value !== 'string' || value.length > limit)) return 'Campo ' + field + ': máximo de ' + limit + ' caracteres.';
     }
     if (body.sinopse != null && (typeof body.sinopse !== 'string' || Buffer.byteLength(body.sinopse, 'utf8') > 65535)) return 'Sinopse inválida.';
     if (body.duracao != null && (!Number.isInteger(body.duracao) || body.duracao <= 0 || body.duracao > 2147483647)) return 'Informe uma duração positiva em minutos.';

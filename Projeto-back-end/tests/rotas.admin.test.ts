@@ -39,6 +39,7 @@ afterAll(async () => {
 beforeEach(() => { controller.mockClear(); });
 
 const administrativeRoutes = [
+    ...['/users', '/usuarios', '/ingressos'].map(path => ({method:'GET',path})),
     ...['filmes', 'salas', 'sessoes'].flatMap((resource) => [
         { method: 'POST', path: `/${resource}` },
         { method: 'PUT', path: `/${resource}/1` },
@@ -81,4 +82,11 @@ describe('Leitura pública do catálogo', () => {
         expect(response.status).toBe(204);
         expect(controller).toHaveBeenCalledTimes(1);
     });
+});
+
+it.each(['/users/1', '/usuarios/1', '/me/compras', '/sessoes/1/ocupacao'])('exige autenticação em %s', async path => {
+ const response = await fetch(baseURL+path); await response.text(); expect(response.status).toBe(401);
+});
+it.each(['/users','/usuarios'])('mantém cadastro público %s', async path => {
+ const response = await fetch(baseURL+path,{method:'POST'}); await response.text(); expect(response.status).toBe(204);
 });

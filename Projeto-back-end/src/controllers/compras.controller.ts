@@ -24,6 +24,11 @@ interface ResourceMaps {
   salasMap: Map<number, Model>;
 }
 
+const isoDate = (value: unknown): string | null => {
+  if (!value) return null;
+  const date = new Date(String(value));
+  return Number.isFinite(date.getTime()) ? date.toISOString() : null;
+};
 class ComprasController {
   private static async getClienteIds(email: string): Promise<number[]> {
     const clientes = await Cliente.findAll({ where: { email } });
@@ -66,23 +71,27 @@ class ComprasController {
     const pagamento = maps.pagamentosMap.get(idIngresso);
     return {
       id: idIngresso,
+      id_sessao: Number(ingresso.get('id_sessao')),
+      id_assento: Number(ingresso.get('id_assento')),
+      id_cliente: Number(ingresso.get('id_cliente')),
+      tipo_ingresso: ingresso.get('tipo_ingresso') || null,
+      valor_unitario: ingresso.get('valor_unitario') == null ? null : Number(ingresso.get('valor_unitario')),
+      pago: Boolean(pagamento),
+      podePagar: !pagamento && ingresso.get('status') !== 'cancelado' && ['inteira', 'meia'].includes(String(ingresso.get('tipo_ingresso'))) && ingresso.get('valor_unitario') != null && Number(ingresso.get('valor_unitario')) >= 0,
+      pagamento: pagamento ? { id_pagamento: Number(pagamento.get('id_pagamento')), id_ingresso: idIngresso, valor: Number(pagamento.get('valor')), metodo_pagamento: pagamento.get('metodo_pagamento'), data_pagamento: isoDate(pagamento.get('data_pagamento')) } : null,
       status: String(ingresso.get('status') || 'ativo'),
-      canceladoEm: ingresso.get('cancelado_em'),
-      horario: sessao?.get('horario') || null,
+      canceladoEm: isoDate(ingresso.get('cancelado_em')),
+      horario: isoDate(sessao?.get('horario')),
       sala: String(maps.salasMap.get(Number(sessao?.get('id_sala')))?.get('nome') || 'Sala não informada'),
       podeCancelar: ingresso.get('status') !== 'cancelado' && new Date(String(sessao?.get('horario'))).getTime() > Date.now(),
       filme: String(filme?.get("titulo") || "Filme nao encontrado"),
-      sessao: sessao?.get("horario")
-        ? new Date(String(sessao.get("horario"))).toLocaleString("pt-BR")
-        : "Horario nao informado",
+      sessao: isoDate(sessao?.get('horario')),
       assento: assento
         ? `${String(assento.get("fila") || "")}${String(assento.get("numero") || "")}`.trim()
         : `ID ${Number(ingresso.get("id_assento"))}`,
-      valor: Number(pagamento?.get("valor") || 0),
+      valor: Number(pagamento?.get("valor") ?? ingresso.get("valor_unitario") ?? 0),
       metodo: String(pagamento?.get("metodo_pagamento") || "Nao informado"),
-      dataCompra: ingresso.get("data_compra")
-        ? new Date(String(ingresso.get("data_compra"))).toLocaleString("pt-BR")
-        : "Data nao informada",
+      dataCompra: isoDate(ingresso.get('data_compra')),
     };
   }
 

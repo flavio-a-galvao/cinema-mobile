@@ -22,7 +22,7 @@ let ticket: ReturnType<typeof model>;
 beforeEach(() => {
  vi.resetAllMocks();
  (db.transaction as any).mockImplementation(async (callback: any) => callback(transaction));
- (Sessao.findByPk as any).mockResolvedValue(model({ id_sala: 1, horario: '2099-01-01T19:00:00Z' }));
+ (Sessao.findByPk as any).mockResolvedValue(model({ id_sala: 1, preco: '25.01', horario: '2099-01-01T19:00:00Z' }));
  (Cliente.findByPk as any).mockResolvedValue(model({ email: 'user@mail.com' }));
  (Assento.findByPk as any).mockResolvedValue(model({ id_sala: 1 }));
  (Ingresso.findOne as any).mockResolvedValue(null);
@@ -63,4 +63,19 @@ describe('Cancelamento e ocupação', () => {
   await Controller.occupancy({params:{id:'1'}} as any,response() as any);
   expect(Ingresso.findAll).toHaveBeenCalledWith({ attributes:['id_assento'],where:{id_sessao:1,status:'ativo'} });
  });
+});
+
+it('persiste inteira/meia e preço autoritativo arredondado ignorando valores enviados', async () => {
+ const req = request([1,2]); req.body.qtdInteira=1; req.body.qtdMeia=1;
+ Object.assign(req.body, { valor_unitario: 0.01, preco: 0.01, valor: 0.01 });
+ const res=response(); await Controller.createBatch(req as any,res as any);
+ expect(res.status).toHaveBeenCalledWith(201);
+ expect(Ingresso.create).toHaveBeenNthCalledWith(1,expect.objectContaining({tipo_ingresso:'inteira',valor_unitario:25.01}),expect.anything());
+ expect(Ingresso.create).toHaveBeenNthCalledWith(2,expect.objectContaining({tipo_ingresso:'meia',valor_unitario:12.51}),expect.anything());
+ expect(res.json.mock.calls[0][0].map((item:any)=>item.valor_unitario)).toEqual([25.01,12.51]);
+});
+
+it('preserva sessão gratuita com preço zero explícito',async()=>{
+ (Sessao.findByPk as any).mockResolvedValue(model({id_sala:1,preco:'0.00',horario:'2099-01-01T19:00:00Z'}));
+ const res=response();await Controller.create(request([1]) as any,res as any);expect(res.status).toHaveBeenCalledWith(201);expect(Ingresso.create).toHaveBeenCalledWith(expect.objectContaining({valor_unitario:0}),expect.anything());
 });

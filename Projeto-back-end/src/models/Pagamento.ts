@@ -33,6 +33,7 @@ Pagamento.init(
   {
     sequelize,
     tableName: "pagamentos",
+    indexes: [{ unique: true, fields: ["id_ingresso"], name: "pagamentos_ingresso_unique" }],
     timestamps: false,
   },
 );

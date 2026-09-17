@@ -20,14 +20,17 @@ Filme.init(
       primaryKey: true,
     },
     titulo: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(150),
+      validate: { len: [1, 150] },
       allowNull: false,
     },
     genero: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
+      validate: { len: [0, 50] },
     },
     classificacao_etaria: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(10),
+      validate: { len: [0, 10] },
     },
     duracao: {
       type: DataTypes.INTEGER,

@@ -1,3 +1,4 @@
+import { ensureTicketPaymentSchema } from './utils/ensureTicketPaymentSchema';
 import { ensureIngressosSchema } from './utils/ensureIngressosSchema';
 import app from "./app";
 import sequelize from "./config/database";
@@ -69,6 +70,7 @@ async function startServer() {
     await ensureUsuariosCpfColumn();
     await ensureClientesEmailUnique(sequelize.getQueryInterface());
     await ensureIngressosSchema(sequelize);
+    await ensureTicketPaymentSchema(sequelize);
     await sequelize.sync();
 
     app.listen(port, () => {

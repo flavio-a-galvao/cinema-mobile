@@ -8,7 +8,7 @@ class RoomConflict extends Error {}
 class SalasController {
   private static validate(body: Record<string, unknown> | undefined, creating: boolean): string | null {
     if (!body || typeof body !== 'object' || Array.isArray(body)) return 'Informe os dados da sala.';
-    if ((creating || body.nome !== undefined) && (typeof body.nome !== 'string' || !body.nome.trim() || body.nome.length > 255)) return 'Informe um nome de até 255 caracteres.';
+    if ((creating || body.nome !== undefined) && (typeof body.nome !== 'string' || !body.nome.trim() || body.nome.length > 50)) return 'Informe um nome de até 50 caracteres.';
     if ((creating || body.capacidade !== undefined) && (!Number.isInteger(body.capacidade) || Number(body.capacidade) < 1 || Number(body.capacidade) > 2147483647)) return 'A capacidade deve ser um número inteiro positivo.';
     return null;
   }

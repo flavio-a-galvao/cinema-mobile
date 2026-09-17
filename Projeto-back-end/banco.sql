@@ -87,6 +87,8 @@ CREATE TABLE ingressos (
     id_cliente INT,
     id_assento INT,
     data_compra DATETIME DEFAULT CURRENT_TIMESTAMP,
+    tipo_ingresso ENUM('inteira','meia') NULL,
+    valor_unitario DECIMAL(6,2) NULL,
     status ENUM('ativo','cancelado') NOT NULL DEFAULT 'ativo',
     cancelado_em DATETIME NULL,
     ocupacao_ativa TINYINT GENERATED ALWAYS AS (CASE WHEN status = 'ativo' THEN 1 ELSE NULL END) STORED,
@@ -105,6 +107,7 @@ CREATE TABLE pagamentos (
     valor DECIMAL(6,2),
     metodo_pagamento ENUM('cartao','pix','dinheiro'),
     data_pagamento DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY pagamentos_ingresso_unique (id_ingresso),
     FOREIGN KEY (id_ingresso) REFERENCES ingressos(id_ingresso)
 );
 

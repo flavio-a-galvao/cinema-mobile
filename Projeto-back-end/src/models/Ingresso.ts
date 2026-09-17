@@ -27,6 +27,8 @@ Ingresso.init(
     id_assento: {
       type: DataTypes.INTEGER,
     },
+    tipo_ingresso: { type: DataTypes.ENUM('inteira', 'meia'), allowNull: true },
+    valor_unitario: { type: DataTypes.DECIMAL(6, 2), allowNull: true },
     status: { type: DataTypes.ENUM('ativo', 'cancelado'), allowNull: false, defaultValue: 'ativo' },
     cancelado_em: { type: DataTypes.DATE, allowNull: true },
     data_compra: {

@@ -19,7 +19,7 @@ const app = express();
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
     if (req.method === 'OPTIONS') {
         return res.sendStatus(204);
     }
@@ -46,14 +46,14 @@ router.get('/catalogo/sessoes/:id', SessoesController.getById);
 router.get('/catalogo/assentos', AssentosController.findAll);
 router.get('/catalogo/assentos/:id', AssentosController.getById);
 
-router.get('/users', UsersController.findAll);
+router.get('/users', requireAuth, requireAdmin, UsersController.findAll);
 router.post('/users', UsersController.create);
-router.get('/users/:id', UsersController.getById);
+router.get('/users/:id', requireAuth, UsersController.getById);
 router.put('/users/:id', requireAuth, UsersController.update);
 
-router.get('/usuarios', UsersController.findAll);
+router.get('/usuarios', requireAuth, requireAdmin, UsersController.findAll);
 router.post('/usuarios', UsersController.create);
-router.get('/usuarios/:id', UsersController.getById);
+router.get('/usuarios/:id', requireAuth, UsersController.getById);
 router.put('/usuarios/:id', requireAuth, UsersController.update);
 
 router.get('/clientes', requireAuth, requireAdmin, ClientesController.findAll);
@@ -88,7 +88,7 @@ router.get('/sessoes/:id', requireAuth, requireAdmin, SessoesController.getById)
 router.put('/sessoes/:id', requireAuth, requireAdmin, SessoesController.update);
 router.delete('/sessoes/:id', requireAuth, requireAdmin, SessoesController.delete);
 
-router.get('/ingressos', requireAuth, IngressosController.findAll);
+router.get('/ingressos', requireAuth, requireAdmin, IngressosController.findAll);
 router.post('/ingressos', requireAuth, IngressosController.create);
 router.post('/ingressos/lote', requireAuth, IngressosController.createBatch);
 router.patch('/ingressos/:id/cancelar', requireAuth, IngressosController.cancel);

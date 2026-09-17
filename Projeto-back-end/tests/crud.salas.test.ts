@@ -99,3 +99,9 @@ describe('Validação e integridade de salas', () => {
     expect(res.status).toHaveBeenCalledWith(400); expect(Sala.create).not.toHaveBeenCalled();
   });
 });
+
+it('nome de sala respeita 50 caracteres na criação e edição',async()=>{
+ vi.clearAllMocks();
+ for(const method of ['create','update'] as const){const res=createResponse();await SalasController[method]({params:{id:'1'},body:{nome:'x'.repeat(51),capacidade:48}} as any,res);expect(res.status).toHaveBeenCalledWith(400);}
+ expect(Sala.create).not.toHaveBeenCalled();const res=createResponse();await SalasController.create({body:{nome:'x'.repeat(50),capacidade:48}} as any,res);expect(res.status).toHaveBeenCalledWith(201);
+});

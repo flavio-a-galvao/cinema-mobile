@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import type { AppTheme } from '@/constants/theme';
 import { useTheme } from '@/contexts/ThemeContext';
-import { createPayment } from '@/services/paymentService';
+import { createPayment, listMyPurchases } from '@/services/paymentService';
 import type { Payment, PaymentMethod } from '@/types/payment';
 
 const methods: { value: PaymentMethod; label: string }[] = [
@@ -48,10 +48,14 @@ export default function PaymentScreen() {
     setCheckout({ ...checkout, status: 'processing' });
     const payments: Payment[] = [];
     try {
-      // A API registra um valor por ingresso; os tipos continuam apenas como quantidades no resumo.
-      for (const [index, ticket] of checkout.tickets.entries()) {
-        const cents = index < checkout.qtdInteira ? checkout.fullCents : checkout.halfCents;
-        const payment = await createPayment({ id_ingresso: ticket.id_ingresso, valor: cents / 100, metodo_pagamento: method }, authState.token);
+      // Reconcilia tentativas anteriores no servidor antes de enviar qualquer pagamento.
+      const purchases = await listMyPurchases(authState.token);
+      for (const ticket of checkout.tickets) {
+        const own = purchases.find(item => item.id === ticket.id_ingresso);
+        if (!own || own.status === 'cancelado') throw new Error('Ingresso indisponível.');
+        if (own.pago && own.pagamento) { payments.push(own.pagamento); continue; }
+        if (!own.podePagar) throw new Error('Pagamento indisponível.');
+        const payment = await createPayment({ id_ingresso: ticket.id_ingresso, metodo_pagamento: method }, authState.token);
         payments.push(payment);
       }
       setCheckout({ ...checkout, payments, status: 'complete' });
@@ -63,8 +67,8 @@ export default function PaymentScreen() {
     }
   }
 
-  if (!owned || !checkout) return <Screen><EmptyState title="Sem pagamento pendente" message="Crie os ingressos a partir de uma sessão." /><Button title="Meus Ingressos" onPress={() => router.replace(routes.tickets)} /></Screen>;
-  const total = checkout.qtdInteira * checkout.fullCents + checkout.qtdMeia * checkout.halfCents;
+  if (!owned || !checkout) return <Screen><EmptyState title="Sem pagamento pendente" message="Consulte Meus Ingressos para continuar pagamentos pendentes." /><Button title="Meus Ingressos" onPress={() => router.replace(routes.tickets)} /></Screen>;
+  const total = checkout.tickets.reduce((sum, ticket) => sum + Math.round(Number(ticket.valor_unitario) * 100), 0);
   return (
     <Screen>
       <Text accessibilityRole="header" style={styles.title}>Finalize sua experiência</Text>

@@ -29,6 +29,7 @@ function RoomEditor({ id }: { id?: number }) {
   }, [id, token, attempt]);
   async function save() {
     if (!token || busy.current) return;
+    if (nome.length > 50) { setError('O nome da sala deve ter no máximo 50 caracteres.'); return; }
     const capacity = Number(capacidade);
     if (!nome.trim() || !Number.isInteger(capacity) || capacity <= 0 || capacity > 2147483647) { setError('Informe um nome e uma capacidade inteira positiva.'); return; }
     if (capacity < total) { setError('A capacidade não pode ser menor que os assentos cadastrados.'); return; }
@@ -44,7 +45,7 @@ function RoomEditor({ id }: { id?: number }) {
   if (loading) return <Screen><Loading /></Screen>;
   if (loadError) return <Screen><ErrorState message={loadError} onRetry={() => { setLoading(true); setAttempt(value => value + 1); }} /><Button title="Voltar" onPress={() => router.replace(adminRoutes.rooms)} /></Screen>;
   return <Screen><Text style={styles.title}>{savedId ? 'Editar sala' : 'Nova sala'}</Text>
-    <Input label="Nome da sala" value={nome} maxLength={255} editable={!pending} onChangeText={value => { setNome(value); setDirty(true); setMessage(''); }} />
+    <Input label="Nome da sala" value={nome} maxLength={50} editable={!pending} onChangeText={value => { setNome(value); setDirty(true); setMessage(''); }} />
     <Input label="Capacidade" value={capacidade} keyboardType="number-pad" editable={!pending} onChangeText={value => { setCapacidade(value); setDirty(true); setMessage(''); }} />
     <Text style={styles.text}>Assentos cadastrados: {total}</Text>
     {!!error && <ErrorState message={error} />}{!!message && <Text style={styles.text} accessibilityRole="alert">{message}</Text>}

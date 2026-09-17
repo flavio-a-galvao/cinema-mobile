@@ -12,9 +12,9 @@ export async function createPayment(input: CreatePaymentInput, token: string): P
   const own = purchases.find((purchase) => purchase.id === input.id_ingresso);
   if (own?.status === 'cancelado') throw new Error('Ingresso cancelado.');
   if (!own) throw new Error('Ingresso não pertence à conta autenticada.');
-  if (own.metodo !== 'Nao informado') throw new Error('Já existe pagamento para este ingresso.');
-  const { id_ingresso, valor, metodo_pagamento } = input;
-  const { data } = await getApi().post<Payment>('/pagamentos', { id_ingresso, valor, metodo_pagamento }, {
+  if (own.pago) throw new Error('Já existe pagamento para este ingresso.');
+  const { id_ingresso, metodo_pagamento } = input;
+  const { data } = await getApi().post<Payment>('/pagamentos', { id_ingresso, metodo_pagamento }, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return data;

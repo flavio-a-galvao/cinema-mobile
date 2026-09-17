@@ -23,7 +23,7 @@ type ConfirmationInput = {
   onLockChange: (locked: boolean) => void;
 };
 
-export function useTicketConfirmation({ sessionId, seats, qtdInteira, qtdMeia, validPrice, fullCents, halfCents, onLockChange }: ConfirmationInput) {
+export function useTicketConfirmation({ sessionId, seats, qtdInteira, qtdMeia, validPrice, onLockChange }: ConfirmationInput) {
   const { authState } = useAuth();
   const { setCheckout } = useCheckout();
   const [pending, setPending] = useState(false);
@@ -75,7 +75,7 @@ export function useTicketConfirmation({ sessionId, seats, qtdInteira, qtdMeia, v
       ticketRequested = true;
       saved.push(...await createTickets({ id_sessao: sessionId, id_cliente: client.id_cliente, id_assentos: seats.map(seat => seat.id_assento), qtdInteira, qtdMeia }, token));
       setCreated([...saved]);
-      setCheckout({ userId: user.id_usuario, tickets: saved, seatLabels: Object.fromEntries(seats.map(seat => [seat.id_assento, seatLabel(seat)])), qtdInteira, qtdMeia, fullCents, halfCents, status: 'ready', payments: [] });
+      setCheckout({ userId: user.id_usuario, tickets: saved, seatLabels: Object.fromEntries(seats.map(seat => [seat.id_assento, seatLabel(seat)])), qtdInteira, qtdMeia, fullCents: Math.round(Number(saved.find(ticket => ticket.tipo_ingresso === 'inteira')?.valor_unitario ?? 0) * 100), halfCents: Math.round(Number(saved.find(ticket => ticket.tipo_ingresso === 'meia')?.valor_unitario ?? 0) * 100), status: 'ready', payments: [] });
       setComplete(true);
     } catch (cause: unknown) {
       if (ticketRequested) {

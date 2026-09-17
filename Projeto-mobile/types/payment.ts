@@ -1,17 +1,25 @@
 export type PaymentMethod = 'cartao' | 'pix' | 'dinheiro';
-export type CreatePaymentInput = { id_ingresso: number; valor: number; metodo_pagamento: PaymentMethod };
+export type CreatePaymentInput = { id_ingresso: number; metodo_pagamento: PaymentMethod };
 export type Payment = Omit<CreatePaymentInput, 'valor'> & { id_pagamento: number; valor: number | string; data_pagamento: string | null };
 export type Purchase = {
   id: number;
+  id_sessao: number;
+  id_assento: number;
+  id_cliente: number;
+  tipo_ingresso: 'inteira' | 'meia' | null;
+  valor_unitario: number | null;
+  pago: boolean;
+  podePagar: boolean;
+  pagamento: Payment | null;
   status: 'ativo' | 'cancelado';
   sala: string;
   horario: string | null;
   podeCancelar: boolean;
   canceladoEm: string | null;
   filme: string;
-  sessao: string;
+  sessao: string | null;
   assento: string;
   valor: number;
   metodo: string;
-  dataCompra: string;
+  dataCompra: string | null;
 };

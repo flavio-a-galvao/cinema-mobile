@@ -1,3 +1,4 @@
+import { pendingCheckout } from '@/utils/pendingCheckout';
 import { routes } from '@/constants/routes';
 import { router, useFocusEffect } from 'expo-router';
 import { isAxiosError } from 'axios';
@@ -20,7 +21,7 @@ export default function MyTicketsScreen() {
   const { theme } = useTheme();
   const styles = createStyles(theme);
   const { authState } = useAuth();
-  const { checkout, setCheckout } = useCheckout();
+  const { setCheckout } = useCheckout();
   const token = authState.token;
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,7 +74,6 @@ export default function MyTicketsScreen() {
         onRefresh={() => { setRefreshing(true); void load(); }}
         ListHeaderComponent={<View style={styles.group}>
           <Text accessibilityRole="header" style={styles.title}>Meus Ingressos</Text>
-          {checkout?.status === 'ready' && <Button title="Continuar pagamento pendente" onPress={() => router.push(routes.payment)} />}
           {notice && <Text accessibilityLiveRegion="polite" style={styles.text}>{notice}</Text>}
           {loading && <Loading message="Carregando seus ingressos..." />}
           {error && <ErrorState message={error} onRetry={() => { setLoading(true); void load(); }} />}
@@ -81,13 +81,20 @@ export default function MyTicketsScreen() {
         ListEmptyComponent={!loading && !error ? <EmptyState title="Nenhum ingresso encontrado" message="Escolha um filme no catálogo para começar." /> : null}
         renderItem={({ item }) => <View style={styles.card}>
           <Text accessibilityRole="header" style={styles.title}>{item.filme}</Text>
-          <Text style={styles.text}>{item.sessao}</Text>
+          <Text style={styles.text}>{item.horario ? new Date(item.horario).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Horário indisponível'}</Text>
           <Text style={styles.text}>{item.sala}</Text>
           <Text style={styles.status}>{item.status === 'cancelado' ? 'CANCELADO' : 'ATIVO'}</Text>
           <Text style={styles.text}>Assento: {item.assento}</Text>
-          <Text style={styles.text}>Compra: {item.dataCompra}</Text>
-          <Text style={styles.text}>{item.metodo === 'Nao informado' ? 'Sem pagamento registrado' : `Pagamento registrado: ${item.metodo}`}</Text>
+          {item.tipo_ingresso && <Text style={styles.text}>{item.tipo_ingresso === 'meia' ? 'Meia-entrada' : 'Inteira'}</Text>}
+          <Text style={styles.text}>Compra: {item.dataCompra ? new Date(item.dataCompra).toLocaleString('pt-BR') : 'Data indisponível'}</Text>
+          <Text style={styles.text}>{!item.pago ? 'Pagamento pendente' : `Pagamento registrado: ${item.metodo}`}</Text>
           <Text style={styles.text}>Total: {item.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
+          {!item.pago && item.status === 'ativo' && !item.podePagar && <Text style={styles.text}>Ingresso antigo sem preço registrado. Cancele e selecione novamente para pagar.</Text>}
+          {item.podePagar && <Button title="Continuar pagamento" disabled={cancelling !== null || refreshing} onPress={() => {
+            if (authState.status !== 'authenticated') return;
+            setCheckout(pendingCheckout(item, authState.user.id_usuario));
+            router.push(routes.payment);
+          }} />}
           {item.podeCancelar && item.status === 'ativo' && <Button variant="secondary" title="Cancelar ingresso" loading={cancelling === item.id} disabled={cancelling !== null} onPress={() => askCancel(item)} />}
         </View>}
       />

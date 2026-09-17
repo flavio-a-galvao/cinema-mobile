@@ -53,6 +53,7 @@ export default function AdminMovieScreen() {
     if (busy.current || !authState.token) return;
     const duration = form.duracao.trim() ? Number(form.duracao) : null;
     const date = form.data_lancamento.trim();
+    if (form.titulo.length > 150 || form.genero.length > 50 || form.classificacao_etaria.length > 10) { setError('Respeite os limites: título 150, gênero 50 e classificação 10 caracteres.'); return; }
     if (!form.titulo.trim()) { setError('Informe o título do filme.'); return; }
     if (duration !== null && (!Number.isInteger(duration) || duration <= 0)) { setError('Informe a duração em minutos, maior que zero.'); return; }
     if (date && (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date)) { setError('Informe uma data válida no formato AAAA-MM-DD.'); return; }
@@ -80,9 +81,9 @@ export default function AdminMovieScreen() {
     {asset && <Text style={styles.text}>Poster selecionado: {asset.fileName ?? 'imagem da galeria'}. Será enviado ao salvar.</Text>}
     <Button title="Selecionar poster" variant="secondary" disabled={pending} onPress={() => { void pickPoster(); }} />
     <Text style={styles.text}>JPEG, PNG ou WEBP • até 5 MB</Text>
-    <Input label="Título" value={form.titulo} maxLength={255} editable={!pending} onChangeText={value => field('titulo', value)} />
-    <Input label="Gênero" value={form.genero} maxLength={255} editable={!pending} onChangeText={value => field('genero', value)} />
-    <Input label="Classificação etária" value={form.classificacao_etaria} maxLength={255} editable={!pending} onChangeText={value => field('classificacao_etaria', value)} />
+    <Input label="Título" value={form.titulo} maxLength={150} editable={!pending} onChangeText={value => field('titulo', value)} />
+    <Input label="Gênero" value={form.genero} maxLength={50} editable={!pending} onChangeText={value => field('genero', value)} />
+    <Input label="Classificação etária" value={form.classificacao_etaria} maxLength={10} editable={!pending} onChangeText={value => field('classificacao_etaria', value)} />
     <Input label="Duração (minutos)" value={form.duracao} keyboardType="number-pad" editable={!pending} onChangeText={value => field('duracao', value)} />
     <Input label="Lançamento (AAAA-MM-DD)" value={form.data_lancamento} maxLength={10} editable={!pending} onChangeText={value => field('data_lancamento', value)} />
     <Input label="Sinopse" value={form.sinopse} multiline maxLength={16000} editable={!pending} onChangeText={value => field('sinopse', value)} />

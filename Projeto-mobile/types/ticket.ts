@@ -9,6 +9,8 @@ export type CreateTicketInput = {
 
 /** Resposta JSON de POST /ingressos. */
 export type Ticket = {
+  tipo_ingresso: 'inteira' | 'meia' | null;
+  valor_unitario: number | string | null;
   status: 'ativo' | 'cancelado';
   cancelado_em: string | null;
   id_ingresso: number;

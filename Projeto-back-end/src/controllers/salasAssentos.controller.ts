@@ -1,3 +1,4 @@
+import { ROOM_CAPACITY } from '../constants/roomLayout';
 import type { Request, Response } from 'express';
 import sequelize from '../config/database';
 import Sala from '../models/Sala';
@@ -19,7 +20,8 @@ export async function generateRoomSeats(req: Request, res: Response) {
       for (const fila of 'ABCDEF') for (let numero = 1; numero <= 8; numero++) {
         if (!existing.has(fila + ':' + numero)) missing.push({ id_sala: id, fila, numero: String(numero) });
       }
-      if (seats.length + missing.length > room.capacidade) throw new SeatGenerationError(409, 'Aumente a capacidade da sala antes de gerar o mapa A1–F8. Assentos existentes serão preservados.');
+      if (seats.length + missing.length > ROOM_CAPACITY) throw new SeatGenerationError(409, 'Esta sala possui assentos incompatíveis com o mapa de 48 lugares. Revise o cadastro; nenhum assento será apagado.');
+      if (room.capacidade !== ROOM_CAPACITY) await room.update({ capacidade: ROOM_CAPACITY }, { transaction });
       if (missing.length) await Assento.bulkCreate(missing, { transaction, ignoreDuplicates: true });
       const total = await Assento.count({ where: { id_sala: id }, transaction });
       return { criados: total - seats.length, total };

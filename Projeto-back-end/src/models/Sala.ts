@@ -1,3 +1,4 @@
+import { ROOM_CAPACITY } from '../constants/roomLayout';
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
@@ -21,6 +22,8 @@ Sala.init(
     capacidade: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      defaultValue: ROOM_CAPACITY,
+      validate: { equalsFixedCapacity(value: number) { if (value !== ROOM_CAPACITY) throw new Error('O mapa padrão possui 48 lugares.'); } },
     },
   },
   {

@@ -37,9 +37,9 @@ describe("🏛️ CRUD DE SALAS", () => {
   });
 
   it("✅ SUCESSO: deve criar sala com sucesso", async () => {
-    (Sala as any).create.mockResolvedValue({ id_sala: 1, nome: "Sala 1", capacidade: 80 });
+    (Sala as any).create.mockResolvedValue({ id_sala: 1, nome: "Sala 1", capacidade: 48 });
 
-    const req = { body: { nome: "Sala 1", capacidade: 80 } };
+    const req = { body: { nome: "Sala 1", capacidade: 48 } };
     const res = createResponse();
 
     await SalasController.create(req as any, res);
@@ -50,7 +50,7 @@ describe("🏛️ CRUD DE SALAS", () => {
   it("❌ SABOTAGEM CRUD: deve retornar 404 ao atualizar sala inexistente", async () => {
     (Sala as any).findByPk.mockResolvedValue(null);
 
-    const req = { params: { id: "999" }, body: { nome: "Sala X", capacidade: 100 } };
+    const req = { params: { id: "999" }, body: { nome: "Sala X", capacidade: 48 } };
     const res = createResponse();
 
     await SalasController.update(req as any, res);
@@ -90,8 +90,8 @@ describe('Validação e integridade de salas', () => {
     expect(res.status).toHaveBeenCalledWith(409);
   });
   it('não reduz capacidade abaixo dos assentos existentes', async () => {
-    const room = { id_sala: 1, update: vi.fn() }; (Sala.findByPk as any).mockResolvedValue(room); (Assento.count as any).mockResolvedValue(48);
-    const res = createResponse(); await SalasController.update({ params: { id: '1' }, body: { capacidade: 20 } } as any, res);
+    const room = { id_sala: 1, update: vi.fn() }; (Sala.findByPk as any).mockResolvedValue(room); (Assento.count as any).mockResolvedValue(49);
+    const res = createResponse(); await SalasController.update({ params: { id: '1' }, body: { capacidade: 48 } } as any, res);
     expect(res.status).toHaveBeenCalledWith(409); expect(room.update).not.toHaveBeenCalled();
   });
   it.each([{ nome: '', capacidade: 48 }, { nome: 'Sala', capacidade: -1 }, { nome: 'Sala', capacidade: 2.5 }])('rejeita dados inválidos', async body => {
@@ -105,3 +105,6 @@ it('nome de sala respeita 50 caracteres na criação e edição',async()=>{
  for(const method of ['create','update'] as const){const res=createResponse();await SalasController[method]({params:{id:'1'},body:{nome:'x'.repeat(51),capacidade:48}} as any,res);expect(res.status).toHaveBeenCalledWith(400);}
  expect(Sala.create).not.toHaveBeenCalled();const res=createResponse();await SalasController.create({body:{nome:'x'.repeat(50),capacidade:48}} as any,res);expect(res.status).toHaveBeenCalledWith(201);
 });
+
+it('cria com 48 quando capacidade omitida',async()=>{const res=createResponse();await SalasController.create({body:{nome:'Sala'}} as any,res);expect(Sala.create).toHaveBeenCalledWith({nome:'Sala',capacidade:48});});
+it.each([20,60,100])('rejeita capacidade %s na criação e edição',async capacidade=>{for(const method of ['create','update'] as const){const res=createResponse();await SalasController[method]({params:{id:'1'},body:{nome:'Sala',capacidade}} as any,res);expect(res.status).toHaveBeenCalledWith(400);}});

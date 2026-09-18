@@ -1,0 +1,8 @@
+erDiagram
+    SALA ||--o{ ASSENTO : possui
+    FILME ||--o{ SESSAO : possui
+    SALA ||--o{ SESSAO : recebe
+    SESSAO ||--o{ INGRESSO : gera
+    CLIENTE ||--o{ INGRESSO : compra
+    ASSENTO ||--o{ INGRESSO : referencia
+    INGRESSO ||--o| PAGAMENTO : possui

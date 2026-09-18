@@ -16,6 +16,6 @@ export function Loading({ message = 'Carregando...' }: LoadingProps) {
 }
 
 const createStyles = (theme: AppTheme) => StyleSheet.create({
-  container: { alignItems: 'center', gap: theme.spacing.md, paddingVertical: theme.spacing.lg },
+  container: { backgroundColor: theme.colors.surface, borderRadius: theme.radius.lg, alignItems: 'center', gap: theme.spacing.md, paddingVertical: theme.spacing.lg },
   message: { ...theme.typography.body, color: theme.colors.muted, textAlign: 'center' },
 });

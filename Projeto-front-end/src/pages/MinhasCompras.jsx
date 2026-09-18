@@ -55,7 +55,7 @@ function MinhasCompras() {
   const [erro, setErro] = useState("");
 
   const totalPago = useMemo(
-    () => compras.reduce((acc, compra) => acc + Number(compra.valor || 0), 0),
+    () => compras.reduce((acc, compra) => acc + (compra.pago ? Number(compra.valor || 0) : 0), 0),
     [compras]
   );
 
@@ -113,11 +113,11 @@ function MinhasCompras() {
                   <div>
                     <h3>{compra.filme}</h3>
                     <p><strong>Ingresso:</strong> #{compra.id}</p>
-                    <p><strong>Sessao:</strong> {compra.sessao}</p>
+                    <p><strong>Sessao:</strong> {compra.horario ? new Date(compra.horario).toLocaleString('pt-BR') : 'Horário indisponível'}</p>
                     <p><strong>Assento:</strong> {compra.assento}</p>
                     <p><strong>Metodo:</strong> {compra.metodo}</p>
                     <p><strong>Valor:</strong> R$ {Number(compra.valor).toFixed(2)}</p>
-                    <p><strong>Compra:</strong> {compra.dataCompra}</p>
+                    <p><strong>Compra:</strong> {compra.dataCompra ? new Date(compra.dataCompra).toLocaleString('pt-BR') : 'Data indisponível'}</p>
                   </div>
                   <div className="compra-qr" aria-label={`QR code do ingresso ${compra.id}`}>
                     {buildFakeQr(`${compra.id}|${compra.filme}|${compra.assento}|${compra.sessao}`).map((dark, index) => (

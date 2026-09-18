@@ -1,7 +1,18 @@
 import { Request, Response } from "express";
 import Sala from "../models/Sala";
 
+import Assento from '../models/Assento';
+import sequelize from '../config/database';
+class RoomConflict extends Error {}
+
 class SalasController {
+  private static validate(body: Record<string, unknown> | undefined, creating: boolean): string | null {
+    if (!body || typeof body !== 'object' || Array.isArray(body)) return 'Informe os dados da sala.';
+    if ((creating || body.nome !== undefined) && (typeof body.nome !== 'string' || !body.nome.trim() || body.nome.length > 50)) return 'Informe um nome de até 50 caracteres.';
+    if ((creating || body.capacidade !== undefined) && (!Number.isInteger(body.capacidade) || Number(body.capacidade) < 1 || Number(body.capacidade) > 2147483647)) return 'A capacidade deve ser um número inteiro positivo.';
+    return null;
+  }
+
   private static readonly NOT_FOUND_MESSAGE = "Sala nao encontrada.";
 
   private static isForeignKeyConstraintError(error: unknown): boolean {
@@ -44,16 +55,32 @@ class SalasController {
   }
 
   static async create(req: Request, res: Response) {
+    const error = SalasController.validate(req.body, true);
+    if (error) return res.status(400).json({ message: error });
     const { nome, capacidade } = req.body;
     const sala = await Sala.create({ nome, capacidade });
     return res.status(201).json(sala);
   }
 
   static async update(req: Request, res: Response) {
-    const sala = await SalasController.findOrNotFound(Number(req.params.id), res);
-    if (!sala) return;
-    await sala.update({ nome: req.body.nome, capacidade: req.body.capacidade });
-    return res.status(200).json(sala);
+    const error = SalasController.validate(req.body, false);
+    if (error) return res.status(400).json({ message: error });
+    try {
+      const sala = await sequelize.transaction(async transaction => {
+        const room = await Sala.findByPk(Number(req.params.id), { transaction, lock: transaction.LOCK.UPDATE });
+        if (!room) return null;
+        if (req.body.capacidade !== undefined && req.body.capacidade < await Assento.count({ where: { id_sala: room.id_sala }, transaction })) {
+          throw new RoomConflict('A capacidade não pode ser menor que a quantidade de assentos cadastrados.');
+        }
+        await room.update({ nome: req.body.nome, capacidade: req.body.capacidade }, { transaction });
+        return room;
+      });
+      if (!sala) return res.status(404).json({ message: SalasController.NOT_FOUND_MESSAGE });
+      return res.status(200).json(sala);
+    } catch (error) {
+      if (error instanceof RoomConflict) return res.status(409).json({ message: error.message });
+      throw error;
+    }
   }
 
   static async delete(req: Request, res: Response) {

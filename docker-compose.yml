@@ -21,6 +21,8 @@ services:
       context: ./Projeto-back-end
       dockerfile: Dockerfile
     container_name: back_service
+    ports:
+      - "3000:3000"
     env_file:
       - .env
     environment:
@@ -32,6 +34,7 @@ services:
       DB_PASS: ${DB_PASS}
     volumes:
       - ./Projeto-back-end/src:/app/src
+      - posters-data:/app/uploads/posters
     depends_on:
       - database
     networks:
@@ -74,6 +77,8 @@ services:
     restart: on-failure
 
 volumes:
+  posters-data:
+    driver: local
   mysql-data:
     driver: local
 

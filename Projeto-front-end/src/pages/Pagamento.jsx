@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import "./Pagamento.css";
@@ -18,18 +18,27 @@ function Pagamento() {
 
   const dados = location.state || {};
   const ingressosIds = Array.isArray(dados.ingressosIds) ? dados.ingressosIds : [];
-  const valorTotal = Number(dados.valorTotal || 0);
+  const [purchases, setPurchases] = useState([]);
+  const [ready, setReady] = useState(false);
+  const ids = useMemo(() => Array.isArray(location.state?.ingressosIds) ? location.state.ingressosIds.map(Number) : [], [location.state]);
+  useEffect(() => {
+    let active = true;
+    api.get('/me/compras').then(items => {
+      const own = items.filter(item => ids.includes(item.id));
+      if (own.length !== ids.length) throw new Error('Confira seus ingressos em Minhas Compras.');
+      if (active) { setPurchases(own); setReady(true); }
+    }).catch(error => { if (active) setFeedback({ tipo: 'erro', texto: error.message }); });
+    return () => { active = false; };
+  }, [ids]);
+  const valorTotal = purchases.reduce((sum, item) => sum + Number(item.valor_unitario ?? item.valor), 0);
   const totalIngressos = Number(dados.totalIngressos || 0);
   const filmeTitulo = dados.filmeTitulo || "Filme";
   const sessaoLabel = dados.sessaoLabel || "Sessao";
 
-  const valorPorIngresso = useMemo(() => {
-    if (!totalIngressos) return 0;
-    return Number((valorTotal / totalIngressos).toFixed(2));
-  }, [totalIngressos, valorTotal]);
+
 
   async function confirmarPagamento() {
-    if (ingressosIds.length === 0) {
+    if (!ready || loading || ingressosIds.length === 0) {
       setFeedback({ tipo: "erro", texto: "Nenhum ingresso pendente para pagamento." });
       return;
     }
@@ -43,12 +52,15 @@ function Pagamento() {
     setFeedback({ tipo: "", texto: "" });
 
     try {
+      const own = await api.get('/me/compras');
       for (const idIngresso of ingressosIds) {
+        const ticket = own.find(item => item.id === Number(idIngresso));
+        if (!ticket || ticket.status === 'cancelado') throw new Error('Ingresso indisponível.');
+        if (ticket.pago) continue;
+        if (!ticket.podePagar) throw new Error('Ingresso antigo sem preço registrado. Consulte Minhas Compras.');
         await api.post("/pagamentos", {
           id_ingresso: Number(idIngresso),
-          valor: valorPorIngresso,
           metodo_pagamento: metodoPagamento,
-          data_pagamento: new Date().toISOString(),
         });
       }
 
@@ -101,7 +113,7 @@ function Pagamento() {
               ))}
             </div>
 
-            <button type="button" className="btn-pagar" onClick={confirmarPagamento} disabled={loading}>
+            <button type="button" className="btn-pagar" onClick={confirmarPagamento} disabled={loading || !ready}>
               {loading ? "Processando..." : "Confirmar pagamento"}
             </button>
           </>

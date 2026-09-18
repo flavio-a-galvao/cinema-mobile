@@ -143,7 +143,7 @@ function Produtos(){
 
       const [assentosApi, ingressosApi, sessoes] = await Promise.all([
         api.get("/catalogo/assentos"),
-        api.get("/ingressos"),
+        api.get(`/sessoes/${idSessaoNumero}/ocupacao`),
         sessoesApi.length > 0 ? Promise.resolve(sessoesApi) : api.get("/catalogo/sessoes"),
       ]);
 
@@ -159,7 +159,6 @@ function Produtos(){
 
       const assentosOcupados = new Set(
         ingressosApi
-          .filter((ingresso) => Number(ingresso.id_sessao) === idSessaoNumero)
           .map((ingresso) => Number(ingresso.id_assento))
       );
 
@@ -274,7 +273,7 @@ function Produtos(){
   async function obterSessaoId() {
     if (!filmeSelecionado) return null;
 
-    const sessoes = sessoesApi.length > 0 ? sessoesApi : await api.get("/sessoes");
+    const sessoes = sessoesApi.length > 0 ? sessoesApi : await api.get("/catalogo/sessoes");
     const sessoesDoFilme = sessoes.filter(
       (sessao) => Number(sessao.id_filme) === Number(filmeSelecionado.id)
     );
@@ -347,10 +346,9 @@ function Produtos(){
         return;
       }
 
-      const ingressosAtuais = await api.get("/ingressos");
+      const ingressosAtuais = await api.get(`/sessoes/${idSessao}/ocupacao`);
       const assentosOcupadosAgora = new Set(
         ingressosAtuais
-          .filter((ingresso) => Number(ingresso.id_sessao) === Number(idSessao))
           .map((ingresso) => Number(ingresso.id_assento))
       );
 
@@ -367,42 +365,16 @@ function Produtos(){
         return;
       }
 
-      const ingressosCriados = [];
-
-      for (const assentoSelecionado of assentosSelecionados) {
-        const idAssento = Number(assentoSelecionado.id_assento || 0);
-        if (!idAssento) {
-          setFeedback({
-            tipo: "erro",
-            texto: `Assento ${assentoSelecionado.numero} invalido para a sessao selecionada.`,
-          });
-          return;
-        }
-
-        const ingresso = await api.post("/ingressos", {
-          id_sessao: idSessao,
-          id_cliente: idCliente,
-          id_assento: idAssento,
-          data_compra: new Date().toISOString(),
-        });
-
-        const idIngresso = Number(
-          ingresso?.id_ingresso ||
-          ingresso?.id ||
-          ingresso?.dataValues?.id_ingresso ||
-          0
-        );
-        if (!idIngresso) {
-          throw new Error("Nao foi possivel obter o ingresso criado para registrar o pagamento.");
-        }
-
-        ingressosCriados.push(idIngresso);
-      }
-
+      const ingressos = await api.post('/ingressos/lote', {
+        id_sessao: idSessao, id_cliente: idCliente,
+        id_assentos: assentosSelecionados.map(assento => Number(assento.id_assento)),
+        qtdInteira, qtdMeia,
+      });
+      const ingressosCriados = ingressos.map(ingresso => ingresso.id_ingresso);
       navigate("/pagamento", {
         state: {
           ingressosIds: ingressosCriados,
-          valorTotal,
+          valorTotal: ingressos.reduce((total, ingresso) => total + Number(ingresso.valor_unitario), 0),
           totalIngressos,
           filmeTitulo: filmeSelecionado.titulo,
           sessaoLabel: String(sessaoSelecionada || "").split("#")[0],

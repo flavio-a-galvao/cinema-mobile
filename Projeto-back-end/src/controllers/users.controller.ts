@@ -8,7 +8,6 @@ interface UserRequestBody {
     cpf?: string;
     email?: string;
     senha?: string;
-    tipo_usuario?: string;
 }
 
 interface NormalizedUserInput {
@@ -126,14 +125,16 @@ class UsersController {
     static async findAll(req: Request, res: Response) {
         const users = await User.findAll();
 
-        return res.status(200).json(users);
+        return res.status(200).json(users.map(UsersController.serializeUser));
     }
 
     static async getById(req: Request, res: Response) {
+        if (!req.authUser) return res.status(401).json({ message: 'Autenticação necessária.' });
+        if (req.authUser.tipo_usuario !== 'admin' && req.authUser.id_usuario !== Number(req.params.id)) return res.status(403).json({ message: 'Você só pode consultar seu próprio usuário.' });
         const user = await UsersController.findByIdOrNotFound(Number(req.params.id), res);
         if (!user) return;
 
-        return res.status(200).json(user);
+        return res.status(200).json(UsersController.serializeUser(user));
     }
 
     static async create(req: Request, res: Response) {
@@ -149,7 +150,7 @@ class UsersController {
             cpf: input.cpf,
             email: input.email,
             senha: senhaHash,
-            tipo_usuario: payload.tipo_usuario,
+            tipo_usuario: "cliente",
         });
 
         return res.status(201).json(UsersController.serializeUser(user));

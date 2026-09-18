@@ -35,7 +35,7 @@ export default function AdminRoomsScreen() {
     {!!error && <ErrorState message={error} onRetry={() => { void load(); }} />}{!!message && <Notice message={message} />}
     {rooms === null && !error && <Loading />}{rooms?.length === 0 && <EmptyState title="Nenhuma sala cadastrada" message="Crie uma sala para organizar as sessões do Cinemax." />}
     {rooms?.map(room => <View key={room.id_sala} style={styles.card}>
-      <Text style={styles.title}>{room.nome || 'Sala sem nome'}</Text><Text style={styles.text}>Capacidade: {room.capacidade} • Assentos: {room.quantidade_assentos}</Text>
+      <Text style={styles.title}>{room.nome || 'Sala sem nome'}</Text><Text style={styles.text}>{room.quantidade_assentos > 48 ? 'Cadastro legado: revisão necessária' : '48 lugares • 6 fileiras × 8 assentos'} • Cadastrados: {room.quantidade_assentos}</Text>
       <Button title="Editar e gerar assentos" variant="secondary" disabled={pending !== null} onPress={() => router.push(adminRoomRoute(room.id_sala))} />
       <Button title="Excluir sala" icon="trash-outline" variant="danger" loading={pending === room.id_sala} disabled={pending !== null} onPress={() => confirmAdminDelete(room.nome || 'Sala', () => { void remove(room); })} />
     </View>)}

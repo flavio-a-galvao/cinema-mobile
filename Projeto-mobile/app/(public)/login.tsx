@@ -1,8 +1,9 @@
+import { Brand } from '@/components/Brand';
 import { routes } from '@/constants/routes';
 import { isAxiosError } from 'axios';
 import { Redirect, router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Keyboard, StyleSheet, Text } from 'react-native';
+import { Keyboard, StyleSheet, Text, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { ErrorState } from '@/components/ErrorState';
 import { Input } from '@/components/Input';
@@ -62,8 +63,8 @@ export default function LoginScreen() {
 
   return (
     <Screen>
-      <Text accessibilityRole="header" style={styles.title}>Cinemax</Text>
-      <Input
+      <Brand subtitle="Grandes histórias começam com você." /><Text style={styles.title}>Bom ter você aqui.</Text>
+      <View style={styles.form}><Input
         label="Email"
         placeholder="seu@email.com"
         value={email}
@@ -91,11 +92,12 @@ export default function LoginScreen() {
       />
       {error && <ErrorState message={error} />}
       <Button title={isSubmitting ? 'Entrando...' : 'Entrar'} loading={isSubmitting} onPress={() => { void handleSignIn(); }} />
-      <Button variant="link" title="Criar conta" disabled={isSubmitting} onPress={() => router.push('/register')} />
+      </View><Button variant="link" title="Criar conta" disabled={isSubmitting} onPress={() => router.push('/register')} />
     </Screen>
   );
 }
 
 const createStyles = (theme: AppTheme) => StyleSheet.create({
-  title: { ...theme.typography.title, color: theme.colors.primary },
+  form: { gap: theme.spacing.md, padding: theme.spacing.md, backgroundColor: theme.colors.surface, borderRadius: theme.radius.lg, borderWidth: theme.sizes.borderWidth, borderColor: theme.colors.border },
+  title: { ...theme.typography.heading, color: theme.colors.text },
 });

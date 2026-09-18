@@ -50,7 +50,7 @@ CREATE TABLE filmes (
 CREATE TABLE salas (
     id_sala INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50),
-    capacidade INT NOT NULL
+    capacidade INT NOT NULL DEFAULT 48
 );
 
 -- =========================
@@ -132,8 +132,8 @@ VALUES
 
 INSERT INTO salas (nome,capacidade)
 VALUES
-('Sala 1',100),
-('Sala 2',80);
+('Sala 1',48),
+('Sala 2',48);
 
 INSERT INTO assentos (id_sala,numero,fila)
 VALUES
@@ -167,7 +167,7 @@ FROM salas s
 CROSS JOIN (SELECT 'A' fila UNION ALL SELECT 'B' UNION ALL SELECT 'C' UNION ALL SELECT 'D' UNION ALL SELECT 'E' UNION ALL SELECT 'F') f
 CROSS JOIN (SELECT 1 numero UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8) n
 WHERE @seed_lock = 1 AND s.id_sala IN (1,2) AND NOT EXISTS (SELECT 1 FROM assentos a WHERE a.id_sala=s.id_sala AND a.fila=f.fila AND a.numero=CAST(n.numero AS CHAR));
-UPDATE salas s SET capacidade=(SELECT COUNT(*) FROM assentos a WHERE a.id_sala=s.id_sala) WHERE @seed_lock=1 AND s.id_sala IN (1,2);
+UPDATE salas s SET capacidade=48 WHERE (SELECT COUNT(*) FROM assentos a WHERE a.id_sala=s.id_sala) <= 48 AND @seed_lock=1 AND s.id_sala IN (1,2);
 INSERT INTO sessoes (id_filme,id_sala,horario,preco)
 SELECT f.id_filme,s.id_sala,TIMESTAMP(DATE_ADD(CURRENT_DATE,INTERVAL 7 DAY),'19:00:00'),25.00
 FROM filmes f JOIN salas s ON s.id_sala=f.id_filme

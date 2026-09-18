@@ -10,7 +10,7 @@ export function AdminSelect({ label, value, options, onChange, disabled }: { lab
   const selected = options.find(option => option.id === value);
   return <View style={styles.field}>
     <Text style={styles.text}>{label}</Text>
-    <Button title={selected?.label ?? 'Selecionar ' + label.toLowerCase()} variant="secondary" disabled={disabled || options.length === 0} onPress={() => setOpen(true)} />
+    <Button icon="chevron-down-outline" title={selected?.label ?? 'Selecionar ' + label.toLowerCase()} variant="secondary" disabled={disabled || options.length === 0} onPress={() => setOpen(true)} />
     {options.length === 0 && <Text style={styles.text}>Nenhuma opção cadastrada.</Text>}
     <Modal visible={open} animationType="slide" onRequestClose={() => setOpen(false)}>
       <SafeAreaView style={styles.screen}><Text style={styles.title}>{label}</Text>
@@ -24,5 +24,5 @@ const createStyles = (theme: AppTheme) => StyleSheet.create({
   field: { gap: theme.spacing.sm }, screen: { flex: 1, padding: theme.spacing.lg, backgroundColor: theme.colors.background, gap: theme.spacing.md },
   title: { ...theme.typography.heading, color: theme.colors.text }, text: { ...theme.typography.body, color: theme.colors.text },
   list: { gap: theme.spacing.sm }, option: { padding: theme.spacing.md, minHeight: theme.sizes.controlMinHeight, borderRadius: theme.radius.md, borderWidth: theme.sizes.borderWidth, borderColor: theme.colors.border, backgroundColor: theme.colors.surface },
-  selected: { borderColor: theme.colors.primary },
+  selected: { borderColor: theme.colors.primary, backgroundColor: theme.colors.primarySoft },
 });

@@ -1,3 +1,5 @@
+import { ageError, digitsOnly, maskBrazilianDate, toApiDate, toDisplayDate } from '@/utils/movieForm';
+import { Notice } from '@/components/Notice';
 import { useEffect, useRef, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text } from 'react-native';
@@ -32,12 +34,12 @@ export default function AdminMovieScreen() {
     let active = true;
     void getMovieById(initialId).then(movie => {
       if (!active) return;
-      setForm({ titulo: movie.titulo, genero: movie.genero ?? '', classificacao_etaria: movie.classificacao_etaria ?? '', duracao: movie.duracao?.toString() ?? '', sinopse: movie.sinopse ?? '', data_lancamento: movie.data_lancamento?.slice(0, 10) ?? '' });
+      setForm({ titulo: movie.titulo, genero: movie.genero ?? '', classificacao_etaria: movie.classificacao_etaria?.toLowerCase() === 'livre' ? '0' : movie.classificacao_etaria ?? '', duracao: movie.duracao?.toString() ?? '', sinopse: movie.sinopse ?? '', data_lancamento: toDisplayDate(movie.data_lancamento) });
       setSavedId(movie.id_filme); setPoster(movie.poster_url); setLoadError('');
     }, () => { if (active) setLoadError('Não foi possível carregar este filme.'); }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [initialId, attempt]);
-  function field(key: keyof Form, value: string) { setForm(current => ({ ...current, [key]: value })); setSuccess(''); }
+  function field(key: keyof Form, value: string) { setForm(current => ({ ...current, [key]: value })); setSuccess(''); setError(''); }
   async function pickPoster() {
     setError(''); setSuccess('');
     try {
@@ -52,11 +54,13 @@ export default function AdminMovieScreen() {
   async function save() {
     if (busy.current || !authState.token) return;
     const duration = form.duracao.trim() ? Number(form.duracao) : null;
-    const date = form.data_lancamento.trim();
-    if (form.titulo.length > 150 || form.genero.length > 50 || form.classificacao_etaria.length > 10) { setError('Respeite os limites: título 150, gênero 50 e classificação 10 caracteres.'); return; }
+    const date = toApiDate(form.data_lancamento.trim());
+    const classificationError = ageError(form.classificacao_etaria);
+    if (classificationError) { setError(classificationError); return; }
+    if (form.titulo.length > 150 || form.genero.length > 50) { setError('Respeite os limites: título 150 e gênero 50 caracteres.'); return; }
     if (!form.titulo.trim()) { setError('Informe o título do filme.'); return; }
-    if (duration !== null && (!Number.isInteger(duration) || duration <= 0)) { setError('Informe a duração em minutos, maior que zero.'); return; }
-    if (date && (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date)) { setError('Informe uma data válida no formato AAAA-MM-DD.'); return; }
+    if (duration !== null && (!Number.isInteger(duration) || duration <= 0 || duration > 2147483647)) { setError('Informe a duração em minutos, maior que zero.'); return; }
+    if (form.data_lancamento && !date) { setError('Informe uma data válida no formato DD/MM/AAAA.'); return; }
     const input: MovieInput = { titulo: form.titulo.trim(), genero: form.genero.trim() || null, classificacao_etaria: form.classificacao_etaria.trim() || null, duracao: duration, sinopse: form.sinopse.trim() || null, data_lancamento: date || null };
     busy.current = true; setPending(true); setError(''); setSuccess('');
     let metadataSaved = false;
@@ -83,13 +87,13 @@ export default function AdminMovieScreen() {
     <Text style={styles.text}>JPEG, PNG ou WEBP • até 5 MB</Text>
     <Input label="Título" value={form.titulo} maxLength={150} editable={!pending} onChangeText={value => field('titulo', value)} />
     <Input label="Gênero" value={form.genero} maxLength={50} editable={!pending} onChangeText={value => field('genero', value)} />
-    <Input label="Classificação etária" value={form.classificacao_etaria} maxLength={10} editable={!pending} onChangeText={value => field('classificacao_etaria', value)} />
-    <Input label="Duração (minutos)" value={form.duracao} keyboardType="number-pad" editable={!pending} onChangeText={value => field('duracao', value)} />
-    <Input label="Lançamento (AAAA-MM-DD)" value={form.data_lancamento} maxLength={10} editable={!pending} onChangeText={value => field('data_lancamento', value)} />
+    <Input label="Classificação etária" value={form.classificacao_etaria} maxLength={3} keyboardType="number-pad" error={ageError(form.classificacao_etaria)} editable={!pending} onChangeText={value => field('classificacao_etaria', digitsOnly(value, 3))} />
+    <Input label="Duração (minutos)" value={form.duracao} error={form.duracao && (Number(form.duracao) <= 0 || Number(form.duracao) > 2147483647) ? 'Informe uma duração positiva em minutos, até 2147483647.' : undefined} maxLength={10} keyboardType="number-pad" editable={!pending} onChangeText={value => field('duracao', digitsOnly(value, 10))} />
+    <Input label="Lançamento (DD/MM/AAAA)" placeholder="DD/MM/AAAA" keyboardType="number-pad" value={form.data_lancamento} error={form.data_lancamento.length === 10 && !toApiDate(form.data_lancamento) ? 'Informe uma data válida no formato DD/MM/AAAA.' : undefined} maxLength={10} editable={!pending} onChangeText={value => field('data_lancamento', maskBrazilianDate(value))} />
     <Input label="Sinopse" value={form.sinopse} multiline maxLength={16000} editable={!pending} onChangeText={value => field('sinopse', value)} />
     {!!error && <ErrorState message={error} />}
-    {!!success && <Text accessibilityRole="alert" style={styles.text}>{success}</Text>}
-    <Button title="Salvar filme" loading={pending} onPress={() => { void save(); }} />
+    {!!success && <Notice message={success} />}
+    <Button icon="checkmark-outline" title="Salvar filme" disabled={!!ageError(form.classificacao_etaria)} loading={pending} onPress={() => { void save(); }} />
     <Button title="Voltar aos filmes" variant="link" disabled={pending} onPress={() => router.replace(routes.admin)} />
   </Screen>;
 }

@@ -1,3 +1,4 @@
+import { ROOM_CAPACITY } from '../constants/roomLayout';
 import { Request, Response } from "express";
 import Sala from "../models/Sala";
 
@@ -9,7 +10,7 @@ class SalasController {
   private static validate(body: Record<string, unknown> | undefined, creating: boolean): string | null {
     if (!body || typeof body !== 'object' || Array.isArray(body)) return 'Informe os dados da sala.';
     if ((creating || body.nome !== undefined) && (typeof body.nome !== 'string' || !body.nome.trim() || body.nome.length > 50)) return 'Informe um nome de até 50 caracteres.';
-    if ((creating || body.capacidade !== undefined) && (!Number.isInteger(body.capacidade) || Number(body.capacidade) < 1 || Number(body.capacidade) > 2147483647)) return 'A capacidade deve ser um número inteiro positivo.';
+    if (body.capacidade !== undefined && body.capacidade !== ROOM_CAPACITY) return 'O mapa padrão possui capacidade fixa de 48 lugares.';
     return null;
   }
 
@@ -57,8 +58,8 @@ class SalasController {
   static async create(req: Request, res: Response) {
     const error = SalasController.validate(req.body, true);
     if (error) return res.status(400).json({ message: error });
-    const { nome, capacidade } = req.body;
-    const sala = await Sala.create({ nome, capacidade });
+    const { nome } = req.body;
+    const sala = await Sala.create({ nome, capacidade: ROOM_CAPACITY });
     return res.status(201).json(sala);
   }
 
@@ -69,10 +70,10 @@ class SalasController {
       const sala = await sequelize.transaction(async transaction => {
         const room = await Sala.findByPk(Number(req.params.id), { transaction, lock: transaction.LOCK.UPDATE });
         if (!room) return null;
-        if (req.body.capacidade !== undefined && req.body.capacidade < await Assento.count({ where: { id_sala: room.id_sala }, transaction })) {
-          throw new RoomConflict('A capacidade não pode ser menor que a quantidade de assentos cadastrados.');
+        if (ROOM_CAPACITY < await Assento.count({ where: { id_sala: room.id_sala }, transaction })) {
+          throw new RoomConflict('Esta sala possui mais de 48 assentos e precisa de revisão manual. Nenhum dado foi alterado.');
         }
-        await room.update({ nome: req.body.nome, capacidade: req.body.capacidade }, { transaction });
+        await room.update({ nome: req.body.nome, capacidade: ROOM_CAPACITY }, { transaction });
         return room;
       });
       if (!sala) return res.status(404).json({ message: SalasController.NOT_FOUND_MESSAGE });

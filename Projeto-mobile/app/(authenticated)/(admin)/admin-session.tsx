@@ -1,3 +1,4 @@
+import { Notice } from '@/components/Notice';
 import { useEffect, useRef, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text } from 'react-native';
@@ -64,8 +65,8 @@ function SessionEditor({ id }: { id?: number }) {
     <Input label="Horário (HH:MM)" value={time} maxLength={5} placeholder="19:30" editable={!pending} onChangeText={value => { setTime(value); setMessage(''); }} />
     <Text style={styles.text}>Data e horário no fuso local do aparelho.</Text>
     <Input label="Preço da inteira (R$)" value={price} keyboardType="decimal-pad" editable={!pending} onChangeText={value => { setPrice(value); setMessage(''); }} />
-    {!!error && <ErrorState message={error} />}{!!message && <Text style={styles.text} accessibilityRole="alert">{message}</Text>}
-    <Button title="Salvar sessão" loading={pending} disabled={!movies.length || !rooms.length} onPress={() => { void save(); }} />
+    {!!error && <ErrorState message={error} />}{!!message && <Notice message={message} />}
+    <Button icon="checkmark-outline" title="Salvar sessão" loading={pending} disabled={!movies.length || !rooms.length} onPress={() => { void save(); }} />
     <Button title="Voltar às sessões" variant="link" disabled={pending} onPress={() => router.replace(adminRoutes.sessions)} />
   </Screen>;
 }

@@ -1,0 +1,5 @@
+import type { ComponentProps } from 'react';
+import { Pressable, Text, View } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useTheme } from '@/contexts/ThemeContext';
+export function AccountAction({title,subtitle,icon,onPress,disabled=false,danger=false}:{title:string;subtitle?:string;icon:ComponentProps<typeof Ionicons>['name'];onPress:()=>void;disabled?:boolean;danger?:boolean}){const {theme:t}=useTheme();return <Pressable accessibilityRole="button" disabled={disabled} onPress={onPress} style={({pressed})=>({flexDirection:'row',alignItems:'center',gap:t.spacing.md,padding:t.spacing.md,borderRadius:t.radius.md,backgroundColor:pressed?t.colors.elevated:t.colors.surface,opacity:disabled?t.opacity.disabled:1})}><Ionicons name={icon} size={t.sizes.icon} color={danger?t.colors.error:t.colors.primary}/><View style={{flex:1,gap:t.spacing.xs}}><Text style={{...t.typography.label,color:danger?t.colors.error:t.colors.text}}>{title}</Text>{subtitle&&<Text style={{...t.typography.caption,color:t.colors.muted}}>{subtitle}</Text>}</View><Ionicons name="chevron-forward" size={t.sizes.icon} color={t.colors.muted}/></Pressable>;}

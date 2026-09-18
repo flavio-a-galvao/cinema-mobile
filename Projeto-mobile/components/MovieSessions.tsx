@@ -57,14 +57,14 @@ export function MovieSessions({ movieId }: { movieId: number }) {
       }} />}
       {state.status === 'success' && (state.sessions.length === 0 ? (
         <EmptyState title="Nenhuma sessão disponível" message="Este filme ainda não possui sessões cadastradas." />
-      ) : state.sessions.map((session) => (
+      ) : <View style={styles.grid}>{state.sessions.map((session) => (
         <Pressable key={session.id_sessao} accessibilityRole="button" accessibilityLabel={formatSchedule(session.horario)} onPress={() => router.push(sessionRoute(session.id_sessao))} style={styles.session}>
           <Text style={styles.text}>{formatSchedule(session.horario)}</Text>
           <Text style={styles.text}>Sala {session.id_sala ?? 'Não informada'}</Text>
           <Text style={styles.text}>{formatPrice(session.preco)}</Text>
           <Text style={styles.action}>Escolher assentos →</Text>
         </Pressable>
-      )))}
+      ))}</View>)}
     </View>
   );
 }
@@ -72,7 +72,8 @@ export function MovieSessions({ movieId }: { movieId: number }) {
 const createStyles = (theme: AppTheme) => StyleSheet.create({
   container: { gap: theme.spacing.md },
   title: { ...theme.typography.heading, color: theme.colors.text },
-  session: { padding: theme.spacing.md, gap: theme.spacing.sm, borderRadius: theme.radius.md, backgroundColor: theme.colors.surface },
-  action: { ...theme.typography.label, color: theme.colors.primary },
-  text: { ...theme.typography.body, color: theme.colors.text },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm },
+  session: { width: '48%', flexGrow: 1, borderWidth: theme.sizes.borderWidth, borderColor: theme.colors.border, padding: theme.spacing.md, gap: theme.spacing.sm, borderRadius: theme.radius.md, backgroundColor: theme.colors.surface },
+  action: { ...theme.typography.caption, fontWeight: '600', color: theme.colors.primary },
+  text: { ...theme.typography.caption, color: theme.colors.text },
 });

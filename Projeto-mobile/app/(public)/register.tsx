@@ -1,7 +1,10 @@
+import { formatCpf } from '@/utils/formatCpf';
+import { Notice } from '@/components/Notice';
+import { Brand } from '@/components/Brand';
 import { isAxiosError } from 'axios';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Keyboard, StyleSheet, Text } from 'react-native';
+import { Keyboard, StyleSheet, Text, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { ErrorState } from '@/components/ErrorState';
 import { Input } from '@/components/Input';
@@ -82,25 +85,25 @@ export default function RegisterScreen() {
 
   return (
     <Screen>
-      <Text accessibilityRole="header" style={styles.title}>Cinemax</Text>
+      <Brand subtitle="Seu lugar nas próximas grandes histórias." /><Text style={styles.title}>Crie sua conta</Text>
       {success ? (
-        <Text accessibilityLiveRegion="polite" style={styles.message}>Conta criada com sucesso. Entre com seu email e senha.</Text>
+        <Notice message="Conta criada com sucesso. Entre com seu email e senha." />
       ) : (
-        <>
-          <Input label="Nome" value={form.nome} onChangeText={(value) => updateField('nome', value)}
+        <View style={styles.form}>
+          <Input label="Nome" placeholder="Como você se chama?" value={form.nome} onChangeText={(value) => updateField('nome', value)}
             autoComplete="name" autoCapitalize="words" editable={!isSubmitting} error={errors.nome} />
-          <Input label="CPF" placeholder="11 dígitos" value={form.cpf} onChangeText={(value) => updateField('cpf', value)}
+          <Input label="CPF" placeholder="000.000.000-00" value={form.cpf} onChangeText={(value) => updateField('cpf', formatCpf(value))}
             keyboardType="number-pad" maxLength={14} editable={!isSubmitting} error={errors.cpf} />
           <Input label="Email" placeholder="seu@email.com" value={form.email} onChangeText={(value) => updateField('email', value)}
             keyboardType="email-address" autoComplete="email" autoCapitalize="none" autoCorrect={false}
             editable={!isSubmitting} error={errors.email} />
-          <Input label="Senha" value={form.senha} onChangeText={(value) => updateField('senha', value)}
+          <Input label="Senha" placeholder="Crie uma senha segura" value={form.senha} onChangeText={(value) => updateField('senha', value)}
             secureTextEntry autoComplete="new-password" autoCapitalize="none" autoCorrect={false}
             editable={!isSubmitting} error={errors.senha} returnKeyType="go" onSubmitEditing={() => { void handleRegister(); }} />
           <Text style={styles.hint}>Senha com pelo menos 8 caracteres, maiúscula, minúscula, número e símbolo.</Text>
           {error && <ErrorState message={error} />}
           <Button title={isSubmitting ? 'Criando conta...' : 'Cadastrar'} loading={isSubmitting} onPress={() => { void handleRegister(); }} />
-        </>
+        </View>
       )}
       <Button variant="link" title="Já tenho conta — Entrar" disabled={isSubmitting} onPress={() => router.replace('/login')} />
     </Screen>
@@ -108,7 +111,8 @@ export default function RegisterScreen() {
 }
 
 const createStyles = (theme: AppTheme) => StyleSheet.create({
-  title: { ...theme.typography.title, color: theme.colors.primary },
+  form: { gap: theme.spacing.md, padding: theme.spacing.md, backgroundColor: theme.colors.surface, borderRadius: theme.radius.lg, borderWidth: theme.sizes.borderWidth, borderColor: theme.colors.border },
+  title: { ...theme.typography.heading, color: theme.colors.text },
   message: { ...theme.typography.body, color: theme.colors.text },
   hint: { ...theme.typography.caption, color: theme.colors.muted },
 });

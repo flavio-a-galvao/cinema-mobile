@@ -1,8 +1,9 @@
+import { AccountAction } from '@/components/AccountAction';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { routes } from '@/constants/routes';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
-import { Button } from '@/components/Button';
+import { StyleSheet, Text, View } from 'react-native';
 import { ErrorState } from '@/components/ErrorState';
 import { Screen } from '@/components/Screen';
 import type { AppTheme } from '@/constants/theme';
@@ -36,18 +37,17 @@ export default function AccountScreen() {
   return (
     <Screen>
       <Text accessibilityRole="header" style={styles.title}>Perfil</Text>
-      <Text style={styles.message}>Olá, {authState.user?.nome}.</Text>
-      <Text style={styles.message}>{authState.user?.email}</Text>
-      <Button variant="secondary" title="Ver catálogo de filmes" disabled={isSigningOut} onPress={() => router.push(routes.catalog)} />
-      <Button title="Meus Ingressos" disabled={isSigningOut} onPress={() => router.push(routes.tickets)} />
+      <View style={{ padding: theme.spacing.lg, gap: theme.spacing.sm, backgroundColor: theme.colors.surface, borderRadius: theme.radius.lg }}><Ionicons name="person-circle-outline" size={theme.sizes.avatar} color={theme.colors.primary} /><Text style={styles.title}>{authState.user?.nome}</Text><Text style={styles.message}>{authState.user?.email}</Text></View><Text style={styles.message}>Sua experiência Cinemax</Text>
+      <AccountAction icon="film-outline" title="Ver catálogo de filmes" subtitle="Encontre sua próxima história" disabled={isSigningOut} onPress={() => router.push(routes.catalog)} />
+      <AccountAction icon="ticket-outline" title="Meus Ingressos" subtitle="Compras e pagamentos pendentes" disabled={isSigningOut} onPress={() => router.push(routes.tickets)} />
       {authState.user?.tipo_usuario === 'admin' && (
-        <Button title="Área administrativa" disabled={isSigningOut} onPress={() => router.push(routes.admin)} />
+        <AccountAction icon="grid-outline" title="Área administrativa" subtitle="Gerencie filmes, salas e sessões" disabled={isSigningOut} onPress={() => router.push(routes.admin)} />
       )}
-      <Button variant="secondary" title={mode === 'dark' ? 'Usar modo claro' : 'Usar modo escuro'} onPress={() => { void toggleTheme().catch(() => setError('Não foi possível salvar o tema.')); }} />
+      <AccountAction icon={mode === 'dark' ? 'sunny-outline' : 'moon-outline'} subtitle="Preferência salva neste aparelho" title={mode === 'dark' ? 'Usar modo claro' : 'Usar modo escuro'} onPress={() => { void toggleTheme().catch(() => setError('Não foi possível salvar o tema.')); }} />
       {error && <ErrorState message={error} />}
-      <Button
+      <AccountAction icon="log-out-outline" danger
         title={isSigningOut ? 'Saindo...' : 'Sair da conta'}
-        loading={isSigningOut}
+        disabled={isSigningOut}
         onPress={() => { void handleSignOut(); }}
       />
     </Screen>

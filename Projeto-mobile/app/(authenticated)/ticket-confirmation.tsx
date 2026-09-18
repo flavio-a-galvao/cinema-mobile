@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { routes } from '@/constants/routes';
 import { router } from 'expo-router';
 import { StyleSheet, Text } from 'react-native';
@@ -19,7 +20,7 @@ export default function TicketConfirmationScreen() {
     <Screen>
       {confirmed && checkout ? (
         <>
-          <Text accessibilityRole="header" style={styles.title}>Tudo pronto!</Text>
+          <Ionicons name="checkmark-circle" size={theme.sizes.avatar} color={theme.colors.success} /><Text accessibilityRole="header" style={styles.title}>Tudo pronto!</Text>
           <Text style={styles.text}>Seus ingressos e o registro de pagamento estão salvos. Nenhuma cobrança online foi realizada.</Text>
           {checkout.tickets.map((ticket) => (
             <Text key={ticket.id_ingresso} style={styles.text}>Assento {checkout.seatLabels[ticket.id_assento] || 'Código indisponível'}</Text>

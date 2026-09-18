@@ -1,58 +1,11 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
-import type { AppTheme } from '@/constants/theme';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '@/contexts/ThemeContext';
-
-type InputProps = Omit<TextInputProps, 'style'> & {
-  label: string;
-  error?: string;
-};
-
-export function Input({ label, error, onFocus, onBlur, editable = true, secureTextEntry = false, ...props }: InputProps) {
-  const { theme } = useTheme();
-  const styles = createStyles(theme);
-  const [showPassword, setShowPassword] = useState(false);
-  const [focused, setFocused] = useState(false);
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
-      <TextInput
-        {...props}
-        editable={editable}
-        secureTextEntry={secureTextEntry && !showPassword}
-        accessibilityLabel={props.accessibilityLabel ?? label}
-        accessibilityHint={error ?? props.accessibilityHint}
-        placeholderTextColor={theme.colors.muted}
-        selectionColor={theme.colors.primary}
-        onFocus={(event) => { setFocused(true); onFocus?.(event); }}
-        onBlur={(event) => { setFocused(false); onBlur?.(event); }}
-        style={[styles.input, focused && styles.focused, !!error && styles.invalid, !editable && styles.disabled]}
-      />
-      {secureTextEntry && <Pressable accessibilityRole="button" accessibilityLabel={showPassword ? 'Ocultar senha' : 'Mostrar senha'} disabled={!editable} onPress={() => setShowPassword(value => !value)} style={styles.toggle}><Text style={styles.toggleLabel}>{showPassword ? 'Ocultar senha' : 'Mostrar senha'}</Text></Pressable>}
-      {!!error && <Text accessibilityRole="alert" style={styles.error}>{error}</Text>}
-    </View>
-  );
+import type { AppTheme } from '@/constants/theme';
+type Props=Omit<TextInputProps,'style'> & {label:string;error?:string};
+export function Input({label,error,onFocus,onBlur,editable=true,secureTextEntry=false,...props}:Props){
+ const {theme}=useTheme();const s=styles(theme);const [visible,setVisible]=useState(false);const [focused,setFocused]=useState(false);
+ return <View style={s.group}><Text style={s.label}>{label}</Text><View style={[s.frame,focused&&s.focused,!!error&&s.invalid,!editable&&s.disabled]}><TextInput {...props} placeholder={props.placeholder??label} editable={editable} secureTextEntry={secureTextEntry&&!visible} accessibilityLabel={props.accessibilityLabel??label} accessibilityHint={error??props.accessibilityHint} placeholderTextColor={theme.colors.muted} selectionColor={theme.colors.primary} onFocus={e=>{setFocused(true);onFocus?.(e);}} onBlur={e=>{setFocused(false);onBlur?.(e);}} style={[s.input,props.multiline&&s.multiline]}/>{secureTextEntry&&<Pressable disabled={!editable} accessibilityRole="button" accessibilityLabel={visible?'Ocultar senha':'Mostrar senha'} accessibilityState={{checked:visible}} onPress={()=>setVisible(v=>!v)} style={s.toggle}><Ionicons name={visible?'eye-off-outline':'eye-outline'} size={theme.sizes.icon} color={theme.colors.muted}/></Pressable>}</View>{!!error&&<Text accessibilityRole="alert" style={s.error}>{error}</Text>}</View>;
 }
-
-const createStyles = (theme: AppTheme) => StyleSheet.create({
-  container: { gap: theme.spacing.sm },
-  label: { ...theme.typography.label, color: theme.colors.text },
-  input: {
-    ...theme.typography.body,
-    color: theme.colors.text,
-    backgroundColor: theme.colors.surface,
-    minHeight: theme.sizes.controlMinHeight,
-    borderWidth: theme.sizes.borderWidth,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.sm,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-  },
-  toggle: { minHeight: theme.sizes.controlMinHeight, justifyContent: 'center', alignSelf: 'flex-end' },
-  toggleLabel: { ...theme.typography.caption, color: theme.colors.primary },
-  focused: { borderColor: theme.colors.primary },
-  invalid: { borderColor: theme.colors.error },
-  disabled: { opacity: theme.opacity.disabled },
-  error: { ...theme.typography.caption, color: theme.colors.error },
-});
+const styles=(t:AppTheme)=>StyleSheet.create({group:{gap:t.spacing.sm},label:{...t.typography.caption,fontWeight:'600',color:t.colors.text},frame:{flexDirection:'row',alignItems:'center',backgroundColor:t.colors.surface,borderWidth:t.sizes.borderWidth,borderColor:t.colors.border,borderRadius:t.radius.md},input:{flex:1,minWidth:0,minHeight:t.sizes.controlMinHeight,padding:t.spacing.md,...t.typography.body,color:t.colors.text},multiline:{minHeight:t.sizes.controlMinHeight*2,textAlignVertical:'top'},toggle:{minHeight:t.sizes.controlMinHeight,minWidth:t.sizes.controlMinHeight,alignItems:'center',justifyContent:'center'},focused:{borderColor:t.colors.primary},invalid:{borderColor:t.colors.error},disabled:{opacity:t.opacity.disabled},error:{...t.typography.caption,color:t.colors.error}});

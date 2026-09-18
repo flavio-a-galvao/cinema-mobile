@@ -10,7 +10,7 @@ export function Screen({ children }: PropsWithChildren) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" automaticallyAdjustKeyboardInsets>
           <View style={styles.content}>{children}</View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -21,6 +21,6 @@ export function Screen({ children }: PropsWithChildren) {
 const createStyles = (theme: AppTheme) => StyleSheet.create({
   flex: { flex: 1 },
   safeArea: { flex: 1, backgroundColor: theme.colors.background },
-  scroll: { flexGrow: 1, padding: theme.spacing.lg, justifyContent: 'flex-start' },
+  scroll: { flexGrow: 1, padding: theme.spacing.lg, paddingBottom: theme.spacing.xxl, justifyContent: 'flex-start' },
   content: { width: '100%', maxWidth: theme.sizes.contentMaxWidth, alignSelf: 'center', gap: theme.spacing.lg },
 });

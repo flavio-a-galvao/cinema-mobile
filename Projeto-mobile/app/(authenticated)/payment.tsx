@@ -1,8 +1,9 @@
+import { Notice } from '@/components/Notice';
 import { routes } from '@/constants/routes';
 import { router } from 'expo-router';
 import { usePreventRemove } from 'expo-router/react-navigation';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, StyleSheet, Text } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { Screen } from '@/components/Screen';
 import { EmptyState } from '@/components/EmptyState';
@@ -72,17 +73,17 @@ export default function PaymentScreen() {
   return (
     <Screen>
       <Text accessibilityRole="header" style={styles.title}>Finalize sua experiência</Text>
-      <Text style={styles.text}>Inteiras: {checkout.qtdInteira} × {money(checkout.fullCents)}</Text>
+      <View style={styles.summary}><Text style={styles.text}>Inteiras: {checkout.qtdInteira} × {money(checkout.fullCents)}</Text>
       <Text style={styles.text}>Meias: {checkout.qtdMeia} × {money(checkout.halfCents)}</Text>
       {checkout.tickets.map((ticket) => <Text key={ticket.id_ingresso} style={styles.text}>Assento {checkout.seatLabels[ticket.id_assento] || 'Código indisponível'}</Text>)}
-      <Text style={styles.title}>Total: {money(total)}</Text>
-      <Text style={styles.text}>Registro de pagamento no cinema. Nenhuma cobrança online será realizada.</Text>
+      <Text style={styles.title}>Total: {money(total)}</Text></View>
+      <Notice tone="warning" message="Pagamento simulado. Nenhuma cobrança online será realizada." />
       {methods.map((item) => <Button variant={method === item.value ? 'primary' : 'secondary'} key={item.value} title={`${method === item.value ? '✓ ' : ''}${item.label}`} accessibilityState={{ selected: method === item.value }} disabled={checkout.status !== 'ready'} onPress={() => setMethod(item.value)} />)}
       {error && <ErrorState message={error} />}
       {checkout.status === 'uncertain' && !error && <ErrorState message="O resultado anterior precisa ser conferido em Meus Ingressos. O reenvio está bloqueado." />}
       <Button title={pending ? 'Registrando...' : 'Confirmar registro de pagamento'} loading={pending} disabled={checkout.status !== 'ready'} onPress={() => { void pay(); }} />
-      <Button title="Meus Ingressos" disabled={pending} onPress={() => router.replace(routes.tickets)} />
+      <Button variant="link" title="Meus Ingressos" disabled={pending} onPress={() => router.replace(routes.tickets)} />
     </Screen>
   );
 }
-const createStyles = (theme: AppTheme) => StyleSheet.create({ title: { ...theme.typography.heading, color: theme.colors.text }, text: { ...theme.typography.body, color: theme.colors.text } });
+const createStyles = (theme: AppTheme) => StyleSheet.create({ summary: { padding: theme.spacing.lg, gap: theme.spacing.md, backgroundColor: theme.colors.surface, borderRadius: theme.radius.lg }, title: { ...theme.typography.heading, color: theme.colors.text }, text: { ...theme.typography.body, color: theme.colors.text } });

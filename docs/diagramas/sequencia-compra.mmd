@@ -1,0 +1,14 @@
+sequenceDiagram
+actor C as Cliente
+participant M as Mobile
+participant API
+participant DB
+C->>M: assentos + inteira/meia
+M->>API: POST /ingressos/lote
+API->>DB: transação/validações
+DB-->>API: ingressos
+API-->>M: 201
+M->>API: POST /pagamentos
+API->>DB: pagamento único
+DB-->>API: pagamento
+API-->>M: confirmação

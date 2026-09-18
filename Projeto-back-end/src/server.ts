@@ -1,3 +1,4 @@
+import { normalizeRoomCapacity } from './utils/normalizeRoomCapacity';
 import { ensureTicketPaymentSchema } from './utils/ensureTicketPaymentSchema';
 import { ensureIngressosSchema } from './utils/ensureIngressosSchema';
 import app from "./app";
@@ -72,6 +73,8 @@ async function startServer() {
     await ensureIngressosSchema(sequelize);
     await ensureTicketPaymentSchema(sequelize);
     await sequelize.sync();
+    const roomReport = await normalizeRoomCapacity(sequelize);
+    if (roomReport.needsReview.length) console.warn('Salas com mais de 48 assentos preservadas; revisão manual necessária:', roomReport.needsReview);
 
     app.listen(port, () => {
       console.log(`Servidor rodando na porta ${port}`);

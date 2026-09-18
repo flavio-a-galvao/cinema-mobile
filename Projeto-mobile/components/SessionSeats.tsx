@@ -67,7 +67,7 @@ export function SessionSeats({ sessionId, price }: { sessionId: number; price: M
       ) : (
         <View style={styles.container}>
           <Text accessibilityLiveRegion="polite" style={styles.count}>Assentos selecionados: {selectedIds.length} / {MAX_TICKETS}</Text>
-          <Text style={styles.count}>Ao alterar os assentos, as quantidades voltam para inteira.</Text>
+          <Text style={styles.count}>Escolha seus lugares. Depois, ajuste inteira e meia.</Text>
           <View style={styles.screenLine}><Text style={styles.count}>TELA DO CINEMA</Text></View>
           <View style={styles.legend}><Text style={styles.availableText}>□ Disponível</Text><Text style={styles.selectedLegend}>■ Selecionado</Text><Text style={styles.occupiedText}>× Ocupado</Text></View>
           <ScrollView horizontal contentContainerStyle={styles.map} showsHorizontalScrollIndicator>
@@ -99,19 +99,19 @@ export function SessionSeats({ sessionId, price }: { sessionId: number; price: M
 const createStyles = (theme: AppTheme) => StyleSheet.create({
   container: { gap: theme.spacing.md },
   title: { ...theme.typography.heading, color: theme.colors.text },
-  screenLine: { borderTopWidth: theme.spacing.xs, borderColor: theme.colors.border, borderRadius: theme.radius.lg, padding: theme.spacing.md, alignItems: 'center' },
-  legend: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.md },
+  screenLine: { borderTopWidth: theme.spacing.xs, borderColor: theme.colors.primary, backgroundColor: theme.colors.primarySoft, borderRadius: theme.radius.lg, padding: theme.spacing.md, alignItems: 'center' },
+  legend: { justifyContent: 'center', backgroundColor: theme.colors.surface, borderRadius: theme.radius.md, padding: theme.spacing.sm, flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.md },
   selectedLegend: { ...theme.typography.caption, color: theme.colors.primary },
   map: { flexGrow: 1, justifyContent: 'center', paddingVertical: theme.spacing.lg },
-  row: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm },
-  rowLabel: { ...theme.typography.caption, color: theme.colors.muted, marginRight: theme.spacing.md },
-  aisle: { marginLeft: theme.spacing.lg },
+  row: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.xs },
+  rowLabel: { ...theme.typography.caption, color: theme.colors.muted, marginRight: theme.spacing.xs },
+  aisle: { marginLeft: theme.spacing.sm },
   seat: { width: theme.sizes.seat, height: theme.sizes.seat, alignItems: 'center', justifyContent: 'center', borderRadius: theme.radius.sm, borderWidth: theme.sizes.borderWidth, padding: theme.spacing.xs },
   available: { backgroundColor: theme.colors.background, borderColor: theme.colors.primary },
   selected: { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary },
-  occupied: { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+  occupied: { backgroundColor: theme.colors.elevated, borderColor: theme.colors.border, opacity: theme.opacity.disabled },
   selectedText: { ...theme.typography.caption, color: theme.colors.onPrimary, textAlign: 'center' },
   count: { ...theme.typography.body, color: theme.colors.text },
-  availableText: { ...theme.typography.caption, color: theme.colors.primary, textAlign: 'center' },
+  availableText: { ...theme.typography.caption, color: theme.colors.muted, textAlign: 'center' },
   occupiedText: { ...theme.typography.caption, color: theme.colors.muted, textAlign: 'center' },
 });

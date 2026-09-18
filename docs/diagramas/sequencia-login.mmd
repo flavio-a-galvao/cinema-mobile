@@ -1,0 +1,11 @@
+sequenceDiagram
+actor U as Usuário
+participant M as Mobile
+participant API
+participant DB
+U->>M: e-mail/senha
+M->>API: POST /auth/login
+API->>DB: buscar usuário
+DB-->>API: usuário
+API-->>M: JWT
+M-->>U: área autenticada

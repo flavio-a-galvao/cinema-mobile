@@ -35,8 +35,8 @@ describe('Geração de assentos da sala', () => {
     const res = response(); await generateRoomSeats({ params: { id: '1' } } as any, res as any);
     expect(res.json).toHaveBeenCalledWith({ criados: 47, total: 48 });
   });
-  it('capacidade insuficiente retorna 409 sem criar', async () => {
-    (Sala.findByPk as any).mockResolvedValue({ id_sala: 1, capacidade: 20 });
+  it('assentos fora do mapa retornam 409 sem criar', async () => {
+    seats.push({ id_sala: 1, fila: 'G', numero: '1' });
     const res = response(); await generateRoomSeats({ params: { id: '1' } } as any, res as any);
     expect(res.status).toHaveBeenCalledWith(409); expect(Assento.bulkCreate).not.toHaveBeenCalled();
   });
@@ -46,3 +46,5 @@ describe('Geração de assentos da sala', () => {
     expect(res.status).toHaveBeenCalledWith(404); expect(Assento.bulkCreate).not.toHaveBeenCalled();
   });
 });
+
+it('normaliza capacidade legada ao gerar sem duplicar',async()=>{const update=vi.fn();(Sala.findByPk as any).mockResolvedValue({id_sala:1,capacidade:60,update});const res=response();await generateRoomSeats({params:{id:'1'}} as any,res as any);expect(update).toHaveBeenCalledWith({capacidade:48},expect.anything());expect(res.json).toHaveBeenCalledWith({criados:48,total:48});});

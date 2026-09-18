@@ -1,0 +1,5 @@
+flowchart TD
+A([Início]) --> B[Filme] --> C[Sessão] --> D[Assentos]
+D --> E{Disponíveis?}
+E -- não --> D
+E -- sim --> F[Inteira/meia] --> G[Compra transacional] --> H[Pagamento] --> I([Ingresso])

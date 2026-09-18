@@ -37,11 +37,9 @@ export function TicketSummary({ sessionId, seats, price, onLockChange }: TicketS
     <View style={styles.container}>
       <Text accessibilityRole="header" style={styles.title}>Resumo dos ingressos</Text>
       <Text style={styles.text}>Assentos: {seats.map((seat) => seatLabel(seat)).join(', ')}</Text>
-      <Text style={styles.text}>Inteiras: {qtdInteira}</Text>
-      <Text style={styles.text}>Meias: {qtdMeia}</Text>
-      <Text style={styles.text}>Total de ingressos: {qtdInteira + qtdMeia}</Text>
-      <Button variant="secondary" title="Trocar uma inteira por meia" disabled={locked || qtdInteira === 0} onPress={() => setQtdMeia((value) => Math.min(seats.length, value + 1))} />
-      <Button variant="secondary" title="Trocar uma meia por inteira" disabled={locked || qtdMeia === 0} onPress={() => setQtdMeia((value) => Math.max(0, value - 1))} />
+      <View style={styles.row}><Text style={styles.text}>{qtdInteira} inteira(s)</Text><Text style={styles.text}>{qtdMeia} meia(s)</Text></View>
+      <View style={styles.row}><View style={styles.half}><Button accessibilityLabel="Adicionar uma meia e remover uma inteira" icon="add-outline" variant="secondary" title="Meia" disabled={locked || qtdInteira === 0} onPress={() => setQtdMeia((value) => Math.min(seats.length, value + 1))} /></View>
+      <View style={styles.half}><Button accessibilityLabel="Remover uma meia e adicionar uma inteira" icon="remove-outline" variant="secondary" title="Meia" disabled={locked || qtdMeia === 0} onPress={() => setQtdMeia((value) => Math.max(0, value - 1))} /></View></View>
       {validPrice ? (
         <>
           <Text style={styles.text}>Preço da inteira: {money(precoInteira)}</Text>
@@ -53,13 +51,14 @@ export function TicketSummary({ sessionId, seats, price, onLockChange }: TicketS
       {stopped && created.map((ticket) => (
         <Text key={ticket.id_ingresso} style={styles.text}>Assento {seatLabel(seats.find(seat => seat.id_assento === ticket.id_assento))} — ingresso criado</Text>
       ))}
-      <Button title={pending ? 'Confirmando...' : 'Confirmar ingressos'} loading={pending} disabled={locked || !validPrice || seats.length === 0 || seats.length > 10 || qtdInteira + qtdMeia !== seats.length} onPress={() => { void confirm(); }} />
+      <Button title={pending ? 'Confirmando...' : 'Continuar para pagamento'} loading={pending} disabled={locked || !validPrice || seats.length === 0 || seats.length > 10 || qtdInteira + qtdMeia !== seats.length} onPress={() => { void confirm(); }} />
     </View>
   );
 }
 
 const createStyles = (theme: AppTheme) => StyleSheet.create({
-  container: { gap: theme.spacing.md },
+  row: { flexDirection: 'row', gap: theme.spacing.sm, justifyContent: 'space-between' }, half: { flex: 1 },
+  container: { padding: theme.spacing.md, borderRadius: theme.radius.lg, backgroundColor: theme.colors.surface, gap: theme.spacing.md },
   title: { ...theme.typography.heading, color: theme.colors.text },
   text: { ...theme.typography.body, color: theme.colors.text },
 });

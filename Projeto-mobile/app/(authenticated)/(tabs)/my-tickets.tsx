@@ -1,3 +1,5 @@
+import { TicketCode } from '@/components/TicketCode';
+import { Notice } from '@/components/Notice';
 import { pendingCheckout } from '@/utils/pendingCheckout';
 import { routes } from '@/constants/routes';
 import { router, useFocusEffect } from 'expo-router';
@@ -74,7 +76,7 @@ export default function MyTicketsScreen() {
         onRefresh={() => { setRefreshing(true); void load(); }}
         ListHeaderComponent={<View style={styles.group}>
           <Text accessibilityRole="header" style={styles.title}>Meus Ingressos</Text>
-          {notice && <Text accessibilityLiveRegion="polite" style={styles.text}>{notice}</Text>}
+          {notice && <Notice tone="warning" message={notice} />}
           {loading && <Loading message="Carregando seus ingressos..." />}
           {error && <ErrorState message={error} onRetry={() => { setLoading(true); void load(); }} />}
         </View>}
@@ -83,8 +85,8 @@ export default function MyTicketsScreen() {
           <Text accessibilityRole="header" style={styles.title}>{item.filme}</Text>
           <Text style={styles.text}>{item.horario ? new Date(item.horario).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Horário indisponível'}</Text>
           <Text style={styles.text}>{item.sala}</Text>
-          <Text style={styles.status}>{item.status === 'cancelado' ? 'CANCELADO' : 'ATIVO'}</Text>
-          <Text style={styles.text}>Assento: {item.assento}</Text>
+          <View style={styles.stub}><Text style={[styles.status, { color: item.status === 'cancelado' ? theme.colors.muted : !item.pago ? theme.colors.warning : theme.colors.success }]}>{item.status === 'cancelado' ? 'CANCELADO' : !item.pago ? 'PAGAMENTO PENDENTE' : 'ATIVO • PAGO'}</Text></View>
+          <Text style={styles.seat}>Assento {item.assento}</Text>
           {item.tipo_ingresso && <Text style={styles.text}>{item.tipo_ingresso === 'meia' ? 'Meia-entrada' : 'Inteira'}</Text>}
           <Text style={styles.text}>Compra: {item.dataCompra ? new Date(item.dataCompra).toLocaleString('pt-BR') : 'Data indisponível'}</Text>
           <Text style={styles.text}>{!item.pago ? 'Pagamento pendente' : `Pagamento registrado: ${item.metodo}`}</Text>
@@ -95,7 +97,8 @@ export default function MyTicketsScreen() {
             setCheckout(pendingCheckout(item, authState.user.id_usuario));
             router.push(routes.payment);
           }} />}
-          {item.podeCancelar && item.status === 'ativo' && <Button variant="secondary" title="Cancelar ingresso" loading={cancelling === item.id} disabled={cancelling !== null} onPress={() => askCancel(item)} />}
+          {item.podeCancelar && item.status === 'ativo' && <Button variant="danger" icon="close-circle-outline" title="Cancelar ingresso" loading={cancelling === item.id} disabled={cancelling !== null} onPress={() => askCancel(item)} />}
+          <TicketCode id={item.id} />
         </View>}
       />
     </SafeAreaView>
@@ -105,8 +108,10 @@ const createStyles = (theme: AppTheme) => StyleSheet.create({
   screen: { flex: 1, backgroundColor: theme.colors.background },
   content: { flexGrow: 1, width: '100%', maxWidth: theme.sizes.contentMaxWidth, alignSelf: 'center', padding: theme.spacing.lg, gap: theme.spacing.md },
   group: { gap: theme.spacing.md },
-  status: { ...theme.typography.label, color: theme.colors.primary, borderTopWidth: theme.sizes.borderWidth, borderStyle: 'dashed', borderColor: theme.colors.border, paddingTop: theme.spacing.md },
-  card: { padding: theme.spacing.md, gap: theme.spacing.sm, borderRadius: theme.radius.md, backgroundColor: theme.colors.surface, borderWidth: theme.sizes.borderWidth, borderColor: theme.colors.border },
+  seat: { ...theme.typography.heading, color: theme.colors.text },
+  stub: { borderTopWidth: theme.sizes.borderWidth, borderStyle: 'dashed', borderColor: theme.colors.border, paddingTop: theme.spacing.md, marginTop: theme.spacing.sm },
+  status: { ...theme.typography.label, color: theme.colors.primary },
+  card: { ...theme.shadow, padding: theme.spacing.md, gap: theme.spacing.sm, borderRadius: theme.radius.lg, backgroundColor: theme.colors.surface, borderWidth: theme.sizes.borderWidth, borderColor: theme.colors.border },
   title: { ...theme.typography.heading, color: theme.colors.text },
   text: { ...theme.typography.body, color: theme.colors.text },
 });

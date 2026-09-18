@@ -1,3 +1,4 @@
+import { Input } from '@/components/Input';
 import { useCallback, useRef, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
@@ -18,6 +19,8 @@ export default function CatalogScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const filtered = movies.filter(movie => (movie.titulo + ' ' + (movie.genero ?? '')).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(query.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()));
   const requestId = useRef(0);
 
   const fetchMovies = useCallback(async (): Promise<void> => {
@@ -54,22 +57,25 @@ export default function CatalogScreen() {
   return (
     <SafeAreaView style={styles.screen}>
       <FlatList
-        data={movies}
+        data={filtered}
+        numColumns={2}
+        columnWrapperStyle={{ justifyContent: 'space-between' }}
+        keyboardShouldPersistTaps="handled"
         keyExtractor={(movie) => String(movie.id_filme)}
         contentContainerStyle={styles.content}
         refreshing={refreshing}
         onRefresh={() => { void loadMovies(true); }}
         ListHeaderComponent={
           <View style={styles.header}>
-            <Text accessibilityRole="header" style={styles.title}>Filmes</Text>
+            <Text accessibilityRole="header" style={styles.title}>Filmes</Text><Text style={{ ...theme.typography.body, color: theme.colors.muted }}>Encontre sua próxima sessão.</Text><Input label="Pesquisar filmes" placeholder="Título ou gênero" value={query} onChangeText={setQuery} autoCorrect={false} />
             {isLoading && <Loading message="Carregando filmes..." />}
             {error && <ErrorState message={error} onRetry={() => { void loadMovies(); }} />}
           </View>
         }
         ListEmptyComponent={!isLoading && !refreshing && !error ? (
-          <EmptyState title="Nenhum filme disponível" message="Puxe para atualizar e consultar o catálogo novamente." />
+          <EmptyState title={query ? "Nenhum resultado" : "Novas histórias em breve"} message={query ? "Tente outro título ou gênero." : "Puxe para atualizar o catálogo."} />
         ) : null}
-        renderItem={({ item }) => <MovieCard movie={item} />}
+        renderItem={({ item }) => <View style={{ width: '48%', flexGrow: 0 }}><MovieCard movie={item} /></View>}
       />
     </SafeAreaView>
   );

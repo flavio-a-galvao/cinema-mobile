@@ -10,11 +10,15 @@ const controller = vi.fn((_req: Request, res: Response) => res.sendStatus(204));
 for (const name of ['auth', 'users', 'clientes', 'compras', 'filmes', 'salas', 'assentos', 'sessoes', 'ingressos', 'pagamentos']) {
     vi.doMock(`../src/controllers/${name}.controller`, () => ({
         default: Object.fromEntries(
-            ['login', 'findAll', 'getById', 'create', 'update', 'delete', 'getMyProfile', 'upsertMyProfile', 'findMyPurchases']
+            ['createBatch', 'cancel', 'occupancy', 'login', 'findAll', 'getById', 'create', 'update', 'delete', 'getMyProfile', 'upsertMyProfile', 'findMyPurchases']
                 .map((method) => [method, controller]),
         ),
     }));
 }
+
+vi.doMock('../src/controllers/salasAssentos.controller', () => ({ generateRoomSeats: controller }));
+
+vi.doMock('../src/controllers/posters.controller', () => ({ uploadPoster: controller }));
 
 let server: Server;
 let baseURL: string;
@@ -35,11 +39,13 @@ afterAll(async () => {
 beforeEach(() => { controller.mockClear(); });
 
 const administrativeRoutes = [
+    ...['/users', '/usuarios', '/ingressos'].map(path => ({method:'GET',path})),
     ...['filmes', 'salas', 'sessoes'].flatMap((resource) => [
         { method: 'POST', path: `/${resource}` },
         { method: 'PUT', path: `/${resource}/1` },
         { method: 'DELETE', path: `/${resource}/1` },
     ]),
+    { method: 'POST', path: '/salas/1/assentos/gerar' },
     { method: 'POST', path: '/assentos' },
     { method: 'POST', path: '/clientes' },
 ];
@@ -76,4 +82,11 @@ describe('Leitura pública do catálogo', () => {
         expect(response.status).toBe(204);
         expect(controller).toHaveBeenCalledTimes(1);
     });
+});
+
+it.each(['/users/1', '/usuarios/1', '/me/compras', '/sessoes/1/ocupacao'])('exige autenticação em %s', async path => {
+ const response = await fetch(baseURL+path); await response.text(); expect(response.status).toBe(401);
+});
+it.each(['/users','/usuarios'])('mantém cadastro público %s', async path => {
+ const response = await fetch(baseURL+path,{method:'POST'}); await response.text(); expect(response.status).toBe(204);
 });

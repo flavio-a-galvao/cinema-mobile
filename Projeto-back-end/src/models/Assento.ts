@@ -29,6 +29,7 @@ Assento.init(
     sequelize,
     tableName: "assentos",
     timestamps: false,
+    indexes: [{ unique: true, fields: ['id_sala', 'fila', 'numero'], name: 'assentos_sala_codigo_unique' }],
   },
 );
 

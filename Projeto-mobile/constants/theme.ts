@@ -1,24 +1,12 @@
-export const theme = {
-  colors: {
-    background: '#09090F',
-    surface: '#111827',
-    border: '#475569',
-    primary: '#F59E0B',
-    primaryPressed: '#D97706',
-    onPrimary: '#09090F',
-    text: '#F1F5F9',
-    muted: '#94A3B8',
-    error: '#FCA5A5',
-  },
-  spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 },
-  radius: { sm: 8, md: 12, lg: 16 },
-  typography: {
-    caption: { fontSize: 14, lineHeight: 20 },
-    body: { fontSize: 16, lineHeight: 24 },
-    label: { fontSize: 16, lineHeight: 24, fontWeight: '600' },
-    heading: { fontSize: 24, lineHeight: 32, fontWeight: '700' },
-    title: { fontSize: 32, lineHeight: 40, fontWeight: '700' },
-  },
-  sizes: { controlMinHeight: 48, contentMaxWidth: 640, borderWidth: 1 },
-  opacity: { disabled: 0.5 },
+const tokens = {
+ spacing: { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 },
+ radius: { sm: 8, md: 12, lg: 16 },
+ typography: { caption: { fontSize: 13, lineHeight: 19 }, body: { fontSize: 16, lineHeight: 24 }, label: { fontSize: 16, lineHeight: 24, fontWeight: '600' }, heading: { fontSize: 24, lineHeight: 32, fontWeight: '700' }, title: { fontSize: 36, lineHeight: 44, fontWeight: '800' } },
+ sizes: { controlMinHeight: 48, contentMaxWidth: 720, borderWidth: 1, posterWidth: 100, posterHeight: 150, heroPosterHeight: 320, seat: 44, icon: 22 },
+ opacity: { disabled: 0.45 },
 } as const;
+const darkColors = { background: '#090D16', surface: '#151C29', border: '#384356', primary: '#FF6B6B', primaryPressed: '#F24D59', onPrimary: '#210A10', text: '#F7F8FC', muted: '#ADB7CA', error: '#FF9C9C' };
+const lightColors = { background: '#F5F6FA', surface: '#FFFFFF', border: '#CFD5E0', primary: '#BB283E', primaryPressed: '#9F1C30', onPrimary: '#FFFFFF', text: '#182033', muted: '#58657A', error: '#AF1935' };
+export const themes = { dark: { ...tokens, colors: darkColors }, light: { ...tokens, colors: lightColors } };
+export type AppTheme = typeof themes.dark;
+export type ThemeMode = keyof typeof themes;

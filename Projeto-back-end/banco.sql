@@ -1,3 +1,5 @@
+SET NAMES utf8mb4;
+
 -- =========================
 -- CRIAÇÃO DO BANCO
 -- =========================
@@ -23,7 +25,7 @@ CREATE TABLE clientes (
     id_cliente INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     cpf VARCHAR(14) UNIQUE,
-    email VARCHAR(150),
+    email VARCHAR(150) UNIQUE,
     telefone VARCHAR(20),
     data_nascimento DATE
 );
@@ -59,6 +61,7 @@ CREATE TABLE assentos (
     id_sala INT,
     numero VARCHAR(10),
     fila VARCHAR(5),
+    UNIQUE KEY assentos_sala_codigo_unique (id_sala,fila,numero),
     FOREIGN KEY (id_sala) REFERENCES salas(id_sala)
 );
 
@@ -84,6 +87,12 @@ CREATE TABLE ingressos (
     id_cliente INT,
     id_assento INT,
     data_compra DATETIME DEFAULT CURRENT_TIMESTAMP,
+    tipo_ingresso ENUM('inteira','meia') NULL,
+    valor_unitario DECIMAL(6,2) NULL,
+    status ENUM('ativo','cancelado') NOT NULL DEFAULT 'ativo',
+    cancelado_em DATETIME NULL,
+    ocupacao_ativa TINYINT GENERATED ALWAYS AS (CASE WHEN status = 'ativo' THEN 1 ELSE NULL END) STORED,
+    UNIQUE KEY ingressos_assento_ativo_unique (id_sessao,id_assento,ocupacao_ativa),
     FOREIGN KEY (id_sessao) REFERENCES sessoes(id_sessao),
     FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente),
     FOREIGN KEY (id_assento) REFERENCES assentos(id_assento)
@@ -98,6 +107,7 @@ CREATE TABLE pagamentos (
     valor DECIMAL(6,2),
     metodo_pagamento ENUM('cartao','pix','dinheiro'),
     data_pagamento DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY pagamentos_ingresso_unique (id_ingresso),
     FOREIGN KEY (id_ingresso) REFERENCES ingressos(id_ingresso)
 );
 
@@ -117,8 +127,8 @@ VALUES
 
 INSERT INTO filmes (titulo,genero,classificacao_etaria,duracao,sinopse,poster_url,data_lancamento)
 VALUES
-('Vingadores','Ação','12',140,'Heróis salvando o mundo','https://i.imgur.com/8w1NikM.jpg','2019-04-25'),
-('Batman','Ação','14',150,'História do cavaleiro das trevas','https://i.imgur.com/cH3kBRq.jpg','2022-03-04');
+('Vingadores','Ação','12',140,'Heróis salvando o mundo',NULL,'2019-04-25'),
+('Batman','Ação','14',150,'História do cavaleiro das trevas',NULL,'2022-03-04');
 
 INSERT INTO salas (nome,capacidade)
 VALUES
@@ -147,3 +157,20 @@ INSERT INTO pagamentos (id_ingresso,valor,metodo_pagamento)
 VALUES
 (1,25.00,'pix'),
 (2,28.00,'cartao');
+SET NAMES utf8mb4;
+-- Apenas dados de desenvolvimento das salas 1 e 2; preserva IDs e ingressos existentes.
+SELECT GET_LOCK('cinemax_dev_assentos', 30) INTO @seed_lock;
+START TRANSACTION;
+INSERT INTO assentos (id_sala, fila, numero)
+SELECT s.id_sala, f.fila, CAST(n.numero AS CHAR)
+FROM salas s
+CROSS JOIN (SELECT 'A' fila UNION ALL SELECT 'B' UNION ALL SELECT 'C' UNION ALL SELECT 'D' UNION ALL SELECT 'E' UNION ALL SELECT 'F') f
+CROSS JOIN (SELECT 1 numero UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8) n
+WHERE @seed_lock = 1 AND s.id_sala IN (1,2) AND NOT EXISTS (SELECT 1 FROM assentos a WHERE a.id_sala=s.id_sala AND a.fila=f.fila AND a.numero=CAST(n.numero AS CHAR));
+UPDATE salas s SET capacidade=(SELECT COUNT(*) FROM assentos a WHERE a.id_sala=s.id_sala) WHERE @seed_lock=1 AND s.id_sala IN (1,2);
+INSERT INTO sessoes (id_filme,id_sala,horario,preco)
+SELECT f.id_filme,s.id_sala,TIMESTAMP(DATE_ADD(CURRENT_DATE,INTERVAL 7 DAY),'19:00:00'),25.00
+FROM filmes f JOIN salas s ON s.id_sala=f.id_filme
+WHERE @seed_lock=1 AND f.id_filme IN (1,2) AND NOT EXISTS (SELECT 1 FROM sessoes x WHERE x.id_filme=f.id_filme AND x.id_sala=s.id_sala AND x.horario>NOW());
+COMMIT;
+SELECT RELEASE_LOCK('cinemax_dev_assentos');

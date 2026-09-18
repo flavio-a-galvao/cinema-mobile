@@ -6,7 +6,8 @@ import { Button } from '@/components/Button';
 import { ErrorState } from '@/components/ErrorState';
 import { Input } from '@/components/Input';
 import { Screen } from '@/components/Screen';
-import { theme } from '@/constants/theme';
+import type { AppTheme } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { register } from '@/services/authService';
 import type { RegisterInput } from '@/types/auth';
 
@@ -42,6 +43,8 @@ function getRegistrationErrorMessage(error: unknown): string {
 }
 
 export default function RegisterScreen() {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
   const [form, setForm] = useState<RegisterInput>(emptyForm);
   const [errors, setErrors] = useState<FormErrors>({});
   const [error, setError] = useState<string | null>(null);
@@ -79,7 +82,7 @@ export default function RegisterScreen() {
 
   return (
     <Screen>
-      <Text accessibilityRole="header" style={styles.title}>Criar conta</Text>
+      <Text accessibilityRole="header" style={styles.title}>Cinemax</Text>
       {success ? (
         <Text accessibilityLiveRegion="polite" style={styles.message}>Conta criada com sucesso. Entre com seu email e senha.</Text>
       ) : (
@@ -99,13 +102,13 @@ export default function RegisterScreen() {
           <Button title={isSubmitting ? 'Criando conta...' : 'Cadastrar'} loading={isSubmitting} onPress={() => { void handleRegister(); }} />
         </>
       )}
-      <Button title="Já tenho conta — Entrar" disabled={isSubmitting} onPress={() => router.replace('/login')} />
+      <Button variant="link" title="Já tenho conta — Entrar" disabled={isSubmitting} onPress={() => router.replace('/login')} />
     </Screen>
   );
 }
 
-const styles = StyleSheet.create({
-  title: { ...theme.typography.heading, color: theme.colors.text },
+const createStyles = (theme: AppTheme) => StyleSheet.create({
+  title: { ...theme.typography.title, color: theme.colors.primary },
   message: { ...theme.typography.body, color: theme.colors.text },
   hint: { ...theme.typography.caption, color: theme.colors.muted },
 });

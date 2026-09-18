@@ -1,3 +1,4 @@
+import { Notice } from '@/components/Notice';
 import { useCallback, useRef, useState } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
@@ -30,16 +31,16 @@ export default function AdminRoomsScreen() {
     catch (cause) { setError(adminError(cause)); } finally { busy.current = false; setPending(null); }
   }
   return <Screen><AdminSections current="rooms" /><Text style={styles.title}>Gerenciar salas</Text>
-    <Button title="Nova sala" disabled={pending !== null} onPress={() => router.push(adminRoomRoute())} />
-    {!!error && <ErrorState message={error} onRetry={() => { void load(); }} />}{!!message && <Text accessibilityRole="alert" style={styles.text}>{message}</Text>}
+    <Button icon="add-outline" title="Nova sala" disabled={pending !== null} onPress={() => router.push(adminRoomRoute())} />
+    {!!error && <ErrorState message={error} onRetry={() => { void load(); }} />}{!!message && <Notice message={message} />}
     {rooms === null && !error && <Loading />}{rooms?.length === 0 && <EmptyState title="Nenhuma sala cadastrada" message="Crie uma sala para organizar as sessões do Cinemax." />}
     {rooms?.map(room => <View key={room.id_sala} style={styles.card}>
       <Text style={styles.title}>{room.nome || 'Sala sem nome'}</Text><Text style={styles.text}>Capacidade: {room.capacidade} • Assentos: {room.quantidade_assentos}</Text>
       <Button title="Editar e gerar assentos" variant="secondary" disabled={pending !== null} onPress={() => router.push(adminRoomRoute(room.id_sala))} />
-      <Button title="Excluir sala" variant="link" loading={pending === room.id_sala} disabled={pending !== null} onPress={() => confirmAdminDelete(room.nome || 'Sala', () => { void remove(room); })} />
+      <Button title="Excluir sala" icon="trash-outline" variant="danger" loading={pending === room.id_sala} disabled={pending !== null} onPress={() => confirmAdminDelete(room.nome || 'Sala', () => { void remove(room); })} />
     </View>)}
     <Button title="Atualizar salas" variant="secondary" disabled={pending !== null} onPress={() => { setRooms(null); setError(''); void load(); }} />
     <Button title="Voltar ao perfil" variant="link" onPress={() => router.navigate(routes.profile)} />
   </Screen>;
 }
-const createStyles = (theme: AppTheme) => StyleSheet.create({ title: { ...theme.typography.heading, color: theme.colors.text }, text: { ...theme.typography.body, color: theme.colors.muted }, card: { gap: theme.spacing.sm, padding: theme.spacing.md, backgroundColor: theme.colors.surface, borderRadius: theme.radius.lg } });
+const createStyles = (theme: AppTheme) => StyleSheet.create({ title: { ...theme.typography.heading, color: theme.colors.text }, text: { ...theme.typography.body, color: theme.colors.muted }, card: { borderWidth: theme.sizes.borderWidth, borderColor: theme.colors.border, gap: theme.spacing.sm, padding: theme.spacing.md, backgroundColor: theme.colors.surface, borderRadius: theme.radius.lg } });

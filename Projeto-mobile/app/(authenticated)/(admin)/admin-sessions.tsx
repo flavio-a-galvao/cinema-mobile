@@ -1,3 +1,4 @@
+import { Notice } from '@/components/Notice';
 import { useCallback, useRef, useState } from 'react';
 import { router, useFocusEffect } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
@@ -35,18 +36,18 @@ export default function AdminSessionsScreen() {
     catch (cause) { setError(adminError(cause)); } finally { busy.current = false; setPending(null); }
   }
   return <Screen><AdminSections current="sessions" /><Text style={styles.title}>Gerenciar sessões</Text>
-    <Button title="Nova sessão" disabled={pending !== null} onPress={() => router.push(adminSessionRoute())} />
-    {!!error && <ErrorState message={error} onRetry={() => { void load(); }} />}{!!message && <Text accessibilityRole="alert" style={styles.text}>{message}</Text>}
+    <Button icon="add-outline" title="Nova sessão" disabled={pending !== null} onPress={() => router.push(adminSessionRoute())} />
+    {!!error && <ErrorState message={error} onRetry={() => { void load(); }} />}{!!message && <Notice message={message} />}
     {sessions === null && !error && <Loading />}{sessions?.length === 0 && <EmptyState title="Nenhuma sessão cadastrada" message="Escolha um filme e uma sala para agendar a primeira sessão." />}
     {sessions?.map(session => <View key={session.id_sessao} style={styles.card}>
       <Text style={styles.title}>{session.movieTitle}</Text><Text style={styles.text}>{session.roomName}</Text>
       <Text style={styles.text}>{session.horario ? new Date(session.horario).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Horário não informado'}</Text>
       <Text style={styles.text}>{session.preco !== null ? Number(session.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : 'Preço não informado'}</Text>
       <Button title="Editar sessão" variant="secondary" disabled={pending !== null} onPress={() => router.push(adminSessionRoute(session.id_sessao))} />
-      <Button title="Excluir sessão" variant="link" loading={pending === session.id_sessao} disabled={pending !== null} onPress={() => confirmAdminDelete(session.movieTitle + ' — ' + session.roomName, () => { void remove(session); })} />
+      <Button title="Excluir sessão" icon="trash-outline" variant="danger" loading={pending === session.id_sessao} disabled={pending !== null} onPress={() => confirmAdminDelete(session.movieTitle + ' — ' + session.roomName, () => { void remove(session); })} />
     </View>)}
     <Button title="Atualizar sessões" variant="secondary" disabled={pending !== null} onPress={() => { setSessions(null); setError(''); void load(); }} />
     <Button title="Voltar ao perfil" variant="link" onPress={() => router.navigate(routes.profile)} />
   </Screen>;
 }
-const createStyles = (theme: AppTheme) => StyleSheet.create({ title: { ...theme.typography.heading, color: theme.colors.text }, text: { ...theme.typography.body, color: theme.colors.muted }, card: { gap: theme.spacing.sm, padding: theme.spacing.md, backgroundColor: theme.colors.surface, borderRadius: theme.radius.lg } });
+const createStyles = (theme: AppTheme) => StyleSheet.create({ title: { ...theme.typography.heading, color: theme.colors.text }, text: { ...theme.typography.body, color: theme.colors.muted }, card: { borderWidth: theme.sizes.borderWidth, borderColor: theme.colors.border, gap: theme.spacing.sm, padding: theme.spacing.md, backgroundColor: theme.colors.surface, borderRadius: theme.radius.lg } });

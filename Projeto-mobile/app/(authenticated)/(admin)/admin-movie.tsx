@@ -1,3 +1,4 @@
+import { Notice } from '@/components/Notice';
 import { useEffect, useRef, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text } from 'react-native';
@@ -88,8 +89,8 @@ export default function AdminMovieScreen() {
     <Input label="Lançamento (AAAA-MM-DD)" value={form.data_lancamento} maxLength={10} editable={!pending} onChangeText={value => field('data_lancamento', value)} />
     <Input label="Sinopse" value={form.sinopse} multiline maxLength={16000} editable={!pending} onChangeText={value => field('sinopse', value)} />
     {!!error && <ErrorState message={error} />}
-    {!!success && <Text accessibilityRole="alert" style={styles.text}>{success}</Text>}
-    <Button title="Salvar filme" loading={pending} onPress={() => { void save(); }} />
+    {!!success && <Notice message={success} />}
+    <Button icon="checkmark-outline" title="Salvar filme" loading={pending} onPress={() => { void save(); }} />
     <Button title="Voltar aos filmes" variant="link" disabled={pending} onPress={() => router.replace(routes.admin)} />
   </Screen>;
 }

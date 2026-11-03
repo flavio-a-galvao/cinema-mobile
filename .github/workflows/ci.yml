@@ -1,0 +1,59 @@
+name: Cinemax CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      demonstrate_deploy:
+        description: 'Executar apenas demonstração de deploy (sem publicação)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Build e testes - ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [Projeto-back-end, Projeto-front-end]
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    env:
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: ${{ matrix.project }}/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Testes do back-end (Vitest)
+        if: matrix.project == 'Projeto-back-end'
+        run: npm test
+      - name: Testes do front-end (Jest)
+        if: matrix.project == 'Projeto-front-end'
+        run: npm test -- --watchAll=false --runInBand
+      - run: npm run build
+
+  deploy-demo:
+    name: Demonstração manual de deploy - sem publicação
+    needs: validate
+    if: github.event_name == 'workflow_dispatch' && inputs.demonstrate_deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Registrar demonstração
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          echo "Demonstração: builds e testes aprovados para $COMMIT_SHA." >> "$GITHUB_STEP_SUMMARY"
+          echo "Nenhum servidor acessado, artefato publicado ou deploy real executado." >> "$GITHUB_STEP_SUMMARY"
+          echo "Estratégia de deploy e rollback: docs/CI_DEPLOY.md." >> "$GITHUB_STEP_SUMMARY"

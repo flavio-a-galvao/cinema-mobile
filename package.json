@@ -2,6 +2,10 @@
   "name": "projeto-3-periodo",
   "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "prepare": "husky install",
+    "validate:push": "npm --prefix Projeto-back-end test && npm --prefix Projeto-front-end test -- --watchAll=false --runInBand"
+  },
   "devDependencies": {
     "commitlint": "^17.0.0",
     "@commitlint/cli": "^17.0.0",
@@ -11,7 +15,7 @@
   "husky": {
     "hooks": {
       "pre-commit": "npx --no-install commitlint --edit $HUSKY_GIT_PARAMS",
-      "pre-push": "cd Projeto-front-end && npm run test:e2e:up-test-env && npm run e2e && npm run test:e2e:down-test-env"
+      "pre-push": "npm run validate:push"
     }
   }
 }

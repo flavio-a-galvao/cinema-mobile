@@ -4,6 +4,8 @@ Arquivos preparados para cobrir os itens de Engenharia/Análise e Evolução da 
 
 ## Entregáveis
 
+- [CI, testes, deploy e rollback](CI_DEPLOY.md).
+
 - `CONTEXTUALIZACAO.md` — problema, público, solução e objetivo.
 - `EVOLUCAO.md` — evolução do produto.
 - `REQUISITOS.md` — RF, RNF e regras de negócio.

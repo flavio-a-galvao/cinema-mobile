@@ -1,5 +1,8 @@
 # Cache distribuído do catálogo
 
+Validação posterior com Redis real executada: veja
+[infraestrutura e evidências](INFRAESTRUTURA_DOCKER.md#evidências-realmente-executadas-nesta-etapa).
+
 ## Funcionamento
 
 O back-end usa cache-aside nas listas completas, páginas e detalhes de filmes e

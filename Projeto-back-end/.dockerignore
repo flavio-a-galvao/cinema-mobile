@@ -3,6 +3,7 @@ npm-debug.log
 dist
 coverage
 .env
+.env.*
 .git
 .gitignore
 README.md

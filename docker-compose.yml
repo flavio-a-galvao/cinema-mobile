@@ -14,15 +14,18 @@ services:
 
   database:
     image: mysql:9.1.0
-    container_name: meu-mysql
     restart: always
-    env_file:
-      - .env
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASS}
+    healthcheck:
+      test: ["CMD-SHELL", 'MYSQL_PWD="$${MYSQL_PASSWORD}" mysql -h 127.0.0.1 -u "$${MYSQL_USER}" "$${MYSQL_DATABASE}" -e "SELECT 1" >/dev/null 2>&1']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
     volumes:
       - mysql-data:/var/lib/mysql
       - ./Projeto-back-end/banco.sql:/docker-entrypoint-initdb.d/banco.sql:ro
@@ -33,25 +36,31 @@ services:
     build:
       context: ./Projeto-back-end
       dockerfile: Dockerfile
-    container_name: back_service
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     env_file:
-      - .env
+      - ${ENV_FILE:-.env}
     environment:
-      PORT: ${PORT:-3000}
-      DB_HOST: ${DB_HOST:-database}
-      DB_PORT: ${DB_PORT:-3306}
+      PORT: 3000
+      DB_HOST: database
+      DB_PORT: 3306
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS:-60}
     volumes:
-      - ./Projeto-back-end/src:/app/src
       - posters-data:/app/uploads/posters
     depends_on:
-      - database
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 30s
+    stop_grace_period: 15s
     networks:
       - app-network
       - cache-network
@@ -61,33 +70,35 @@ services:
     build:
       context: ./Projeto-front-end
       dockerfile: Dockerfile
-    container_name: frontend-container
-    environment:
-      - HOST=0.0.0.0
-      - PORT=3000
-      - CHOKIDAR_USEPOLLING=true
-      - REACT_APP_API_URL=https://cinema.local/api
-    volumes:
-      - ./Projeto-front-end/src:/app/src
-      - ./Projeto-front-end/public:/app/public
-    depends_on:
-      - backend
+      args:
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-/api}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     networks:
       - app-network
     restart: on-failure
 
   nginx:
-    image: nginx:alpine
-    container_name: nginx-proxy
+    image: nginx:1.28-alpine
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./certs:/etc/nginx/certs:ro
+      - ${TLS_CERTS_DIR:-./certs}:/etc/nginx/certs:ro
     depends_on:
-      - backend
-      - frontend
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     networks:
       - app-network
     restart: on-failure

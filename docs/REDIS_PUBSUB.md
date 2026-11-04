@@ -1,5 +1,8 @@
 # Mensageria e assinatura de eventos — Redis Pub/Sub
 
+Validação posterior com Redis real executada: veja
+[infraestrutura e evidências](INFRAESTRUTURA_DOCKER.md#evidências-realmente-executadas-nesta-etapa).
+
 ## Arquitetura e execução
 
 `src/services/catalogEvents.ts` concentra publicação, validação e consumo do

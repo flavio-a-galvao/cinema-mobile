@@ -19,6 +19,9 @@ build/
 *.p8
 *.p12
 *.key
+# Certificados locais gerados, incluindo possíveis bundles com chave privada.
+certs/local/
+*.pfx
 *.mobileprovision
 
 # Logs

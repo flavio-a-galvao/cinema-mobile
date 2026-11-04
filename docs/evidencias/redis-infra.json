@@ -1,0 +1,262 @@
+{
+  "executedAt": "2026-11-04T01:01:25.164Z",
+  "project": "cinemax-infra-check",
+  "result": "passed",
+  "services": [
+    {
+      "service": "backend",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "database",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "frontend",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "nginx",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "redis",
+      "state": "running",
+      "health": "healthy"
+    }
+  ],
+  "checks": [
+    {
+      "check": "nginx_tls_frontend",
+      "evidence": {
+        "redirect": 301,
+        "https": 200,
+        "spa": 200,
+        "tlsVerified": true,
+        "securityHeaders": true
+      }
+    },
+    {
+      "check": "cache_miss_hit",
+      "evidence": {
+        "id": 3,
+        "key": "cinemax:catalogo:filmes:3e4bc863-f659-4323-a967-50433e476818:id:3",
+        "missSetDelta": 1,
+        "hitSetDelta": 0,
+        "pttl": 2004
+      }
+    },
+    {
+      "check": "cache_ttl",
+      "evidence": {
+        "expired": true,
+        "nextReadRepopulated": true
+      }
+    },
+    {
+      "check": "cache_invalidation",
+      "evidence": {
+        "versionChanged": true,
+        "updatedTitle": "Infra atualizado",
+        "mysqlPersistedTitle": "Infra atualizado",
+        "paginatedListCached": true
+      }
+    },
+    {
+      "check": "redis_fallback",
+      "evidence": {
+        "update": 200,
+        "read": 200,
+        "title": "Infra fallback",
+        "cacheAndPubsubWarnings": true
+      }
+    },
+    {
+      "check": "redis_recovery",
+      "evidence": {
+        "ping": "PONG",
+        "cacheRepopulated": true,
+        "subscriptionsRestored": true
+      }
+    },
+    {
+      "check": "crud_filmes_sessoes",
+      "evidence": {
+        "movieId": 3,
+        "sessionId": 5,
+        "created": 201,
+        "updated": 200,
+        "deleted": 200,
+        "deletedDetails": 404,
+        "errorsNotCached": true
+      }
+    },
+    {
+      "check": "pubsub_real",
+      "evidence": {
+        "types": [
+          "filme.created",
+          "filme.updated",
+          "filme.deleted",
+          "sessao.created",
+          "sessao.updated",
+          "sessao.deleted"
+        ],
+        "matchedPublicationAndConsumption": true
+      }
+    }
+  ],
+  "circulation": [
+    {
+      "component": "redis_pubsub",
+      "level": "info",
+      "action": "published",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "80d9a7c1-4550-4d12-b180-561396f7669a",
+      "type": "filme.created",
+      "id": 3,
+      "timestamp": "2026-11-04T01:01:04.556Z",
+      "subscribers": 1
+    },
+    {
+      "component": "redis_pubsub",
+      "level": "info",
+      "action": "consumed",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "80d9a7c1-4550-4d12-b180-561396f7669a",
+      "type": "filme.created",
+      "id": 3,
+      "timestamp": "2026-11-04T01:01:04.556Z"
+    },
+    {
+      "component": "redis_pubsub",
+      "level": "info",
+      "action": "published",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "2a8ef1b1-326d-4612-bec6-4a44adc951bc",
+      "type": "filme.updated",
+      "id": 3,
+      "timestamp": "2026-11-04T01:01:08.962Z",
+      "subscribers": 1
+    },
+    {
+      "component": "redis_pubsub",
+      "level": "info",
+      "action": "consumed",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "2a8ef1b1-326d-4612-bec6-4a44adc951bc",
+      "type": "filme.updated",
+      "id": 3,
+      "timestamp": "2026-11-04T01:01:08.962Z"
+    },
+    {
+      "component": "redis_pubsub",
+      "level": "info",
+      "action": "published",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "5954cb9d-c4cd-4050-92d1-3b5637518f97",
+      "type": "filme.updated",
+      "id": 3,
+      "timestamp": "2026-11-04T01:01:21.268Z",
+      "subscribers": 1
+    },
+    {
+      "component": "redis_pubsub",
+      "level": "info",
+      "action": "consumed",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "5954cb9d-c4cd-4050-92d1-3b5637518f97",
+      "type": "filme.updated",
+      "id": 3,
+      "timestamp": "2026-11-04T01:01:21.268Z"
+    },
+    {
+      "component": "redis_pubsub",
+      "level": "info",
+      "action": "published",
+      "channel": "cinemax:eventos:sessoes",
+      "eventId": "337ad41b-0bd5-445d-9baa-30e8ba1d9cc3",
+      "type": "sessao.created",
+      "id": 5,
+      "timestamp": "2026-11-04T01:01:21.720Z",
+      "subscribers": 1
+    },
+    {
+      "component": "redis_pubsub",
+      "level": "info",
+      "action": "consumed",
+      "channel": "cinemax:eventos:sessoes",
+      "eventId": "337ad41b-0bd5-445d-9baa-30e8ba1d9cc3",
+      "type": "sessao.created",
+      "id": 5,
+      "timestamp": "2026-11-04T01:01:21.720Z"
+    },
+    {
+      "component": "redis_pubsub",
+      "level": "info",
+      "action": "published",
+      "channel": "cinemax:eventos:sessoes",
+      "eventId": "77a6037a-997d-47ea-9926-17a2c5e9c71d",
+      "type": "sessao.updated",
+      "id": 5,
+      "timestamp": "2026-11-04T01:01:22.371Z",
+      "subscribers": 1
+    },
+    {
+      "component": "redis_pubsub",
+      "level": "info",
+      "action": "consumed",
+      "channel": "cinemax:eventos:sessoes",
+      "eventId": "77a6037a-997d-47ea-9926-17a2c5e9c71d",
+      "type": "sessao.updated",
+      "id": 5,
+      "timestamp": "2026-11-04T01:01:22.371Z"
+    },
+    {
+      "component": "redis_pubsub",
+      "level": "info",
+      "action": "published",
+      "channel": "cinemax:eventos:sessoes",
+      "eventId": "9187379c-6ce6-46ee-8e13-fec5f946e2e6",
+      "type": "sessao.deleted",
+      "id": 5,
+      "timestamp": "2026-11-04T01:01:22.655Z",
+      "subscribers": 1
+    },
+    {
+      "component": "redis_pubsub",
+      "level": "info",
+      "action": "consumed",
+      "channel": "cinemax:eventos:sessoes",
+      "eventId": "9187379c-6ce6-46ee-8e13-fec5f946e2e6",
+      "type": "sessao.deleted",
+      "id": 5,
+      "timestamp": "2026-11-04T01:01:22.655Z"
+    },
+    {
+      "component": "redis_pubsub",
+      "level": "info",
+      "action": "published",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "3b5b795e-9caf-457c-a12a-30c3e52da778",
+      "type": "filme.deleted",
+      "id": 3,
+      "timestamp": "2026-11-04T01:01:23.082Z",
+      "subscribers": 1
+    },
+    {
+      "component": "redis_pubsub",
+      "level": "info",
+      "action": "consumed",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "3b5b795e-9caf-457c-a12a-30c3e52da778",
+      "type": "filme.deleted",
+      "id": 3,
+      "timestamp": "2026-11-04T01:01:23.082Z"
+    }
+  ]
+}

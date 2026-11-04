@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Filme from "../models/Filme";
+import { catalogCache } from '../services/catalogCache';
 
 interface FilmePayload {
   [key: string]: unknown;
@@ -68,22 +69,22 @@ class FilmesController {
     const hasPagination = req.query.page !== undefined || req.query.limit !== undefined;
 
     if (!hasPagination) {
-      const filmes = await Filme.findAll();
+      const filmes = await catalogCache.remember('filmes', 'all', () => Filme.findAll());
       return res.status(200).json(filmes);
     }
 
     const { page, limit, offset } = FilmesController.parsePagination(req.query);
-    const { rows, count } = await Filme.findAndCountAll({ limit, offset });
-
-    return res.status(200).json({
-      data: rows,
-      pagination: { page, limit, total: count, totalPages: Math.ceil(count / limit) },
+    const result = await catalogCache.remember('filmes', `page:${page}:limit:${limit}`, async () => {
+      const { rows, count } = await Filme.findAndCountAll({ limit, offset });
+      return { data: rows, pagination: { page, limit, total: count, totalPages: Math.ceil(count / limit) } };
     });
+    return res.status(200).json(result);
   }
 
   static async getById(req: Request, res: Response) {
-    const filme = await FilmesController.findOrNotFound(Number(req.params.id), res);
-    if (!filme) return;
+    const id = Number(req.params.id);
+    const filme = await catalogCache.remember('filmes', `id:${id}`, () => Filme.findByPk(id));
+    if (!filme) return res.status(404).json({ message: FilmesController.NOT_FOUND_MESSAGE });
 
     return res.status(200).json(filme);
   }
@@ -92,6 +93,7 @@ class FilmesController {
     const error = FilmesController.validate(req.body, true);
     if (error) return res.status(400).json({ message: error });
     const filme = await Filme.create(FilmesController.toPayload(req.body as FilmePayload));
+    await catalogCache.invalidate('filmes');
     return res.status(201).json(filme);
   }
 
@@ -102,6 +104,7 @@ class FilmesController {
     const error = FilmesController.validate(req.body, false);
     if (error) return res.status(400).json({ message: error });
     await filme.update(FilmesController.toPayload(req.body as FilmePayload));
+    await catalogCache.invalidate('filmes');
 
     return res.status(200).json(filme);
   }
@@ -111,6 +114,7 @@ class FilmesController {
     if (!filme) return;
     try {
       await filme.destroy();
+      await catalogCache.invalidate('filmes');
       return res.status(200).json({ message: "Filme removido com sucesso." });
     } catch (error) {
       if (FilmesController.isForeignKeyConstraintError(error)) {

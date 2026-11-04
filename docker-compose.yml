@@ -1,4 +1,17 @@
 services:
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    # Cache descartável: sem persistência e sem portas publicadas no host.
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - cache-network
+
   database:
     image: mysql:9.1.0
     container_name: meu-mysql
@@ -32,6 +45,8 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS:-60}
     volumes:
       - ./Projeto-back-end/src:/app/src
       - posters-data:/app/uploads/posters
@@ -39,6 +54,7 @@ services:
       - database
     networks:
       - app-network
+      - cache-network
     restart: on-failure
 
   frontend:
@@ -83,5 +99,7 @@ volumes:
     driver: local
 
 networks:
+  cache-network:
+    internal: true
   app-network:
     driver: bridge

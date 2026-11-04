@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Sessao from "../models/Sessao";
+import { catalogCache } from '../services/catalogCache';
 
 import Filme from '../models/Filme';
 import Sala from '../models/Sala';
@@ -82,22 +83,22 @@ class SessoesController {
     const hasPagination = req.query.page !== undefined || req.query.limit !== undefined;
 
     if (!hasPagination) {
-      const sessoes = await Sessao.findAll();
+      const sessoes = await catalogCache.remember('sessoes', 'all', () => Sessao.findAll());
       return res.status(200).json(sessoes);
     }
 
     const { page, limit, offset } = SessoesController.parsePagination(req.query);
-    const { rows, count } = await Sessao.findAndCountAll({ limit, offset });
-
-    return res.status(200).json({
-      data: rows,
-      pagination: { page, limit, total: count, totalPages: Math.ceil(count / limit) },
+    const result = await catalogCache.remember('sessoes', `page:${page}:limit:${limit}`, async () => {
+      const { rows, count } = await Sessao.findAndCountAll({ limit, offset });
+      return { data: rows, pagination: { page, limit, total: count, totalPages: Math.ceil(count / limit) } };
     });
+    return res.status(200).json(result);
   }
 
   static async getById(req: Request, res: Response) {
-    const sessao = await SessoesController.findOrNotFound(Number(req.params.id), res);
-    if (!sessao) return;
+    const id = Number(req.params.id);
+    const sessao = await catalogCache.remember('sessoes', `id:${id}`, () => Sessao.findByPk(id));
+    if (!sessao) return res.status(404).json({ message: SessoesController.NOT_FOUND_MESSAGE });
 
     return res.status(200).json(sessao);
   }
@@ -106,6 +107,7 @@ class SessoesController {
     try {
       await SessoesController.validate(req.body, true);
       const sessao = await Sessao.create(SessoesController.toPayload(req.body));
+      await catalogCache.invalidate('sessoes');
       return res.status(201).json(sessao);
     } catch (error) { return SessoesController.reply(error, res); }
   }
@@ -124,6 +126,7 @@ class SessoesController {
         await session.update(SessoesController.toPayload(req.body), { transaction });
         return session;
       });
+      await catalogCache.invalidate('sessoes');
       return res.status(200).json(sessao);
     } catch (error) { return SessoesController.reply(error, res); }
   }
@@ -133,6 +136,7 @@ class SessoesController {
     if (!sessao) return;
     try {
       await sessao.destroy();
+      await catalogCache.invalidate('sessoes');
       return res.status(200).json({ message: "Sessao removida com sucesso." });
     } catch (error) {
       if (SessoesController.isForeignKeyConstraintError(error)) {

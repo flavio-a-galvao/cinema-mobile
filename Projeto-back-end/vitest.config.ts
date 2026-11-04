@@ -16,7 +16,7 @@ export default defineConfig({
   }],
   test: {
     // Valores exclusivos dos testes; não são credenciais de um banco real.
-    env: { DB_NAME: "cinemax_test", DB_USER: "test", DB_PASS: "test" },
+    env: { DB_NAME: "cinemax_test", DB_USER: "test", DB_PASS: "test", REDIS_URL: "" },
     environment: "node",
     include: ["**/*.test.ts"],
     globals: true,

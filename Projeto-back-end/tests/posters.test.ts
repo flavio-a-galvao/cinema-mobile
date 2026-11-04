@@ -7,6 +7,9 @@ import path from 'node:path';
 import sharp from 'sharp';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../src/config/auth';
+import { catalogCache } from '../src/services/catalogCache';
+
+const invalidateCache = vi.spyOn(catalogCache, 'invalidate');
 
 vi.mock('../src/config/database', async () => {
   const { Sequelize } = await import('sequelize');
@@ -80,6 +83,7 @@ describe('Upload real multipart com autorização', () => {
     const result = await response.json() as { poster_url: string };
     expect(result.poster_url).toMatch(/^\/posters\/[a-f0-9-]{36}\.webp$/);
     expect(movie.update).toHaveBeenCalledWith({ poster_url: result.poster_url });
+    expect(invalidateCache).toHaveBeenCalledWith('filmes');
     const stored = await readFile(path.join(directory, path.basename(result.poster_url)));
     expect((await sharp(stored).metadata()).format).toBe('webp');
     const served = await fetch(base + result.poster_url);

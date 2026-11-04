@@ -4,6 +4,7 @@ import { mkdir, writeFile, unlink } from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
 import Filme from '../models/Filme';
+import { catalogCache } from '../services/catalogCache';
 import { POSTER_DIRECTORY } from '../middlewares/posterUpload';
 
 export async function uploadPoster(req: Request, res: Response) {
@@ -27,6 +28,7 @@ export async function uploadPoster(req: Request, res: Response) {
   await writeFile(target, normalized, { flag: 'wx' });
   try {
     await movie.update({ poster_url: '/posters/' + filename });
+    await catalogCache.invalidate('filmes');
   } catch (error) {
     await unlink(target).catch(() => undefined);
     throw error;

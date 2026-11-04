@@ -4,6 +4,7 @@ import { createClient } from 'redis';
 
 type Collection = 'filmes' | 'sessoes';
 export interface CacheStore {
+  close?(): void;
   get(key: string): Promise<string | null>;
   set(key: string, value: string, ttl?: number): Promise<unknown>;
 }
@@ -13,6 +14,8 @@ export class CatalogCache {
   private bypassUntil = 0;
   private lastWarning = -Infinity;
   constructor(private store: CacheStore | undefined, private ttl = 60) {}
+
+  close(): void { this.store?.close?.(); }
 
   private warn(operation: string) {
     if (Date.now() - this.lastWarning >= 5000) {
@@ -87,6 +90,7 @@ export function redisStore(url: string, timeout = 500): CacheStore {
     } finally { clearTimeout(timer); }
   }
   return {
+    close: () => { retryAfter = Infinity; if (client.isOpen) client.destroy(); },
     get: key => run(() => client.get(key)),
     set: (key, value, ttl) => run(() => client.set(key, value, ttl ? { EX: ttl } : undefined)),
   };

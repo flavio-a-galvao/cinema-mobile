@@ -5,6 +5,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import Filme from '../models/Filme';
 import { catalogCache } from '../services/catalogCache';
+import { catalogEvents } from '../services/catalogEvents';
 import { POSTER_DIRECTORY } from '../middlewares/posterUpload';
 
 export async function uploadPoster(req: Request, res: Response) {
@@ -29,6 +30,7 @@ export async function uploadPoster(req: Request, res: Response) {
   try {
     await movie.update({ poster_url: '/posters/' + filename });
     await catalogCache.invalidate('filmes');
+    await catalogEvents.publish('filme.updated', movie.id_filme);
   } catch (error) {
     await unlink(target).catch(() => undefined);
     throw error;

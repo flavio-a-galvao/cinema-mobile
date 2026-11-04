@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Sessao from "../models/Sessao";
 import { catalogCache } from '../services/catalogCache';
+import { catalogEvents } from '../services/catalogEvents';
 
 import Filme from '../models/Filme';
 import Sala from '../models/Sala';
@@ -108,6 +109,7 @@ class SessoesController {
       await SessoesController.validate(req.body, true);
       const sessao = await Sessao.create(SessoesController.toPayload(req.body));
       await catalogCache.invalidate('sessoes');
+      await catalogEvents.publish('sessao.created', sessao.id_sessao);
       return res.status(201).json(sessao);
     } catch (error) { return SessoesController.reply(error, res); }
   }
@@ -127,6 +129,7 @@ class SessoesController {
         return session;
       });
       await catalogCache.invalidate('sessoes');
+      await catalogEvents.publish('sessao.updated', sessao.id_sessao);
       return res.status(200).json(sessao);
     } catch (error) { return SessoesController.reply(error, res); }
   }
@@ -137,6 +140,7 @@ class SessoesController {
     try {
       await sessao.destroy();
       await catalogCache.invalidate('sessoes');
+      await catalogEvents.publish('sessao.deleted', sessao.id_sessao);
       return res.status(200).json({ message: "Sessao removida com sucesso." });
     } catch (error) {
       if (SessoesController.isForeignKeyConstraintError(error)) {

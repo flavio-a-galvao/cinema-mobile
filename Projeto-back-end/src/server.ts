@@ -5,6 +5,8 @@ import app from "./app";
 import sequelize from "./config/database";
 import { DataTypes } from "sequelize";
 import { ensureClientesEmailUnique } from "./utils/ensureClientesEmailUnique";
+import { catalogEvents } from './services/catalogEvents';
+import { catalogCache } from './services/catalogCache';
 
 const port = 3000;
 
@@ -76,9 +78,31 @@ async function startServer() {
     const roomReport = await normalizeRoomCapacity(sequelize);
     if (roomReport.needsReview.length) console.warn('Salas com mais de 48 assentos preservadas; revisão manual necessária:', roomReport.needsReview);
 
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
       console.log(`Servidor rodando na porta ${port}`);
     });
+    catalogEvents.start();
+
+    let shuttingDown = false;
+    const shutdown = () => {
+      if (shuttingDown) return;
+      shuttingDown = true;
+      const deadline = setTimeout(() => {
+        catalogEvents.stop();
+        catalogCache.close();
+        process.exit(1);
+      }, 10000).unref();
+      // Drena requisições antes de fechar as conexões usadas pelas mutações.
+      server.close(async () => {
+        catalogEvents.stop();
+        catalogCache.close();
+        try { await sequelize.close(); }
+        catch { console.error('Falha ao encerrar conexão com o banco.'); process.exitCode = 1; }
+        finally { clearTimeout(deadline); }
+      });
+    };
+    process.once('SIGTERM', shutdown);
+    process.once('SIGINT', shutdown);
   } catch (error) {
     console.error("Falha ao iniciar o servidor:", error);
     process.exit(1);

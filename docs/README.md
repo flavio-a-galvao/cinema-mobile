@@ -6,6 +6,7 @@ Arquivos preparados para cobrir os itens de Engenharia/Análise e Evolução da 
 
 - [CI, testes, deploy e rollback](CI_DEPLOY.md).
 - [Cache Redis: configuração, testes e demonstração](CACHE_REDIS.md).
+- [Redis Pub/Sub: eventos, consumidores e demonstração](REDIS_PUBSUB.md).
 
 - `CONTEXTUALIZACAO.md` — problema, público, solução e objetivo.
 - `EVOLUCAO.md` — evolução do produto.

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Filme from "../models/Filme";
 import { catalogCache } from '../services/catalogCache';
+import { catalogEvents } from '../services/catalogEvents';
 
 interface FilmePayload {
   [key: string]: unknown;
@@ -94,6 +95,7 @@ class FilmesController {
     if (error) return res.status(400).json({ message: error });
     const filme = await Filme.create(FilmesController.toPayload(req.body as FilmePayload));
     await catalogCache.invalidate('filmes');
+    await catalogEvents.publish('filme.created', filme.id_filme);
     return res.status(201).json(filme);
   }
 
@@ -105,6 +107,7 @@ class FilmesController {
     if (error) return res.status(400).json({ message: error });
     await filme.update(FilmesController.toPayload(req.body as FilmePayload));
     await catalogCache.invalidate('filmes');
+    await catalogEvents.publish('filme.updated', filme.id_filme);
 
     return res.status(200).json(filme);
   }
@@ -115,6 +118,7 @@ class FilmesController {
     try {
       await filme.destroy();
       await catalogCache.invalidate('filmes');
+      await catalogEvents.publish('filme.deleted', filme.id_filme);
       return res.status(200).json({ message: "Filme removido com sucesso." });
     } catch (error) {
       if (FilmesController.isForeignKeyConstraintError(error)) {

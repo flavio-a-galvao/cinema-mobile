@@ -22,6 +22,25 @@ bloqueios e índices únicos dão suporte à consistência. Sequelize fornece AP
 model e transação utilizadas pelo código TypeScript. Essa é uma leitura técnica
 da implementação, não evidência de um estudo comparativo da equipe.
 
+### Detalhamento técnico retrospectivo
+
+- MySQL permite combinar transações e bloqueios `FOR UPDATE` com índices únicos.
+  A coluna gerada de ocupação ativa usa `NULL` para cancelados, permitindo manter
+  histórico sem bloquear uma nova emissão para o mesmo lugar da sessão.
+- `DECIMAL(6,2)` representa preços no armazenamento; o código calcula snapshots
+  e meia-entrada em centavos antes de persistir. O driver pode retornar decimais
+  como strings, diferença explicitada nos schemas da
+  [API OpenAPI](../../API_OPENAPI.md).
+- Sequelize centraliza configuração e APIs de models/transações. O adaptador
+  efetivo é `mysql2`; usar ORM não torna portável o SQL específico de coluna
+  gerada e `UPDATE ... JOIN` dos utilitários de evolução.
+- A unicidade de pagamento é reforçada no banco, além da consulta no controller.
+  A evolução verifica duplicidades antes de criar o índice e preserva valores
+  legados desconhecidos, sem presumir tipo de ingresso.
+
+Este complemento descreve mecanismos verificáveis nas fontes. Não atribui
+decisões históricas, comparações de desempenho ou aprovações não registradas.
+
 ## Alternativas consideradas neste registro
 
 - PostgreSQL: também atenderia ao modelo relacional; a troca exigiria rever SQL,
@@ -54,4 +73,5 @@ da implementação, não evidência de um estudo comparativo da equipe.
 [ingressos](../../../Projeto-back-end/src/controllers/ingressos.controller.ts),
 [pagamentos](../../../Projeto-back-end/src/controllers/pagamentos.controller.ts),
 [índice de ocupação](../../../Projeto-back-end/src/utils/ensureIngressosSchema.ts),
+[evolução de preço/pagamento](../../../Projeto-back-end/src/utils/ensureTicketPaymentSchema.ts),
 [startup](../../../Projeto-back-end/src/server.ts) e [DER](../../DER.md).

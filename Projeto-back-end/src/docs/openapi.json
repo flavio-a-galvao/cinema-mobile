@@ -1,0 +1,3833 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Cinemax — API existente",
+    "version": "1.0.0",
+    "description": "Contratos documentados a partir das rotas e controllers do backend. x-roles indica requisito de admin; titularidade é descrita por operação. Exemplos são fictícios. Não há credenciais ou JWT real. A documentação não adiciona validação às rotas existentes; falhas de ORM não tratadas retornam 500. Serviços e contratos de negócio são preservados."
+  },
+  "servers": [
+    {
+      "url": "..",
+      "description": "Raiz relativa à especificação em /api-docs/openapi.json: / direto ou /api/ pelo proxy."
+    }
+  ],
+  "tags": [
+    {
+      "name": "Sistema"
+    },
+    {
+      "name": "Autenticação"
+    },
+    {
+      "name": "Usuários"
+    },
+    {
+      "name": "Clientes"
+    },
+    {
+      "name": "Filmes"
+    },
+    {
+      "name": "Sessões"
+    },
+    {
+      "name": "Salas e assentos"
+    },
+    {
+      "name": "Ingressos"
+    },
+    {
+      "name": "Compras e pagamentos"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "get_",
+        "tags": [
+          "Sistema"
+        ],
+        "summary": "Resposta básica do servidor",
+        "description": "Resposta básica do servidor",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Resposta de verificação HTTP; não verifica o banco.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Hello World (typescript)"
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "post_auth_login",
+        "tags": [
+          "Autenticação"
+        ],
+        "summary": "Autenticar usuário",
+        "description": "Valida e-mail e compara senha bcrypt; emite JWT de 8 horas. Exemplos não contêm senha ou token real.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Login"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "get_users",
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Listar usuários sem hashes de senha",
+        "description": "Somente admin.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Usuario"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_users",
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Cadastrar conta de cliente",
+        "description": "Sempre cria tipo_usuario=cliente; não aceita elevação de papel pelo corpo.",
+        "security": [],
+        "responses": {
+          "201": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsuarioInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "operationId": "get_users_id",
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Consultar usuário próprio ou como admin",
+        "description": "Admin pode consultar outro usuário; demais contas consultam somente o próprio ID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "put_users_id",
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Atualizar o próprio usuário",
+        "description": "Exige todos os campos do cadastro e senha forte; e-mail deve ser o já cadastrado. Nem admin pode editar conta alheia.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsuarioInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usuarios": {
+      "get": {
+        "operationId": "get_usuarios",
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Listar usuários sem hashes de senha",
+        "description": "Somente admin. Alias de /users, com o mesmo contrato.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Usuario"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_usuarios",
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Cadastrar conta de cliente",
+        "description": "Sempre cria tipo_usuario=cliente; não aceita elevação de papel pelo corpo. Alias de /users, com o mesmo contrato.",
+        "security": [],
+        "responses": {
+          "201": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsuarioInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usuarios/{id}": {
+      "get": {
+        "operationId": "get_usuarios_id",
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Consultar usuário próprio ou como admin",
+        "description": "Admin pode consultar outro usuário; demais contas consultam somente o próprio ID. Alias de /users, com o mesmo contrato.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "put_usuarios_id",
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Atualizar o próprio usuário",
+        "description": "Exige todos os campos do cadastro e senha forte; e-mail deve ser o já cadastrado. Nem admin pode editar conta alheia. Alias de /users, com o mesmo contrato.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UsuarioInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clientes": {
+      "get": {
+        "operationId": "get_clientes",
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Listar clientes",
+        "description": "Listar clientes",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Cliente"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_clientes",
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Criar ou atualizar cliente por e-mail",
+        "description": "Admin. E-mail existente: atualiza nome/telefone/data de nascimento e retorna 200, preservando CPF; novo: cria e retorna 201.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente já existente atualizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClienteInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clientes/{id}": {
+      "get": {
+        "operationId": "get_clientes_id",
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Consultar cliente por ID",
+        "description": "Admin. Se inexistente, o controller usa res.send(null): HTTP 200 com corpo vazio, sem 404.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente encontrado em JSON ou corpo vazio se inexistente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      }
+    },
+    "/clientes/me": {
+      "get": {
+        "operationId": "get_clientes_me",
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Consultar meu perfil de cliente",
+        "description": "Localiza perfil pelo e-mail do JWT; 404 se ainda não existe.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_clientes_me",
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Criar ou atualizar meu perfil",
+        "description": "E-mail vem do JWT. Corpo aceita nome, telefone e data_nascimento; CPF e e-mail do corpo não são utilizados.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Perfil existente atualizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cliente"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeuClienteInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/filmes": {
+      "get": {
+        "operationId": "get_filmes",
+        "tags": [
+          "Filmes"
+        ],
+        "summary": "Listar filmes",
+        "description": "Sem page/limit: array. Com um deles: objeto data/pagination. Catálogo compartilhado em cache Redis, quando configurado.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilmeLista"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Ativa paginação quando presente. Convertido por Number e limitado inferiormente a 1; entrada não tem validação explícita de inteiro.",
+            "schema": {
+              "type": "number",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Ativa paginação quando presente. Convertido por Number e limitado ao intervalo 1–100; entrada não tem validação explícita de inteiro.",
+            "schema": {
+              "type": "number",
+              "default": 10
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "post_filmes",
+        "tags": [
+          "Filmes"
+        ],
+        "summary": "Criar filme",
+        "description": "Criar filme",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "201": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Filme"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilmeCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/filmes/{id}": {
+      "get": {
+        "operationId": "get_filmes_id",
+        "tags": [
+          "Filmes"
+        ],
+        "summary": "Consultar filme",
+        "description": "Consultar filme",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Filme"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "put_filmes_id",
+        "tags": [
+          "Filmes"
+        ],
+        "summary": "Atualizar filme",
+        "description": "Atualização parcial; título, quando informado, não pode ser vazio. Invalida o cache após persistir.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Filme"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilmeInput"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete_filmes_id",
+        "tags": [
+          "Filmes"
+        ],
+        "summary": "Excluir filme",
+        "description": "409 se houver sessões relacionadas. Retorna mensagem com HTTP 200.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensagem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      }
+    },
+    "/catalogo/filmes": {
+      "get": {
+        "operationId": "get_catalogo_filmes",
+        "tags": [
+          "Filmes"
+        ],
+        "summary": "Listar filmes",
+        "description": "Sem page/limit: array. Com um deles: objeto data/pagination. Catálogo compartilhado em cache Redis, quando configurado.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilmeLista"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Ativa paginação quando presente. Convertido por Number e limitado inferiormente a 1; entrada não tem validação explícita de inteiro.",
+            "schema": {
+              "type": "number",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Ativa paginação quando presente. Convertido por Number e limitado ao intervalo 1–100; entrada não tem validação explícita de inteiro.",
+            "schema": {
+              "type": "number",
+              "default": 10
+            }
+          }
+        ]
+      }
+    },
+    "/catalogo/filmes/{id}": {
+      "get": {
+        "operationId": "get_catalogo_filmes_id",
+        "tags": [
+          "Filmes"
+        ],
+        "summary": "Consultar filme",
+        "description": "Consultar filme",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Filme"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      }
+    },
+    "/sessoes": {
+      "get": {
+        "operationId": "get_sessoes",
+        "tags": [
+          "Sessões"
+        ],
+        "summary": "Listar sessões",
+        "description": "Sem page/limit: array. Com um deles: objeto data/pagination. Catálogo compartilhado em cache Redis, quando configurado.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessaoLista"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Ativa paginação quando presente. Convertido por Number e limitado inferiormente a 1; entrada não tem validação explícita de inteiro.",
+            "schema": {
+              "type": "number",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Ativa paginação quando presente. Convertido por Number e limitado ao intervalo 1–100; entrada não tem validação explícita de inteiro.",
+            "schema": {
+              "type": "number",
+              "default": 10
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "post_sessoes",
+        "tags": [
+          "Sessões"
+        ],
+        "summary": "Criar sessao",
+        "description": "Criar sessao",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "201": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sessao"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessaoCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sessoes/{id}": {
+      "get": {
+        "operationId": "get_sessoes_id",
+        "tags": [
+          "Sessões"
+        ],
+        "summary": "Consultar sessao",
+        "description": "Consultar sessao",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sessao"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "put_sessoes_id",
+        "tags": [
+          "Sessões"
+        ],
+        "summary": "Atualizar sessao",
+        "description": "Atualização parcial. Bloqueia a sessão; filme/sala não podem mudar se houver ingressos no histórico. IDs referenciados devem existir.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sessao"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessaoInput"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete_sessoes_id",
+        "tags": [
+          "Sessões"
+        ],
+        "summary": "Excluir sessao",
+        "description": "409 se houver ingressos relacionados. Retorna mensagem com HTTP 200.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensagem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      }
+    },
+    "/catalogo/sessoes": {
+      "get": {
+        "operationId": "get_catalogo_sessoes",
+        "tags": [
+          "Sessões"
+        ],
+        "summary": "Listar sessões",
+        "description": "Sem page/limit: array. Com um deles: objeto data/pagination. Catálogo compartilhado em cache Redis, quando configurado.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessaoLista"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Ativa paginação quando presente. Convertido por Number e limitado inferiormente a 1; entrada não tem validação explícita de inteiro.",
+            "schema": {
+              "type": "number",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Ativa paginação quando presente. Convertido por Number e limitado ao intervalo 1–100; entrada não tem validação explícita de inteiro.",
+            "schema": {
+              "type": "number",
+              "default": 10
+            }
+          }
+        ]
+      }
+    },
+    "/catalogo/sessoes/{id}": {
+      "get": {
+        "operationId": "get_catalogo_sessoes_id",
+        "tags": [
+          "Sessões"
+        ],
+        "summary": "Consultar sessao",
+        "description": "Consultar sessao",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sessao"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      }
+    },
+    "/filmes/{id}/poster": {
+      "post": {
+        "operationId": "post_filmes_id_poster",
+        "tags": [
+          "Filmes"
+        ],
+        "summary": "Enviar pôster do filme",
+        "description": "Admin. Um arquivo JPEG, PNG ou WEBP de até 5 MiB; extensão, MIME e conteúdo verificados. Até 20 milhões de pixels de entrada; normaliza para WebP até 1600×2400. Atualiza poster_url e invalida cache.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Filme"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "413": {
+            "$ref": "#/components/responses/Erro413"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "poster": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Arquivo JPEG, PNG ou WEBP; máximo 5 MiB."
+                  }
+                },
+                "required": [
+                  "poster"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/salas": {
+      "get": {
+        "operationId": "get_salas",
+        "tags": [
+          "Salas e assentos"
+        ],
+        "summary": "Listar salas",
+        "description": "Sem page/limit: array ordenado por id_sala decrescente. Com um deles: data/pagination.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalaLista"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Ativa paginação quando presente. Convertido por Number e limitado inferiormente a 1; entrada não tem validação explícita de inteiro.",
+            "schema": {
+              "type": "number",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Ativa paginação quando presente. Convertido por Number e limitado ao intervalo 1–100; entrada não tem validação explícita de inteiro.",
+            "schema": {
+              "type": "number",
+              "default": 10
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "post_salas",
+        "tags": [
+          "Salas e assentos"
+        ],
+        "summary": "Criar sala de 48 lugares",
+        "description": "Criar sala de 48 lugares",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "201": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sala"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SalaCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/salas/{id}": {
+      "get": {
+        "operationId": "get_salas_id",
+        "tags": [
+          "Salas e assentos"
+        ],
+        "summary": "Consultar sala",
+        "description": "Consultar sala",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sala"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "put_salas_id",
+        "tags": [
+          "Salas e assentos"
+        ],
+        "summary": "Atualizar sala",
+        "description": "Atualização parcial. Capacidade permanece 48; rejeita sala com mais de 48 assentos preservando dados para revisão.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sala"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SalaInput"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete_salas_id",
+        "tags": [
+          "Salas e assentos"
+        ],
+        "summary": "Excluir sala",
+        "description": "HTTP 200 com mensagem; 409 para relacionamentos impeditivos.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Mensagem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      }
+    },
+    "/salas/{id}/assentos/gerar": {
+      "post": {
+        "operationId": "post_salas_id_assentos_gerar",
+        "tags": [
+          "Salas e assentos"
+        ],
+        "summary": "Completar mapa padrão de assentos",
+        "description": "Sem corpo. Gera lugares faltantes A–F, 1–8, em transação; não apaga dados. Operação repetível; 409 para mapa incompatível.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeracaoAssentos"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      }
+    },
+    "/assentos": {
+      "get": {
+        "operationId": "get_assentos",
+        "tags": [
+          "Salas e assentos"
+        ],
+        "summary": "Listar assentos físicos",
+        "description": "Sem filtros/paginação implementados. Não representa ocupação por sessão.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Assento"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_assentos",
+        "tags": [
+          "Salas e assentos"
+        ],
+        "summary": "Cadastrar assento",
+        "description": "Admin. Repassa id_sala, numero e fila ao ORM. Não há tratamento específico de 400/409 neste controller; erro de banco é 500.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "201": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Assento"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssentoInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assentos/{id}": {
+      "get": {
+        "operationId": "get_assentos_id",
+        "tags": [
+          "Salas e assentos"
+        ],
+        "summary": "Consultar assento",
+        "description": "Consultar assento",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Assento"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      }
+    },
+    "/catalogo/assentos": {
+      "get": {
+        "operationId": "get_catalogo_assentos",
+        "tags": [
+          "Salas e assentos"
+        ],
+        "summary": "Listar assentos físicos",
+        "description": "Sem filtros/paginação implementados. Não representa ocupação por sessão.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Assento"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        }
+      }
+    },
+    "/catalogo/assentos/{id}": {
+      "get": {
+        "operationId": "get_catalogo_assentos_id",
+        "tags": [
+          "Salas e assentos"
+        ],
+        "summary": "Consultar assento",
+        "description": "Consultar assento",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Assento"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      }
+    },
+    "/ingressos": {
+      "get": {
+        "operationId": "get_ingressos",
+        "tags": [
+          "Ingressos"
+        ],
+        "summary": "Listar ingressos",
+        "description": "Listar ingressos",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ingresso"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_ingressos",
+        "tags": [
+          "Ingressos"
+        ],
+        "summary": "Emitir ingresso individual",
+        "description": "Titular por e-mail, sessão futura e assento na sala. Valor calculado no servidor; não aceita preço do cliente. IDs são convertidos por Number.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ingresso"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IngressoInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ingressos/{id}": {
+      "get": {
+        "operationId": "get_ingressos_id",
+        "tags": [
+          "Ingressos"
+        ],
+        "summary": "Consultar ingresso",
+        "description": "Admin. Se inexistente, res.send(null) produz HTTP 200 com corpo vazio, sem 404.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Ingresso em JSON ou corpo vazio se inexistente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ingresso"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      }
+    },
+    "/ingressos/lote": {
+      "post": {
+        "operationId": "post_ingressos_lote",
+        "tags": [
+          "Ingressos"
+        ],
+        "summary": "Emitir de 1 a 10 ingressos atomicamente",
+        "description": "Valida quantidade, duplicidade, titularidade, sessão e sala; transação all-or-nothing. Inteiras primeiro e meias depois conforme ordem dos assentos; meia arredondada em centavos.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Ingresso"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoteIngressosInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ingressos/{id}/cancelar": {
+      "patch": {
+        "operationId": "patch_ingressos_id_cancelar",
+        "tags": [
+          "Ingressos"
+        ],
+        "summary": "Cancelar meu ingresso",
+        "description": "Sem corpo. Apenas titular e sessão futura; 409 se cancelado ou sessão iniciada. Preserva histórico e não realiza estorno.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ingresso"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      }
+    },
+    "/sessoes/{id}/ocupacao": {
+      "get": {
+        "operationId": "get_sessoes_id_ocupacao",
+        "tags": [
+          "Ingressos"
+        ],
+        "summary": "Consultar assentos ocupados por sessão",
+        "description": "Exige ID inteiro positivo. Lista apenas id_assento de ingressos ativos. Sessão inexistente retorna array vazio, não 404.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ocupacao"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      }
+    },
+    "/me/compras": {
+      "get": {
+        "operationId": "get_me_compras",
+        "tags": [
+          "Compras e pagamentos"
+        ],
+        "summary": "Consultar minhas compras",
+        "description": "Composição por e-mail do JWT; array vazio se não houver cliente/ingresso. Converte valores monetários para número; pagamento pode ser null. Não existe entidade Compra persistida.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Compra"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        }
+      }
+    },
+    "/pagamentos": {
+      "get": {
+        "operationId": "get_pagamentos",
+        "tags": [
+          "Compras e pagamentos"
+        ],
+        "summary": "Listar pagamentos",
+        "description": "Listar pagamentos",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Pagamento"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_pagamentos",
+        "tags": [
+          "Compras e pagamentos"
+        ],
+        "summary": "Registrar pagamento do meu ingresso",
+        "description": "Um pagamento por ingresso ativo do titular. Usa snapshot do ingresso e horário atual; 409 se já pago, cancelado ou legado sem preço/tipo válido. Sem gateway ou liquidação externa.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pagamento"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Erro400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Erro404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Erro409"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PagamentoInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pagamentos/{id}": {
+      "get": {
+        "operationId": "get_pagamentos_id",
+        "tags": [
+          "Compras e pagamentos"
+        ],
+        "summary": "Consultar pagamento",
+        "description": "Admin. Se inexistente, res.json(null) retorna HTTP 200 com JSON null, não 404.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operação concluída.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id_pagamento": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "id_ingresso": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "valor": {
+                      "oneOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "string",
+                          "pattern": "^-?\\d+(?:\\.\\d+)?$"
+                        }
+                      ],
+                      "description": "DECIMAL pode ser serializado como string pelo mysql2 ou como número após gravação/conversão.",
+                      "example": "25.00"
+                    },
+                    "metodo_pagamento": {
+                      "type": "string",
+                      "enum": [
+                        "cartao",
+                        "pix",
+                        "dinheiro"
+                      ]
+                    },
+                    "data_pagamento": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true,
+                      "example": "2026-11-05T20:00:00.000Z"
+                    }
+                  },
+                  "required": [
+                    "id_pagamento",
+                    "id_ingresso",
+                    "valor",
+                    "metodo_pagamento"
+                  ],
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Identificador do recurso. Validações específicas são descritas na operação.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Informe apenas o JWT obtido no login. Nunca publique tokens ou senhas reais."
+      }
+    },
+    "schemas": {
+      "Mensagem": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Assento já ocupado nesta sessão."
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "LoginInput": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "cliente@example.test",
+            "description": "Normalizado com trim e lowercase."
+          },
+          "senha": {
+            "type": "string",
+            "format": "password",
+            "writeOnly": true,
+            "description": "Senha da conta de teste previamente cadastrada; nenhum segredo é preenchido automaticamente."
+          }
+        },
+        "required": [
+          "email",
+          "senha"
+        ]
+      },
+      "UsuarioInput": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "minLength": 1,
+            "example": "Cliente de demonstração"
+          },
+          "cpf": {
+            "type": "string",
+            "description": "CPF com dígitos verificadores válidos; pontuação é removida. Use cadastro sintético próprio."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "cliente@example.test"
+          },
+          "senha": {
+            "type": "string",
+            "format": "password",
+            "minLength": 8,
+            "writeOnly": true,
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z\\d]).{8,}$",
+            "description": "Maiúscula, minúscula, número e símbolo."
+          }
+        },
+        "required": [
+          "nome",
+          "cpf",
+          "email",
+          "senha"
+        ]
+      },
+      "Usuario": {
+        "type": "object",
+        "properties": {
+          "id_usuario": {
+            "type": "integer",
+            "example": 1
+          },
+          "nome": {
+            "type": "string"
+          },
+          "cpf": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string"
+          },
+          "tipo_usuario": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "funcionario",
+              "cliente"
+            ]
+          },
+          "data_criacao": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-11-05T20:00:00.000Z"
+          }
+        },
+        "required": [
+          "id_usuario",
+          "nome",
+          "email",
+          "tipo_usuario"
+        ]
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT emitido no login, com validade configurada de 8 horas; não há token real nos exemplos."
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id_usuario": {
+                "type": "integer",
+                "example": 1
+              },
+              "nome": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "tipo_usuario": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id_usuario",
+              "nome",
+              "email",
+              "tipo_usuario"
+            ]
+          }
+        },
+        "required": [
+          "token",
+          "user"
+        ]
+      },
+      "ClienteInput": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "minLength": 1
+          },
+          "cpf": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "description": "Obrigatório no cadastro administrativo; normalizado, sem validação de formato neste controller.",
+            "example": "cliente@example.test"
+          },
+          "telefone": {
+            "type": "string",
+            "nullable": true
+          },
+          "data_nascimento": {
+            "type": "string",
+            "nullable": true,
+            "description": "Data aceita pelo ORM. Exemplo de data de cadastro sintético.",
+            "example": "2000-01-01"
+          }
+        },
+        "required": [
+          "nome",
+          "email"
+        ]
+      },
+      "MeuClienteInput": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "minLength": 1,
+            "example": "Cliente de demonstração"
+          },
+          "telefone": {
+            "type": "string",
+            "nullable": true
+          },
+          "data_nascimento": {
+            "type": "string",
+            "nullable": true,
+            "example": "2000-01-01"
+          }
+        },
+        "required": [
+          "nome"
+        ]
+      },
+      "Cliente": {
+        "type": "object",
+        "properties": {
+          "id_cliente": {
+            "type": "integer",
+            "example": 1
+          },
+          "nome": {
+            "type": "string"
+          },
+          "cpf": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "telefone": {
+            "type": "string",
+            "nullable": true
+          },
+          "data_nascimento": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-11-05T20:00:00.000Z"
+          }
+        },
+        "required": [
+          "id_cliente",
+          "nome"
+        ]
+      },
+      "FilmeInput": {
+        "type": "object",
+        "properties": {
+          "titulo": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 150,
+            "example": "Horizontes do Cinema"
+          },
+          "genero": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 50
+          },
+          "classificacao_etaria": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 10
+          },
+          "duracao": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647,
+            "nullable": true,
+            "example": 110
+          },
+          "sinopse": {
+            "type": "string",
+            "nullable": true,
+            "description": "Limite de 65.535 bytes UTF-8, não de caracteres."
+          },
+          "poster_url": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 255,
+            "example": "/posters/exemplo.webp"
+          },
+          "data_lancamento": {
+            "type": "string",
+            "nullable": true,
+            "description": "AAAA-MM-DD ou timestamp UTC com segundos e milissegundos opcionais; calendário validado.",
+            "example": "2026-11-05"
+          }
+        }
+      },
+      "Filme": {
+        "type": "object",
+        "properties": {
+          "id_filme": {
+            "type": "integer",
+            "example": 1
+          },
+          "titulo": {
+            "type": "string"
+          },
+          "genero": {
+            "type": "string",
+            "nullable": true
+          },
+          "classificacao_etaria": {
+            "type": "string",
+            "nullable": true
+          },
+          "duracao": {
+            "type": "integer",
+            "nullable": true
+          },
+          "sinopse": {
+            "type": "string",
+            "nullable": true
+          },
+          "poster_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "data_lancamento": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-11-05T20:00:00.000Z"
+          }
+        },
+        "required": [
+          "id_filme",
+          "titulo"
+        ],
+        "example": {
+          "id_filme": 1,
+          "titulo": "Horizontes do Cinema",
+          "genero": "Drama",
+          "classificacao_etaria": "12",
+          "duracao": 110,
+          "sinopse": "Uma produção fictícia para demonstração.",
+          "poster_url": null,
+          "data_lancamento": "2026-11-05T00:00:00.000Z"
+        }
+      },
+      "SalaInput": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "example": "Sala de demonstração"
+          },
+          "capacidade": {
+            "type": "integer",
+            "enum": [
+              48
+            ],
+            "description": "Se informado, deve ser 48. A API usa a capacidade fixa."
+          }
+        }
+      },
+      "Sala": {
+        "type": "object",
+        "properties": {
+          "id_sala": {
+            "type": "integer",
+            "example": 1
+          },
+          "nome": {
+            "type": "string",
+            "nullable": true
+          },
+          "capacidade": {
+            "type": "integer",
+            "example": 48
+          }
+        },
+        "required": [
+          "id_sala",
+          "capacidade"
+        ]
+      },
+      "AssentoInput": {
+        "type": "object",
+        "properties": {
+          "id_sala": {
+            "type": "integer",
+            "example": 1
+          },
+          "numero": {
+            "type": "string",
+            "example": "1"
+          },
+          "fila": {
+            "type": "string",
+            "example": "A"
+          }
+        },
+        "description": "O controller repassa estes campos ao ORM, sem validação explícita ou obrigatoriedade adicional; falhas de banco seguem o erro 500."
+      },
+      "Assento": {
+        "type": "object",
+        "properties": {
+          "id_assento": {
+            "type": "integer",
+            "example": 1
+          },
+          "id_sala": {
+            "type": "integer",
+            "example": 1,
+            "nullable": true
+          },
+          "numero": {
+            "type": "string",
+            "nullable": true
+          },
+          "fila": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id_assento"
+        ]
+      },
+      "SessaoInput": {
+        "type": "object",
+        "properties": {
+          "id_filme": {
+            "type": "integer",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "id_sala": {
+            "type": "integer",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "horario": {
+            "type": "string",
+            "description": "Data/hora futura válida; aceita T ou espaço, segundos opcionais e fuso opcional. No PUT, horário igual ao persistido é aceito mesmo se já passou.",
+            "example": "2099-01-01T20:00:00Z"
+          },
+          "preco": {
+            "oneOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 9999.99
+              },
+              {
+                "type": "string",
+                "pattern": "^\\d+(?:\\.\\d{1,2})?$"
+              }
+            ],
+            "description": "Número ou string decimal entre 0 e 9999,99, com até duas casas; representação numérica também passa por essa verificação.",
+            "example": 25
+          }
+        }
+      },
+      "Sessao": {
+        "type": "object",
+        "properties": {
+          "id_sessao": {
+            "type": "integer",
+            "example": 1
+          },
+          "id_filme": {
+            "type": "integer",
+            "example": 1,
+            "nullable": true
+          },
+          "id_sala": {
+            "type": "integer",
+            "example": 1,
+            "nullable": true
+          },
+          "horario": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-11-05T20:00:00.000Z"
+          },
+          "preco": {
+            "oneOf": [
+              {
+                "type": "number",
+                "nullable": true
+              },
+              {
+                "type": "string",
+                "pattern": "^-?\\d+(?:\\.\\d+)?$"
+              }
+            ],
+            "description": "DECIMAL pode ser serializado como string pelo mysql2 ou como número após gravação/conversão. Registros legados podem conter null.",
+            "example": "25.00",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id_sessao"
+        ]
+      },
+      "IngressoInput": {
+        "type": "object",
+        "properties": {
+          "id_sessao": {
+            "type": "integer",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "id_cliente": {
+            "type": "integer",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "id_assento": {
+            "type": "integer",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "tipo_ingresso": {
+            "type": "string",
+            "enum": [
+              "inteira",
+              "meia"
+            ],
+            "default": "inteira"
+          }
+        },
+        "required": [
+          "id_sessao",
+          "id_cliente",
+          "id_assento"
+        ]
+      },
+      "LoteIngressosInput": {
+        "type": "object",
+        "properties": {
+          "id_sessao": {
+            "type": "integer",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "id_cliente": {
+            "type": "integer",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "id_assentos": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "example": 1,
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "minItems": 1,
+            "maxItems": 10,
+            "uniqueItems": true,
+            "example": [
+              1,
+              2
+            ]
+          },
+          "qtdInteira": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 1
+          },
+          "qtdMeia": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 1
+          }
+        },
+        "required": [
+          "id_sessao",
+          "id_cliente",
+          "id_assentos",
+          "qtdInteira",
+          "qtdMeia"
+        ],
+        "description": "qtdInteira + qtdMeia deve coincidir com o número de assentos. IDs são convertidos por Number; exemplos usam números. Emissão atômica."
+      },
+      "Ingresso": {
+        "type": "object",
+        "properties": {
+          "id_ingresso": {
+            "type": "integer",
+            "example": 1
+          },
+          "id_sessao": {
+            "type": "integer",
+            "example": 1
+          },
+          "id_cliente": {
+            "type": "integer",
+            "example": 1
+          },
+          "id_assento": {
+            "type": "integer",
+            "example": 1
+          },
+          "data_compra": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-11-05T20:00:00.000Z"
+          },
+          "tipo_ingresso": {
+            "type": "string",
+            "enum": [
+              "inteira",
+              "meia",
+              null
+            ],
+            "nullable": true
+          },
+          "valor_unitario": {
+            "oneOf": [
+              {
+                "type": "number",
+                "nullable": true
+              },
+              {
+                "type": "string",
+                "pattern": "^-?\\d+(?:\\.\\d+)?$"
+              }
+            ],
+            "description": "DECIMAL pode ser serializado como string pelo mysql2 ou como número após gravação/conversão. Registros legados podem conter null.",
+            "example": "25.00",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ativo",
+              "cancelado"
+            ]
+          },
+          "cancelado_em": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-11-05T20:00:00.000Z"
+          }
+        },
+        "required": [
+          "id_ingresso",
+          "id_sessao",
+          "id_cliente",
+          "id_assento"
+        ],
+        "example": {
+          "id_ingresso": 1,
+          "id_sessao": 1,
+          "id_cliente": 1,
+          "id_assento": 1,
+          "data_compra": "2026-11-05T12:00:00.000Z",
+          "tipo_ingresso": "inteira",
+          "valor_unitario": "25.00",
+          "status": "ativo",
+          "cancelado_em": null
+        }
+      },
+      "PagamentoInput": {
+        "type": "object",
+        "properties": {
+          "id_ingresso": {
+            "type": "integer",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "metodo_pagamento": {
+            "type": "string",
+            "enum": [
+              "cartao",
+              "pix",
+              "dinheiro"
+            ]
+          }
+        },
+        "required": [
+          "id_ingresso",
+          "metodo_pagamento"
+        ],
+        "description": "Valor e data enviados pelo cliente são ignorados. O servidor utiliza valor_unitario do ingresso e data atual; não integra gateway financeiro."
+      },
+      "Pagamento": {
+        "type": "object",
+        "properties": {
+          "id_pagamento": {
+            "type": "integer",
+            "example": 1
+          },
+          "id_ingresso": {
+            "type": "integer",
+            "example": 1
+          },
+          "valor": {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "pattern": "^-?\\d+(?:\\.\\d+)?$"
+              }
+            ],
+            "description": "DECIMAL pode ser serializado como string pelo mysql2 ou como número após gravação/conversão.",
+            "example": "25.00"
+          },
+          "metodo_pagamento": {
+            "type": "string",
+            "enum": [
+              "cartao",
+              "pix",
+              "dinheiro"
+            ]
+          },
+          "data_pagamento": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-11-05T20:00:00.000Z"
+          }
+        },
+        "required": [
+          "id_pagamento",
+          "id_ingresso",
+          "valor",
+          "metodo_pagamento"
+        ]
+      },
+      "PagamentoCompra": {
+        "type": "object",
+        "properties": {
+          "id_pagamento": {
+            "type": "integer",
+            "example": 1
+          },
+          "id_ingresso": {
+            "type": "integer",
+            "example": 1
+          },
+          "valor": {
+            "type": "number"
+          },
+          "metodo_pagamento": {
+            "type": "string",
+            "enum": [
+              "cartao",
+              "pix",
+              "dinheiro"
+            ]
+          },
+          "data_pagamento": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-11-05T20:00:00.000Z"
+          }
+        },
+        "required": [
+          "id_pagamento",
+          "id_ingresso",
+          "valor"
+        ]
+      },
+      "Compra": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "id_sessao": {
+            "type": "integer",
+            "example": 1
+          },
+          "id_assento": {
+            "type": "integer",
+            "example": 1
+          },
+          "id_cliente": {
+            "type": "integer",
+            "example": 1
+          },
+          "tipo_ingresso": {
+            "type": "string",
+            "enum": [
+              "inteira",
+              "meia",
+              null
+            ],
+            "nullable": true
+          },
+          "valor_unitario": {
+            "type": "number",
+            "nullable": true
+          },
+          "pago": {
+            "type": "boolean"
+          },
+          "podePagar": {
+            "type": "boolean"
+          },
+          "pagamento": {
+            "type": "object",
+            "properties": {
+              "id_pagamento": {
+                "type": "integer",
+                "example": 1
+              },
+              "id_ingresso": {
+                "type": "integer",
+                "example": 1
+              },
+              "valor": {
+                "type": "number"
+              },
+              "metodo_pagamento": {
+                "type": "string",
+                "enum": [
+                  "cartao",
+                  "pix",
+                  "dinheiro"
+                ]
+              },
+              "data_pagamento": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true,
+                "example": "2026-11-05T20:00:00.000Z"
+              }
+            },
+            "required": [
+              "id_pagamento",
+              "id_ingresso",
+              "valor"
+            ],
+            "nullable": true
+          },
+          "status": {
+            "type": "string"
+          },
+          "canceladoEm": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-11-05T20:00:00.000Z"
+          },
+          "horario": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-11-05T20:00:00.000Z"
+          },
+          "sala": {
+            "type": "string"
+          },
+          "podeCancelar": {
+            "type": "boolean"
+          },
+          "filme": {
+            "type": "string"
+          },
+          "sessao": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-11-05T20:00:00.000Z"
+          },
+          "assento": {
+            "type": "string"
+          },
+          "valor": {
+            "type": "number"
+          },
+          "metodo": {
+            "type": "string"
+          },
+          "dataCompra": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2026-11-05T20:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "id_sessao",
+          "id_assento",
+          "id_cliente",
+          "pago",
+          "podePagar",
+          "pagamento",
+          "status",
+          "podeCancelar",
+          "valor"
+        ]
+      },
+      "Paginacao": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "totalPages": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "page",
+          "limit",
+          "total",
+          "totalPages"
+        ]
+      },
+      "GeracaoAssentos": {
+        "type": "object",
+        "properties": {
+          "criados": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer",
+            "example": 48
+          }
+        },
+        "required": [
+          "criados",
+          "total"
+        ]
+      },
+      "Ocupacao": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id_assento": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          "required": [
+            "id_assento"
+          ]
+        }
+      },
+      "FilmeCreate": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FilmeInput"
+          }
+        ],
+        "required": [
+          "titulo"
+        ]
+      },
+      "FilmeLista": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Filme"
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Filme"
+                }
+              },
+              "pagination": {
+                "$ref": "#/components/schemas/Paginacao"
+              }
+            },
+            "required": [
+              "data",
+              "pagination"
+            ]
+          }
+        ]
+      },
+      "SessaoCreate": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SessaoInput"
+          }
+        ],
+        "required": [
+          "id_filme",
+          "id_sala",
+          "horario",
+          "preco"
+        ]
+      },
+      "SessaoLista": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Sessao"
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Sessao"
+                }
+              },
+              "pagination": {
+                "$ref": "#/components/schemas/Paginacao"
+              }
+            },
+            "required": [
+              "data",
+              "pagination"
+            ]
+          }
+        ]
+      },
+      "SalaCreate": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SalaInput"
+          }
+        ],
+        "required": [
+          "nome"
+        ]
+      },
+      "SalaLista": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Sala"
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Sala"
+                }
+              },
+              "pagination": {
+                "$ref": "#/components/schemas/Paginacao"
+              }
+            },
+            "required": [
+              "data",
+              "pagination"
+            ]
+          }
+        ]
+      }
+    },
+    "responses": {
+      "Erro400": {
+        "description": "Dados inválidos segundo a validação do endpoint.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Mensagem"
+            }
+          }
+        }
+      },
+      "Erro401": {
+        "description": "Bearer JWT ausente, inválido ou expirado.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Mensagem"
+            }
+          }
+        }
+      },
+      "Erro403": {
+        "description": "Papel administrativo ou titularidade exigidos.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Mensagem"
+            }
+          }
+        }
+      },
+      "Erro404": {
+        "description": "Recurso não encontrado quando o endpoint verifica existência.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Mensagem"
+            }
+          }
+        }
+      },
+      "Erro409": {
+        "description": "Conflito de unicidade, ocupação, estado ou relacionamento.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Mensagem"
+            }
+          }
+        }
+      },
+      "Erro413": {
+        "description": "Pôster excede o limite de 5 MiB.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Mensagem"
+            }
+          }
+        }
+      },
+      "Erro500": {
+        "description": "Erro interno, incluindo falhas de banco/ORM não tratadas especificamente.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Mensagem"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -8,6 +8,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "vitest run",
+    "test:openapi": "vitest run tests/openapi.test.ts",
+    "validate:openapi": "node scripts/validate-openapi.cjs",
     "test:watch": "vitest",
     "test:verbose": "vitest run --reporter=verbose",
     "test:failfast": "vitest run --reporter=verbose --bail=1"
@@ -36,9 +38,11 @@
     "pg-hstore": "^2.3.4",
     "redis": "^5.12.1",
     "sequelize": "^6.37.8",
-    "sharp": "^0.35.4"
+    "sharp": "^0.35.4",
+    "swagger-ui-dist": "5.34.1"
   },
   "devDependencies": {
+    "@apidevtools/swagger-parser": "13.0.0",
     "@types/express": "^5.0.6",
     "@types/multer": "^2.2.0",
     "@types/node": "^25.5.0",

@@ -14,6 +14,7 @@ import PagamentosController from './controllers/pagamentos.controller';
 
 import { POSTER_DIRECTORY, receivePoster } from './middlewares/posterUpload';
 import { uploadPoster } from './controllers/posters.controller';
+import apiDocs from './docs/router';
 
 const app = express();
 app.use((req, res, next) => {
@@ -26,6 +27,7 @@ app.use((req, res, next) => {
     next();
 });
 app.use(express.json());
+app.use('/api-docs', apiDocs);
 app.use('/posters', express.static(POSTER_DIRECTORY, {
     dotfiles: 'deny', index: false,
     setHeaders: (res) => { res.setHeader('X-Content-Type-Options', 'nosniff'); },

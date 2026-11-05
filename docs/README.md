@@ -4,6 +4,10 @@ Arquivos preparados para cobrir os itens de Engenharia/Análise e Evolução da 
 
 ## Entregáveis
 
+- [Arquitetura de Software: guia de avaliação, C4, ADRs, DDD e Quality Scenarios](arquitetura/README.md).
+- [C4 — contexto](arquitetura/C4_CONTEXTO.md) e [containers](arquitetura/C4_CONTAINERS.md).
+- [DDD — Context Map e modelo tático](arquitetura/DDD.md).
+- [Cenários de qualidade e métricas verificáveis](arquitetura/QUALITY_SCENARIOS.md).
 - [CI, testes, deploy e rollback](CI_DEPLOY.md).
 - [Cache Redis: configuração, testes e demonstração](CACHE_REDIS.md).
 - [Redis Pub/Sub: eventos, consumidores e demonstração](REDIS_PUBSUB.md).

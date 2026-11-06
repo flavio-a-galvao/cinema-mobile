@@ -43,8 +43,9 @@ atual, sem inventar histórico de aprovação da equipe.
 - Há `stop_grace_period: 15s` no Compose, mas o processo aplica deadline interno
   de 10 s para drenar e encerrar. Os limites não são uma medição de recuperação.
 - TLS local exige par correspondente e confiança explícita. O proxy aplica HSTS
-  e CSP; tráfego interno permanece sem TLS. A CSP pode bloquear Google Fonts
-  declarado pelo HTML, conforme [contexto](../C4_CONTEXTO.md).
+  e CSP; tráfego interno permanece sem TLS. O conflito original com Google Fonts
+  foi corrigido na auditoria removendo referências externas, sem enfraquecer CSP,
+  conforme [contexto](../C4_CONTEXTO.md).
 - Volumes exigem backup e cuidado com o nome do projeto. Compose em host único
   não oferece redundância nem comprova prontidão para produção.
 - `docker-compose.test.yml` é legado e não possui Redis. A prova Redis usa o

@@ -4,7 +4,7 @@ services:
     container_name: meu-mysql-test
     restart: unless-stopped
     env_file:
-      - .env
+      - ${ENV_FILE:-.env}
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
@@ -22,7 +22,7 @@ services:
       dockerfile: Dockerfile
     container_name: back_service_test
     env_file:
-      - .env
+      - ${ENV_FILE:-.env}
     environment:
       PORT: ${PORT:-3000}
       DB_HOST: database

@@ -316,9 +316,11 @@ Critérios de aceite:
 
 ## Tasks e Bugs
 
-São trabalho proposto; os dois bugs são achados de inspeção estática, sem correção
-executada nem reprodução visual alegada. Nenhum desses registros foi criado no
-Jira por esta etapa.
+Na elaboração original, eram trabalho proposto e achados estáticos. A auditoria
+final corrigiu BUG01/BUG02 no HTML; fonte local/CSP e idioma foram conferidos no
+build. O CSV continua sendo preparo para conciliação/aceite, sem movimentação
+Jira nem reprodução do defeito original no proxy real. Veja o
+[relatório final](../RELATORIO_FINAL_RUBRICA.md).
 
 ### TK01 — Confirmar projeto e configurar importação/quadros
 
@@ -389,7 +391,9 @@ Aceite:
 ### BUG01 — Conciliar Google Fonts com a CSP vigente
 
 Bug; EP06; P2; 2 h. Associado a US02.
-Incompatibilidade estática: HTML aponta Google Fonts e CSP aceita estilo/fonte da própria origem; efeito visual ainda não verificado.
+Na base `8145040`, HTML apontava Google Fonts e a CSP aceitava estilo/fonte da
+própria origem. A auditoria removeu as referências externas e preservou o
+fallback local. Aceite de apresentação no ambiente real continua pendente.
 Fontes: [Projeto-front-end/public/index.html](../../Projeto-front-end/public/index.html), [nginx.conf](../../nginx.conf), [docs/arquitetura/C4_CONTEXTO.md](../../docs/arquitetura/C4_CONTEXTO.md).
 
 Aceite:
@@ -400,7 +404,9 @@ Aceite:
 ### BUG02 — Alinhar idioma declarado do HTML web
 
 Bug; EP06; P2; 1 h. Associado a US02.
-Defeito estático observado: <html lang="en"> na aplicação web com conteúdo em português; não é relatório de usuário nem teste assistivo executado.
+Na base `8145040`, o HTML declarava `lang="en"` apesar do conteúdo em português.
+A auditoria corrigiu para `pt-BR` e conferiu o build; não é aprovação de teste
+assistivo ou de issue Jira.
 Fontes: [Projeto-front-end/public/index.html](../../Projeto-front-end/public/index.html).
 
 Aceite:

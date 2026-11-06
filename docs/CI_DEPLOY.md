@@ -40,6 +40,14 @@ Todos os testes existentes foram preservados. A suíte configurada seleciona
 Ela depende da aplicação completa em `https://cinema.local`, com banco descartável,
 API, front-end, Nginx e certificados locais. Não aponta para produção.
 
+Na auditoria, helpers foram alinhados à segurança da API: cadastro público nunca
+cria admin e não existe DELETE de usuário. Provisione conta administrativa
+somente no banco descartável e configure `E2E_ADMIN_EMAIL`/`E2E_ADMIN_PASSWORD`
+na sessão, sem versionar credenciais. Confirme `CINEMAX_E2E_ISOLATED=1` antes de
+executar. Os usuários sintéticos permanecem no ambiente isolado; o teste não
+declara limpeza inexistente nem exclui volumes. A capacidade de sala testada é 48.
+`E2E_BASE_URL` permite outro host de teste explicitamente configurado.
+
 Configure `.env` a partir de `.env.example`, o certificado `certs/cinema.local.crt`
 e sua chave privada correspondente `certs/cinema.local.key` (ausente no clone;
 gere um par local se necessário, sem versionar a chave), e a resolução
@@ -51,6 +59,8 @@ npm --prefix Projeto-front-end exec -- playwright install chromium
 docker compose -p cinemax-e2e -f docker-compose.test.yml up -d --build
 try {
   # Aguarde banco, API e https://cinema.local ficarem disponíveis antes dos testes.
+  $env:CINEMAX_E2E_ISOLATED = '1'
+  # E2E_ADMIN_EMAIL e E2E_ADMIN_PASSWORD: conta de teste provisionada previamente.
   npm --prefix Projeto-front-end run test:e2e -- --project=chromium --reporter=list
   if ($LASTEXITCODE -ne 0) { throw 'Playwright falhou' }
 } finally {
@@ -64,6 +74,8 @@ O `down` preserva o volume de testes; use um banco de testes limpo para repetir
 cenários. Não execute essa suíte contra dados reais. Para os três navegadores,
 instale-os com `playwright install` e omita `--project=chromium`.
 Os scripts visuais existentes continuam disponíveis por opção explícita.
+O navegador exige certificado confiável: `ignoreHTTPSErrors` permanece falso;
+instale/confie na CA local conforme a política do notebook, sem contornar avisos.
 
 ## GitHub Actions
 

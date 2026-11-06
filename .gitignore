@@ -46,3 +46,4 @@ referencias/
 
 # Coverage
 coverage/
+.audit-tmp/

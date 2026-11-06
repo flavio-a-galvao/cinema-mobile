@@ -16,11 +16,13 @@ interface AdminSalaFormProps {
   mode: AdminFormMode;
 }
 
+const ROOM_CAPACITY = 48;
+
 function AdminSalaForm({ mode }: AdminSalaFormProps) {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = useMemo(() => mode === "edit", [mode]);
-  const [formData, setFormData] = useState<SalaFormData>({ nome: "", capacidade: "40", gerarAssentos: true });
+  const [formData, setFormData] = useState<SalaFormData>({ nome: "", capacidade: String(ROOM_CAPACITY), gerarAssentos: true });
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState("");
 
@@ -30,7 +32,7 @@ function AdminSalaForm({ mode }: AdminSalaFormProps) {
     async function load() {
       try {
         const sala = await api.get<Sala>(`/salas/${id}`);
-        setFormData({ nome: String(sala.nome || ""), capacidade: String(sala.capacidade || ""), gerarAssentos: false });
+        setFormData({ nome: String(sala.nome || ""), capacidade: String(ROOM_CAPACITY), gerarAssentos: false });
       } catch (error) {
         const message = error instanceof Error ? error.message : "Nao foi possivel carregar sala.";
         setFeedback(message);
@@ -51,8 +53,8 @@ function AdminSalaForm({ mode }: AdminSalaFormProps) {
     const nome = String(formData.nome || "").trim();
     const capacidade = Number(formData.capacidade || 0);
 
-    if (!nome || !Number.isFinite(capacidade) || capacidade <= 0) {
-      setFeedback("Preencha nome e capacidade validos.");
+    if (!nome || capacidade !== ROOM_CAPACITY) {
+      setFeedback("Preencha o nome. O mapa padrao possui 48 lugares.");
       return;
     }
 
@@ -66,10 +68,7 @@ function AdminSalaForm({ mode }: AdminSalaFormProps) {
         const sala = await api.post<Sala>("/salas", { nome, capacidade });
 
         if (formData.gerarAssentos) {
-          for (let numero = 1; numero <= capacidade; numero += 1) {
-            const fila = String.fromCharCode(65 + Math.floor((numero - 1) / 10));
-            await api.post<void>("/assentos", { id_sala: sala.id_sala, numero: String(numero), fila });
-          }
+          await api.post(`/salas/${sala.id_sala}/assentos/gerar`, {});
         }
       }
 
@@ -93,7 +92,8 @@ function AdminSalaForm({ mode }: AdminSalaFormProps) {
           <input name="nome" value={formData.nome} onChange={handleChange} />
 
           <label>Capacidade</label>
-          <input name="capacidade" type="number" min="1" value={formData.capacidade} onChange={handleChange} />
+          <input name="capacidade" aria-label="Capacidade" type="number" value={formData.capacidade} readOnly />
+          <small>Mapa padrao A1–F8, com 48 lugares.</small>
 
           {!isEdit && (
             <label className="checkbox-inline">

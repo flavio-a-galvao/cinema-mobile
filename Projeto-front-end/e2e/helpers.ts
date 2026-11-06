@@ -13,41 +13,30 @@ export async function loginAsUser(page: Page, email: string, password: string) {
   await page.fill('input[name="senha"]', password);
   await page.click('button:has-text("Entrar")');
 
-  await Promise.all([
-    page.waitForURL('**/', { timeout: 5000 }),
-    page.locator('button.usuario-trigger').waitFor({ state: 'visible', timeout: 5000 }),
-  ]).catch(() => {});
+  await page.locator('button.usuario-trigger').waitFor({ state: 'visible', timeout: 10000 });
 }
 
 /**
- * Create admin user via API
+ * Lê uma conta administrativa provisionada no ambiente isolado.
+ * O cadastro público NÃO permite elevar o papel para admin.
  */
 export async function createAdminUser(page: Page, overrides?: Partial<SignupData>): Promise<SignupData> {
-  const timestamp = Date.now();
+  const email = process.env.E2E_ADMIN_EMAIL;
+  const senha = process.env.E2E_ADMIN_PASSWORD;
+  if (!email || !senha) throw new Error('Provisione admin no banco de teste e configure E2E_ADMIN_EMAIL/E2E_ADMIN_PASSWORD.');
   const data: SignupData = {
     nome: 'Admin Teste',
     cpf: generateValidCPF(),
-    email: `admin-teste-${timestamp}@teste.com`,
+    email,
     telefone: '11987654321',
-    senha: 'AdminTeste123!',
-    confirmarSenha: 'AdminTeste123!',
+    senha,
+    confirmarSenha: senha,
     ...overrides,
   };
 
-  // Create admin user via API
-  const response = await page.request.post('https://cinema.local/api/usuarios', {
-    data: {
-      nome: data.nome,
-      email: data.email,
-      cpf: data.cpf,
-      telefone: data.telefone,
-      senha: data.senha,
-      tipo_usuario: 'admin', // Important: set as admin
-    },
-  });
-
-  if (!response.ok()) {
-    console.error('Failed to create admin user:', await response.text());
+  const response = await page.request.post('/api/auth/login', { data: { email: data.email, senha: data.senha } });
+  if (!response.ok() || (await response.json()).user?.tipo_usuario !== 'admin') {
+    throw new Error('A conta E2E configurada não autenticou como admin; nenhum papel foi alterado pela API.');
   }
 
   return data;
@@ -60,7 +49,8 @@ export async function loginAsAdmin(page: Page, adminData?: SignupData) {
   if (adminData) {
     await loginAsUser(page, adminData.email, adminData.senha);
   } else {
-    await loginAsUser(page, 'admin@cinema.com', 'Admin123!');
+    const account = await createAdminUser(page);
+    await loginAsUser(page, account.email, account.senha);
   }
 }
 
@@ -111,14 +101,8 @@ export async function signupNewUser(page: Page, overrides?: Partial<SignupData>)
  * Delete user via API
  */
 export async function deleteUserViaAPI(page: Page, email: string): Promise<boolean> {
-  try {
-    const response = await page.request.delete(`https://cinema.local/api/usuarios/${email}`);
-    console.log(`🗑️ Usuário ${email} deletado (${response.status()})`);
-    return response.ok();
-  } catch (error) {
-    console.error(`❌ Erro ao deletar usuário ${email}:`, error);
-    return false;
-  }
+  // Não existe DELETE de usuário na API atual. Nunca simular limpeza bem-sucedida.
+  return false;
 }
 
 /**
@@ -138,7 +122,7 @@ export async function cleanupTestUsers(page: Page, userEmails: string[]): Promis
  */
 export async function getAuthToken(page: Page, email: string, senha: string): Promise<string | null> {
   try {
-    const response = await page.request.post('https://cinema.local/api/login', {
+    const response = await page.request.post('/api/auth/login', {
       data: { email, senha },
     });
     const data = await response.json();

@@ -1,0 +1,98 @@
+{
+  "checkedAt": "2026-11-06T01:09:36.018Z",
+  "command": "npm audit --omit=dev --json",
+  "backend": {
+    "before": {
+      "info": 0,
+      "low": 0,
+      "moderate": 5,
+      "high": 3,
+      "critical": 1,
+      "total": 9
+    },
+    "after": {
+      "info": 0,
+      "low": 0,
+      "moderate": 2,
+      "high": 0,
+      "critical": 0,
+      "total": 2
+    },
+    "remaining": [
+      "sequelize",
+      "uuid"
+    ]
+  },
+  "frontend": {
+    "before": {
+      "info": 0,
+      "low": 17,
+      "moderate": 14,
+      "high": 33,
+      "critical": 3,
+      "total": 67
+    },
+    "after": {
+      "info": 0,
+      "low": 16,
+      "moderate": 6,
+      "high": 13,
+      "critical": 0,
+      "total": 35
+    },
+    "remaining": [
+      "@jest/core",
+      "@rollup/plugin-node-resolve",
+      "@svgr/plugin-svgo",
+      "@svgr/webpack",
+      "@tootallnate/once",
+      "bfj",
+      "css-minimizer-webpack-plugin",
+      "css-select",
+      "deepmerge",
+      "fork-ts-checker-webpack-plugin",
+      "http-proxy-agent",
+      "jest",
+      "jest-cli",
+      "jest-config",
+      "jest-environment-jsdom",
+      "jest-runner",
+      "jest-watch-typeahead",
+      "jsdom",
+      "jsonpath",
+      "nth-check",
+      "postcss",
+      "qs",
+      "react-dev-utils",
+      "react-scripts",
+      "resolve-url-loader",
+      "rollup-plugin-terser",
+      "serialize-javascript",
+      "sockjs",
+      "svgo",
+      "underscore",
+      "uuid",
+      "webpack-dev-middleware",
+      "webpack-dev-server",
+      "workbox-build",
+      "workbox-webpack-plugin"
+    ]
+  },
+  "compatibleUpdatesOnly": true,
+  "forceUsed": false,
+  "secretScan": {
+    "scope": "Arquivos de texto atuais do repositorio e novos artefatos; modulo anterior excluido, sem auditoria de todo o historico Git",
+    "scanned": 213,
+    "findings": [],
+    "checkedAt": "2026-11-06T01:19:06.859Z"
+  },
+  "frontendHtml": {
+    "ptBR": true,
+    "googleFontsRemoved": true
+  },
+  "limitations": [
+    "Alertas npm nao sao prova automatica de exploracao no runtime.",
+    "Backend: cadeia sequelize/uuid requer estudo sem downgrade para sequelize 3.",
+    "Frontend: CRA possui dependencias legadas de build/teste; migracao de plataforma fora do escopo."
+  ]
+}

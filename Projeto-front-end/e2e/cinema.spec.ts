@@ -2,6 +2,12 @@ import { test, expect } from '@playwright/test';
 import { signupNewUser, createAdminUser, loginAsAdmin } from './helpers';
 import { trackUser, cleanupAllTestData } from './cleanup';
 
+test.beforeAll(() => {
+  if (process.env.CINEMAX_E2E_ISOLATED !== '1') {
+    throw new Error('Execute somente em ambiente descartável e confirme CINEMAX_E2E_ISOLATED=1.');
+  }
+});
+
 // Limpeza automática após cada teste
 test.afterEach(async ({ page }) => {
   await cleanupAllTestData(page);
@@ -36,7 +42,7 @@ test.describe('Login', () => {
     await expect(page.locator('button.usuario-trigger')).toBeVisible({ timeout: 10000 });
     console.log('✅ Botão usuário-trigger encontrado');
     
-    await expect(page).toHaveURL('https://cinema.local/');
+    await expect(page).toHaveURL(new URL('/', process.env.E2E_BASE_URL || 'https://cinema.local').href);
     console.log('✅ Login realizado com sucesso!');
   });
 
@@ -240,8 +246,7 @@ test.describe('CRUD Filmes', () => {
     console.log('📝 Iniciando: CRUD Filmes - Fluxo Completo');
     
     const adminData = await createAdminUser(page);
-    trackUser(adminData.email);
-    console.log(`👤 Admin criado: ${adminData.email}`);
+    console.log(`Conta admin provisionada validada: ${adminData.email}`);
     await page.waitForTimeout(1000);
 
     await loginAsAdmin(page, adminData);
@@ -342,7 +347,6 @@ test.describe('CRUD Filmes', () => {
     console.log('📝 Iniciando: Filme sem título (deve falhar)');
     
     const adminData = await createAdminUser(page);
-    trackUser(adminData.email);
     await loginAsAdmin(page, adminData);
     await page.goto('/admin/filmes');
     await page.waitForTimeout(1500);
@@ -372,8 +376,7 @@ test.describe('CRUD Salas', () => {
     console.log('📝 Iniciando: CRUD Salas - Fluxo Criar/Listar/Editar');
     
     const adminData = await createAdminUser(page);
-    trackUser(adminData.email);
-    console.log(`👤 Admin criado: ${adminData.email}`);
+    console.log(`Conta admin provisionada validada: ${adminData.email}`);
     await page.waitForTimeout(1000);
 
     await loginAsAdmin(page, adminData);
@@ -397,7 +400,7 @@ test.describe('CRUD Salas', () => {
     console.log('✏️ Nome da sala preenchido');
     await page.waitForTimeout(300);
 
-    await page.fill('input[name="capacidade"]', '60');
+    await expect(page.locator('input[name="capacidade"]')).toHaveValue('48');
     console.log('✏️ Capacidade preenchida');
     await page.waitForTimeout(500);
 
@@ -435,12 +438,11 @@ test.describe('CRUD Salas', () => {
     console.log('✅ Sala atualizada com sucesso (CREATE/READ/UPDATE)');
   });
 
-  test('❌ Falha: criar sala com capacidade inválida (0)', async ({ page }) => {
+  test('Mapa de sala mantém capacidade fixa de 48 lugares', async ({ page }) => {
     test.slow();
-    console.log('📝 Iniciando: Sala com capacidade 0 (deve falhar)');
+    console.log('Verificando capacidade fixa do mapa de 48 lugares.');
     
     const adminData = await createAdminUser(page);
-    trackUser(adminData.email);
     await loginAsAdmin(page, adminData);
     await page.goto('/admin/salas');
     await page.waitForTimeout(1500);
@@ -448,16 +450,12 @@ test.describe('CRUD Salas', () => {
     await page.click('button:has-text("Cadastrar nova sala")');
     await page.waitForTimeout(1000);
 
-    await page.fill('input[name="nome"]', 'Sala Inválida');
-    await page.fill('input[name="capacidade"]', '0');
+    await page.fill('input[name="nome"]', 'Sala de demonstracao');
+    await expect(page.locator('input[name="capacidade"]')).toHaveValue('48');
+    await expect(page.locator('input[name="capacidade"]')).not.toBeEditable();
     await page.waitForTimeout(500);
 
-    await page.click('button:has-text("Salvar")');
-    console.log('🔘 Tentando salvar sala com capacidade 0');
-    await page.waitForTimeout(1500);
-
-    await expect(page.locator('text=capacidade')).toBeVisible();
-    console.log('✅ Mensagem de erro exibida');
+    await expect(page.getByText('Mapa padrao A1–F8, com 48 lugares.')).toBeVisible();
   });
 });
 

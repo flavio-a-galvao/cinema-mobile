@@ -1,12 +1,15 @@
 // Executar após o build no ambiente MySQL configurado: node --test tests/pagamentos.mysql.integration.cjs
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
+assert.equal(process.env.CINEMAX_MYSQL_INTEGRATION_ISOLATED, '1',
+ 'Confirme banco descartavel com CINEMAX_MYSQL_INTEGRATION_ISOLATED=1 antes de executar; nunca use dados reais.');
 const { randomUUID } = require('node:crypto');
 const jwt = require('jsonwebtoken');
 const db = require('../dist/config/database').default;
 const app = require('../dist/app').default;
 const { JWT_SECRET } = require('../dist/config/auth');
 const { ensureTicketPaymentSchema } = require('../dist/utils/ensureTicketPaymentSchema');
+const { ensureIngressosSchema } = require('../dist/utils/ensureIngressosSchema');
 const models = Object.fromEntries(['Cliente','User','Sala','Assento','Filme','Sessao','Ingresso','Pagamento'].map(name=>[name,require('../dist/models/'+name).default]));
 db.options.logging=false;
 
@@ -15,12 +18,13 @@ test('Integração MySQL: isolamento, preço, recuperação e concorrência', as
  async function fixture(name,values){const record=await models[name].create(values);fixtures.push(record);return record;}
  try {
   await db.authenticate();
+  await ensureIngressosSchema(db);
   await ensureTicketPaymentSchema(db); await ensureTicketPaymentSchema(db);
   const tag=randomUUID();
   const user=await fixture('User',{nome:'Teste de segurança',email:tag+'@test.invalid',senha:'HASH_TESTE_NAO_RETORNAR',tipo_usuario:'cliente'});
   client=await fixture('Cliente',{nome:'Teste de segurança',email:user.email});
   const movie=await fixture('Filme',{titulo:'Teste isolado de pagamento'});
-  const room=await fixture('Sala',{nome:'Sala teste temporária',capacidade:2});
+  const room=await fixture('Sala',{nome:'Sala teste temporária',capacidade:48});
   const seats=[];for(let numero=1;numero<=2;numero++)seats.push(await fixture('Assento',{id_sala:room.id_sala,fila:'A',numero}));
   session=await fixture('Sessao',{id_filme:movie.id_filme,id_sala:room.id_sala,horario:new Date('2099-01-01T22:00:00Z'),preco:25.01});
   server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
@@ -60,6 +64,17 @@ test('Integração MySQL: isolamento, preço, recuperação e concorrência', as
    assert.equal((await call('/pagamentos','POST',payload)).status,409);
    await assert.rejects(models.Pagamento.create({...payload,valor:12.51}),error=>error.name==='SequelizeUniqueConstraintError');
    const own=(await call('/me/compras')).body;assert.equal(own.find(item=>item.id===payload.id_ingresso).podePagar,false);assert.equal(own.filter(item=>item.podePagar).length,1);
+  });
+  await t.test('emissão concorrente ocupa um assento somente uma vez',async()=>{
+   const seat=await fixture('Assento',{id_sala:room.id_sala,fila:'A',numero:'3'});
+   const payload={id_sessao:session.id_sessao,id_cliente:client.id_cliente,id_assento:seat.id_assento};
+   const results=await Promise.all([call('/ingressos','POST',payload),call('/ingressos','POST',payload)]);
+   assert.deepEqual(results.map(result=>result.status).sort(),[201,409]);
+   assert.equal(await models.Ingresso.count({where:{id_sessao:session.id_sessao,id_assento:seat.id_assento,status:'ativo'}}),1);
+   const created=results.find(result=>result.status===201).body;
+   assert.equal((await call('/ingressos/'+created.id_ingresso+'/cancelar','PATCH')).status,200);
+   assert.equal(await models.Ingresso.count({where:{id_sessao:session.id_sessao,id_assento:seat.id_assento,status:'ativo'}}),0);
+   assert.equal((await call('/ingressos','POST',payload)).status,201);
   });
  } finally {
   if(server)await new Promise(resolve=>server.close(resolve));

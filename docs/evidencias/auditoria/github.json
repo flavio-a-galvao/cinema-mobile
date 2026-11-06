@@ -1,0 +1,90 @@
+{
+    "checkedAt":  "2026-11-06T00:57:00.9802747Z",
+    "runs":  [
+                 {
+                     "name":  "Cinemax CI",
+                     "head_sha":  "8145040b756d327b288c4dbdf8761335a77ff79c",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "html_url":  "https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/42138386775",
+                     "created_at":  "2026-11-06T00:39:15Z"
+                 },
+                 {
+                     "name":  "Cinemax CI",
+                     "head_sha":  "c8263684cf6c41cfd9aac669d17780ab9e7fdf8e",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "html_url":  "https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/42135802666",
+                     "created_at":  "2026-11-06T00:18:00Z"
+                 },
+                 {
+                     "name":  "Cinemax CI",
+                     "head_sha":  "185f1556ed29beb76512ba8f5008e80c320cb532",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "html_url":  "https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/42133107692",
+                     "created_at":  "2026-11-05T23:56:09Z"
+                 },
+                 {
+                     "name":  "Cinemax CI",
+                     "head_sha":  "5228fab2b4bdd958c2ef2ec5ba835ca2d097d52b",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "html_url":  "https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/42131191336",
+                     "created_at":  "2026-11-05T23:40:33Z"
+                 },
+                 {
+                     "name":  "Cinemax CI",
+                     "head_sha":  "e23bd866e658bde13e4de02f8565b92efe0c0703",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "html_url":  "https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/41752238115",
+                     "created_at":  "2026-11-04T01:10:51Z"
+                 },
+                 {
+                     "name":  "Cinemax CI",
+                     "head_sha":  "5c6a580922213a8434f8773f214057e3f92113d1",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "html_url":  "https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/41749185576",
+                     "created_at":  "2026-11-04T00:45:23Z"
+                 },
+                 {
+                     "name":  "Cinemax CI",
+                     "head_sha":  "8893d8674a97ea8522254c9504ee594037fb9892",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "html_url":  "https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/41745607896",
+                     "created_at":  "2026-11-04T00:16:43Z"
+                 },
+                 {
+                     "name":  "Cinemax CI",
+                     "head_sha":  "67645c98e906cb13e0b06ac5af8681a01311cf84",
+                     "status":  "completed",
+                     "conclusion":  "success",
+                     "html_url":  "https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/41743680719",
+                     "created_at":  "2026-11-04T00:01:35Z"
+                 }
+             ],
+    "baselineJobs":  [
+                         {
+                             "name":  "Build e testes - Projeto-back-end",
+                             "conclusion":  "success",
+                             "html_url":  "https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/42138386775/job/127632222258"
+                         },
+                         {
+                             "name":  "Build e testes - Projeto-front-end",
+                             "conclusion":  "success",
+                             "html_url":  "https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/42138386775/job/127632222556"
+                         },
+                         {
+                             "name":  "Demonstração manual de deploy - sem publicação",
+                             "conclusion":  "skipped",
+                             "html_url":  "https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/42138386775/job/127632447225"
+                         }
+                     ],
+    "releasesReturned":  0,
+    "releases":  [
+
+                 ]
+}

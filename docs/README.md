@@ -4,6 +4,7 @@ Arquivos preparados para cobrir os itens de Engenharia/Análise e Evolução da 
 
 ## Entregáveis
 
+- [Relatório final da rubrica: pesos oficiais, auditoria, evidências e pendências](RELATORIO_FINAL_RUBRICA.md).
 - [Tech Forge: Cynefin, backlog, Kanban, ciclo de vida e preparo para Jira](gestao/README.md).
 - [Observabilidade, resiliência, SLIs, SLOs e evidências locais](OBSERVABILIDADE_RESILIENCIA.md).
 - [Runbook de incidentes: diagnóstico, recuperação e rollback](RUNBOOK_INCIDENTES.md).

@@ -565,7 +565,9 @@ Fontes:
 https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/gestao/PLANEJAMENTO_AGIL.md
 
 To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","6","Highest","To Do","cinemax-gestao"
-"29","Bug","[CMX-BUG01] Conciliar Google Fonts com a CSP vigente","ID local: BUG01; épico: EP06; ordem proposta: 22.
+"29","Bug","[CMX-BUG01] Conciliar Google Fonts com a CSP vigente","Atualizacao da auditoria: correcao tecnica aplicada ao HTML; aceite e status Jira nao confirmados. Ver docs/RELATORIO_FINAL_RUBRICA.md.
+
+ID local: BUG01; épico: EP06; ordem proposta: 22.
 
 Incompatibilidade estática: HTML aponta Google Fonts e CSP aceita estilo/fonte da própria origem; efeito visual ainda não verificado.
 
@@ -589,7 +591,9 @@ https://github.com/flavio-a-galvao/cinema-mobile/blob/main/nginx.conf
 https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/arquitetura/C4_CONTEXTO.md
 
 To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","6","Medium","To Do","cinemax-gestao"
-"30","Bug","[CMX-BUG02] Alinhar idioma declarado do HTML web","ID local: BUG02; épico: EP06; ordem proposta: 23.
+"30","Bug","[CMX-BUG02] Alinhar idioma declarado do HTML web","Atualizacao da auditoria: correcao tecnica aplicada ao HTML; aceite e status Jira nao confirmados. Ver docs/RELATORIO_FINAL_RUBRICA.md.
+
+ID local: BUG02; épico: EP06; ordem proposta: 23.
 
 Defeito estático observado: <html lang=""en""> na aplicação web com conteúdo em português; não é relatório de usuário nem teste assistivo executado.
 

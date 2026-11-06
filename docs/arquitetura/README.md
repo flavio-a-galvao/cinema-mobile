@@ -16,9 +16,9 @@ código da branch `main`, base `e23bd86`. O escopo é a aplicação web e sua AP
 | DDD tático | [Modelo de Bilheteria](DDD.md#modelo-tático-conceitual-de-bilheteria) | Entities, Value Objects, Aggregate e invariantes |
 | Quality Scenarios | [Cenários de qualidade](QUALITY_SCENARIOS.md) | Desempenho, disponibilidade, resiliência, segurança e manutenibilidade |
 
-O mapeamento cobre os critérios fornecidos no pedido. A rubrica integral da
-instituição não está anexada; outros requisitos formais precisam ser conferidos
-na entrega acadêmica.
+O mapeamento original cobriu os critérios então informados. O PDF oficial foi
+fornecido na auditoria final; pesos e descritores conferidos estão no
+[relatório final](../RELATORIO_FINAL_RUBRICA.md).
 
 ## Como interpretar
 
@@ -36,7 +36,7 @@ Os diagramas usam blocos `mermaid` com `flowchart`, sem extensões C4 ou serviç
 externos de renderização. Os níveis seguem a abstração do C4 com notação própria
 explicitada nas legendas. A inspeção estrutural não equivale a renderização.
 
-## Base e limites da entrega
+## Base e limites da entrega original
 
 As fontes principais são [rotas da API](../../Projeto-back-end/src/app.ts),
 [inicialização](../../Projeto-back-end/src/server.ts),
@@ -50,6 +50,11 @@ conferência estrutural dos diagramas e rastreabilidade com as fontes; `git diff
 disponível nas dependências locais nem comando `mmdc` no PATH: a sintaxe foi
 revisada estruturalmente, mas os diagramas **não foram renderizados nem validados
 por um parser Mermaid**. Conferir a visualização no GitHub permanece pendente.
+
+Atualização da auditoria: os 18 blocos/arquivos Mermaid foram parseados e
+renderizados em Chrome headless. C4 e Context Map tiveram imagens inspecionadas;
+os [resultados e artefatos](../evidencias/auditoria/local.json) distinguem essa
+validação local da visualização no GitHub, que não foi executada.
 
 Consulte também [CI e deploy](../CI_DEPLOY.md), [cache](../CACHE_REDIS.md),
 [Pub/Sub](../REDIS_PUBSUB.md), [infraestrutura](../INFRAESTRUTURA_DOCKER.md) e

@@ -51,25 +51,10 @@ export function clearTrackedData() {
 }
 
 /**
- * Clean up all test data from database
+ * Encerra o rastreamento local; os dados ficam no ambiente descartável.
  */
 export async function cleanupAllTestData(page: Page) {
-  console.log('🧹 Limpando dados de teste do banco...');
-  const data = getTrackedData();
-
-  // Delete test users
-  for (const email of data.users) {
-    try {
-      const response = await page.request.delete(`https://cinema.local/api/usuarios/${email}`);
-      if (response.ok()) {
-        console.log(`  ✅ Usuário deletado: ${email}`);
-      }
-    } catch (error) {
-      console.log(`  ⚠️ Erro ao deletar: ${email}`);
-    }
-    await page.waitForTimeout(200);
-  }
-
+  console.log('Dados sintéticos permanecem somente no ambiente E2E isolado; não existe DELETE de usuário na API.');
   clearTrackedData();
-  console.log('🧹 Limpeza concluída!\n');
+  console.log('Rastreamento local encerrado, sem exclusões de dados.');
 }

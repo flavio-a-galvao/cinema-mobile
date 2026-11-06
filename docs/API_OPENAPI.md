@@ -150,6 +150,12 @@ simulação do prefixo. Não houve acesso visual em navegador, execução de Doc
 teste com Nginx real ou nova integração de negócio com banco neste notebook.
 Essas demonstrações visuais/reais permanecem para o ambiente operacional.
 
+Atualização na auditoria final: o Swagger foi renderizado e inspecionado em
+Chrome headless, com 52 operações e sem erro de CSP no servidor HTTP local que
+reproduz a política do proxy. Veja [captura](evidencias/auditoria/swagger-local.png)
+e [registro](evidencias/auditoria/local.json). Isso não substitui teste do Nginx
+ou HTTPS reais, ainda dependentes de daemon Docker funcional neste notebook.
+
 Referências técnicas: [OpenAPI 3.0.3](https://spec.openapis.org/oas/v3.0.3.html),
 [Swagger UI](https://swagger.io/docs/open-source-tools/swagger-ui/usage/installation/)
 e [Swagger Parser](https://apidevtools.com/swagger-parser/).

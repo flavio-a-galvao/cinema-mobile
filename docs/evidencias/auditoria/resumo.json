@@ -1,0 +1,226 @@
+{
+  "checkedAt": "2026-11-06T01:19:08.019Z",
+  "timezone": "America/Sao_Paulo",
+  "baseline": "8145040b756d327b288c4dbdf8761335a77ff79c",
+  "branch": "main",
+  "previousCommitsPreserved": [
+    "67645c9",
+    "8893d86",
+    "5c6a580",
+    "e23bd86",
+    "5228fab",
+    "185f155",
+    "c826368",
+    "8145040"
+  ],
+  "mobile": {
+    "unchanged": true,
+    "tree": "dfafc0aa9e0f1bb1741987243d040b9dc34426a9",
+    "untrackedFiles": 0
+  },
+  "rubric": {
+    "sourceSha256": "7ac514768fcaae983c9abc63baa4c94b1dbae1c402230d215f71b495c5d9e262",
+    "architectureWeights": [
+      0.5,
+      1,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "backendWeights": [
+      1,
+      0.5,
+      1,
+      0.5
+    ],
+    "techForgeWeights": [
+      1,
+      1,
+      1
+    ],
+    "maximum": 9,
+    "additionalProjectGrade": "Sem estimativa: descritores insuficientes"
+  },
+  "automatedTests": {
+    "backend": {
+      "passed": 420,
+      "total": 420,
+      "files": 28,
+      "success": true
+    },
+    "frontend": {
+      "passed": 5,
+      "total": 5,
+      "files": 2,
+      "success": true
+    }
+  },
+  "executedBuilds": [
+    {
+      "command": "npm --prefix Projeto-back-end run build",
+      "exitCode": 0
+    },
+    {
+      "command": "npm --prefix Projeto-front-end run build",
+      "exitCode": 0
+    }
+  ],
+  "installation": {
+    "command": "npm ci",
+    "modules": [
+      "Projeto-back-end",
+      "Projeto-front-end"
+    ],
+    "result": "passed on final lockfiles",
+    "node": "v22.13.0",
+    "npm": "10.9.2",
+    "ciNode": "24"
+  },
+  "openapi": {
+    "version": "3.0.3",
+    "paths": 34,
+    "operations": 52,
+    "validation": "npm --prefix Projeto-back-end run validate:openapi",
+    "result": "passed"
+  },
+  "localChecks": {
+    "source": "local.json",
+    "http": 12,
+    "swagger": {
+      "rendered": true,
+      "browser": "Chrome headless",
+      "browserVersion": "156.0.8078.48",
+      "operations": 52,
+      "policy": "CSP copiada do nginx.conf; proxy real não iniciado",
+      "cspErrors": 0
+    },
+    "frontend": {
+      "rendered": true,
+      "route": "/admin/salas/nova",
+      "htmlLang": "pt-BR",
+      "capacity": 48,
+      "readOnly": true,
+      "scope": "Build SPA real; identidade de UI simulada. Não é login ou CRUD integrado com MySQL."
+    },
+    "mermaidDiagrams": 18
+  },
+  "docker": {
+    "version": {
+      "command": "docker version --format {{json .Server}}",
+      "exitCode": 1,
+      "stdout": "null",
+      "stderr": "error during connect: Get \"http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.47/version\": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified."
+    },
+    "compose": [
+      {
+        "command": "docker compose --env-file .env.infra-check -p cinemax-infra-check config --quiet",
+        "exitCode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": "docker compose --env-file .env.infra-check -p cinemax-infra-check -f docker-compose.test.yml config --quiet",
+        "exitCode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "realInfraExecutedThisAudit": false,
+    "volumeRemovalCommandsExecuted": false,
+    "historicalEvidence": "docs/evidencias/redis-infra.json"
+  },
+  "e2e": {
+    "discovered": 11,
+    "executed": 0,
+    "command": "npm --prefix Projeto-front-end run test:e2e -- --list --project=chromium"
+  },
+  "mysqlIntegration": {
+    "syntaxChecked": true,
+    "executed": false,
+    "reason": "Daemon MySQL/Docker indisponivel"
+  },
+  "documentation": {
+    "files": 35,
+    "internalLinksChecked": 301,
+    "brokenLinks": [],
+    "codeFences": "balanced"
+  },
+  "security": {
+    "source": "seguranca.json",
+    "secretPatternsChecked": [
+      "private-key",
+      "github-token",
+      "aws-key",
+      "literal-jwt"
+    ],
+    "scanned": 213,
+    "findings": []
+  },
+  "jira": {
+    "connected": false,
+    "issuesCreated": 0,
+    "source": "CSV preparado, sem comprovacao de operacao real"
+  },
+  "artifacts": [
+    {
+      "file": "docs/evidencias/auditoria/c4_containers.png",
+      "sha256": "cb9ccb1ba07b337b39633ad89f0f9d8c543ff82c71f35df896fac667d8cad7ea"
+    },
+    {
+      "file": "docs/evidencias/auditoria/c4_containers.svg",
+      "sha256": "2f3c831954b7d8eb4750a5e057697a9967ed7158d3399f18107047c469ab9684"
+    },
+    {
+      "file": "docs/evidencias/auditoria/c4_contexto.png",
+      "sha256": "766016e94f6d559b3b5fbafcc59a2b15886108518b8129ea9f0a5621e4216802"
+    },
+    {
+      "file": "docs/evidencias/auditoria/c4_contexto.svg",
+      "sha256": "a055379ded27aeaf9f77c753a4f4ca1ee6059cc1a3af1363753eb6e12a3d8cca"
+    },
+    {
+      "file": "docs/evidencias/auditoria/ddd.png",
+      "sha256": "8b589bf74b9af91fc0c88148c10590b950b1a8e41ce09d98921cfaf014393ca2"
+    },
+    {
+      "file": "docs/evidencias/auditoria/ddd.svg",
+      "sha256": "a2e2ce7f6dd22287075fe679e7a9a22bfe7b7efb0c576b701690cdf8695c745a"
+    },
+    {
+      "file": "docs/evidencias/auditoria/github.json",
+      "sha256": "e6d8ed90a1200371fdaaba298430cfd662130bf9c0232b41ed964497c42d98f2"
+    },
+    {
+      "file": "docs/evidencias/auditoria/local.json",
+      "sha256": "a81705210fbd9de3043c937aab6f29976b7ef409e1f7c094bc618936e32acf5e"
+    },
+    {
+      "file": "docs/evidencias/auditoria/salas-local.png",
+      "sha256": "a753f8f771f25ca070880cbe7d43e3ce5c759bbf49c230984fba6bfb70baedb1"
+    },
+    {
+      "file": "docs/evidencias/auditoria/seguranca.json",
+      "sha256": "ca1fd11bf7da657478789d2208b3a298277831f5d36ab6631dec81882fa07744"
+    },
+    {
+      "file": "docs/evidencias/auditoria/swagger-local.png",
+      "sha256": "85ceb8eeb43ffdaadd087c1800a2a2cf9c4c064c96d480045970eb8d4a3f3112"
+    }
+  ],
+  "lockfiles": [
+    {
+      "file": "Projeto-back-end/package-lock.json",
+      "sha256": "6867d2b2f6e488f2b7aff20d0490150fd9615efdfc7a62aac44b5183515d4b55"
+    },
+    {
+      "file": "Projeto-front-end/package-lock.json",
+      "sha256": "019b45289b7ea62f437ea362e2ed2c59800272fa8f5c774b9954ae6db5184629"
+    }
+  ],
+  "limits": [
+    "Builds e instalacoes registrados a partir dos comandos realmente executados nesta auditoria.",
+    "HTTP local sem banco/Redis; UI de sala com identidade sintetica.",
+    "Sem integracao real atual, Nginx ou HTTPS; evidencia historica preservada.",
+    "Nenhuma nota, release ou atividade Jira inferida de mocks."
+  ]
+}

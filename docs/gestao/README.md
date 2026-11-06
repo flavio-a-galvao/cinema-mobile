@@ -16,9 +16,9 @@ não altera aplicação, contratos da API ou `Projeto-mobile/`.
 | Evidências da gestão | [Roteiro Jira](JIRA_GUIA.md) | Capturas/URLs ainda a produzir, sem movimentos fictícios |
 | Correspondência com implementação | [Backlog](PRODUCT_BACKLOG.md) | Commits verificados no histórico e fontes reais por história |
 
-O mapa cobre os requisitos descritos no pedido. A rubrica integral da instituição
-não foi fornecida; exigências adicionais de formulário ou apresentação precisam
-ser conferidas com o avaliador.
+O mapa original cobriu os requisitos descritos no pedido. A auditoria posterior
+recebeu o PDF oficial; os pesos e a situação conferida constam no
+[relatório final](../RELATORIO_FINAL_RUBRICA.md).
 
 ## Estado real e limites
 
@@ -34,6 +34,12 @@ ser conferidas com o avaliador.
 - **Releases:** nenhuma tag local ou remota foi encontrada na consulta. Não há
   lançamento comprovado por esta análise; GitHub Releases não foi inspecionado.
   Versões em `package.json` não são evidência de publicação.
+
+Na auditoria final, a consulta pública do GitHub confirmou zero releases
+retornadas e nenhuma tag remota. O [registro](../evidencias/auditoria/github.json)
+também comprova CI bem-sucedido da base `8145040`. Isso não cria uma release
+ou evidência Jira. BUG01/BUG02 receberam correções técnicas na auditoria;
+o CSV mantém To Do proposto até conciliação e aceite reais, sem simular Done.
 
 Validações desta etapa: links locais, CSV, hierarquia, contagens, critérios de
 aceite, prioridades, dependências sem ciclos, correspondência dos commits com

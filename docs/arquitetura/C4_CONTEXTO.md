@@ -46,11 +46,11 @@ O model `User` também admite `funcionario`, mas `requireAdmin` aceita somente
   essas URLs; imagens enviadas ao Cinemax são servidas localmente por `/posters/`.
   A indisponibilidade do host externo pode afetar a imagem, sem substituir o
   catálogo no MySQL. Não foi testada a disponibilidade desses hosts nesta etapa.
-- **Fontes declaradas:** o [HTML](../../Projeto-front-end/public/index.html)
-  referencia Google Fonts. No Compose principal, a
-  [CSP do proxy](../../nginx.conf) restringe estilos e fontes à própria origem
-  (com estilo inline permitido), portanto essa dependência declarada pode ser
-  bloqueada. Não é representada como integração operacional garantida.
+- **Fontes:** na base original, o HTML declarava Google Fonts, incompatível com
+  as origens autorizadas pela [CSP do proxy](../../nginx.conf). Na auditoria,
+  essas referências foram removidas do [HTML](../../Projeto-front-end/public/index.html),
+  preservando o fallback local já declarado no CSS e a política de segurança.
+  Não há integração operacional com Google Fonts na versão auditada.
 - **Pagamentos:** [a tela](../../Projeto-front-end/src/pages/Pagamento.jsx)
   chama a API interna; [o controller](../../Projeto-back-end/src/controllers/pagamentos.controller.ts)
   grava método e valor no MySQL. As opções Pix, cartão e dinheiro **não comprovam

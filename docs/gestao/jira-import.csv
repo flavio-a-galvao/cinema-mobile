@@ -1,0 +1,613 @@
+"Work item ID","Work type","Summary","Description","Parent","Priority","Status","Labels"
+"1","Epic","[CMX-EP01] Acesso e catálogo","ID local: EP01
+Objetivo: Validar autenticação, titularidade e consulta pública do catálogo.
+Planejamento proposto; sem histórico Jira confirmado. Encerrar somente após aceite real dos itens no escopo, sem pressupor funcionalidades não implementadas.","","High","To Do","cinemax-gestao"
+"2","Epic","[CMX-EP02] Bilheteria e pagamentos","ID local: EP02
+Objetivo: Preservar integridade da ocupação, emissão, pagamento simulado e cancelamento.
+Planejamento proposto; sem histórico Jira confirmado. Encerrar somente após aceite real dos itens no escopo, sem pressupor funcionalidades não implementadas.","","High","To Do","cinemax-gestao"
+"3","Epic","[CMX-EP03] Administração do cinema","ID local: EP03
+Objetivo: Validar administração protegida de filmes, pôsteres, salas e sessões.
+Planejamento proposto; sem histórico Jira confirmado. Encerrar somente após aceite real dos itens no escopo, sem pressupor funcionalidades não implementadas.","","High","To Do","cinemax-gestao"
+"4","Epic","[CMX-EP04] Qualidade e infraestrutura","ID local: EP04
+Objetivo: Verificar CI, Redis, Compose e integração reproduzível.
+Planejamento proposto; sem histórico Jira confirmado. Encerrar somente após aceite real dos itens no escopo, sem pressupor funcionalidades não implementadas.","","High","To Do","cinemax-gestao"
+"5","Epic","[CMX-EP05] Arquitetura, API e operação","ID local: EP05
+Objetivo: Consolidar arquitetura, contratos, telemetria e procedimentos operacionais.
+Planejamento proposto; sem histórico Jira confirmado. Encerrar somente após aceite real dos itens no escopo, sem pressupor funcionalidades não implementadas.","","High","To Do","cinemax-gestao"
+"6","Epic","[CMX-EP06] Gestão, homologação e entrega","ID local: EP06
+Objetivo: Estabelecer Jira real, aceite verificável e uma release rastreável.
+Planejamento proposto; sem histórico Jira confirmado. Encerrar somente após aceite real dos itens no escopo, sem pressupor funcionalidades não implementadas.","","High","To Do","cinemax-gestao"
+"7","Story","[CMX-US01] Validar cadastro, login e acesso à própria conta","ID local: US01; épico: EP01; ordem proposta: 4.
+
+Como cliente, quero cadastrar e autenticar minha conta para acessar somente os recursos permitidos.
+
+Estado técnico: implementação/artefato observado; aceite Jira pendente.
+
+Prioridade proposta: P0. Estimativa proposta: 3 pontos de validação; Três fronteiras de autorização e dados de teste distintos.
+
+Dependências locais: nenhuma.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. Cadastro público cria papel cliente e resposta não contém senha/hash; CPF/e-mail inválidos são rejeitados conforme contrato.
+2. Login válido emite JWT; rota protegida sem JWT retorna 401; cliente em rota administrativa recebe 403.
+3. Consulta de outra conta por cliente recebe 403; PUT só altera a própria conta e preserva o e-mail.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/controllers/auth.controller.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/controllers/users.controller.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/tests/usuarios.test.ts
+
+Commits:
+https://github.com/flavio-a-galvao/cinema-mobile/commit/54ca7e3
+https://github.com/flavio-a-galvao/cinema-mobile/commit/c9e19d3
+https://github.com/flavio-a-galvao/cinema-mobile/commit/58dda76
+https://github.com/flavio-a-galvao/cinema-mobile/commit/2c9b3e8
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","1","Highest","To Do","cinemax-gestao"
+"8","Story","[CMX-US02] Validar catálogo público de filmes e sessões","ID local: US02; épico: EP01; ordem proposta: 5.
+
+Como visitante, quero consultar filmes e sessões para escolher uma exibição.
+
+Estado técnico: implementação/artefato observado; aceite Jira pendente.
+
+Prioridade proposta: P0. Estimativa proposta: 2 pontos de validação; Leituras já implementadas; conferir formatos e casos vazio/inexistente.
+
+Dependências locais: nenhuma.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. GET público de filmes/sessões funciona sem token; detalhe existente retorna 200 e inexistente retorna 404.
+2. Sem page/limit há array; com paginação há data e pagination, conforme OpenAPI.
+3. Pôster local ou substituto não altera a origem dos dados do catálogo; falhas observadas são registradas sem simular sucesso.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/app.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/controllers/filmes.controller.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/controllers/sessoes.controller.ts
+
+Commits:
+https://github.com/flavio-a-galvao/cinema-mobile/commit/54ca7e3
+https://github.com/flavio-a-galvao/cinema-mobile/commit/8893d86
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","1","Highest","To Do","cinemax-gestao"
+"9","Story","[CMX-US03] Validar emissão em lote e ocupação","ID local: US03; épico: EP02; ordem proposta: 11.
+
+Como cliente, quero emitir de 1 a 10 ingressos para assentos da sessão para concluir minha seleção com integridade.
+
+Estado técnico: implementação/artefato observado; aceite Jira pendente.
+
+Prioridade proposta: P0. Estimativa proposta: 5 pontos de validação; Transação, validações cruzadas e múltiplos cenários; concorrência real é TK04.
+
+Dependências locais: US01, US02, US07.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. Lote válido retorna 201 com um ingresso por assento; quantidades inteira/meia coincidem com a seleção.
+2. Duplicidade de assento, titularidade alheia, sala incompatível e sessão iniciada são rejeitadas conforme contrato.
+3. Falha no lote não deixa emissão parcial; preço é calculado no servidor e não aceito do navegador.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/controllers/ingressos.controller.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/utils/ensureIngressosSchema.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/tests/crud.ingressos.test.ts
+
+Commits:
+https://github.com/flavio-a-galvao/cinema-mobile/commit/cbb1a6e
+https://github.com/flavio-a-galvao/cinema-mobile/commit/58dda76
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","2","Highest","To Do","cinemax-gestao"
+"10","Story","[CMX-US04] Validar pagamento simulado e retomada","ID local: US04; épico: EP02; ordem proposta: 12.
+
+Como cliente, quero registrar ou retomar o pagamento dos meus ingressos sem recriá-los.
+
+Estado técnico: implementação/artefato observado; aceite Jira pendente.
+
+Prioridade proposta: P0. Estimativa proposta: 5 pontos de validação; Integridade entre dois recursos e recuperação após sucesso parcial da tela.
+
+Dependências locais: US03.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. Registro de ingresso próprio ativo retorna 201 usando valor_unitario e data do servidor; valor/data enviados são ignorados.
+2. Pagamento alheio recebe 403; duplicado ou ingresso cancelado recebe 409; não há segundo registro.
+3. GET /me/compras mostra pendência e pagamento após registro; retomada mantém os IDs e não é apresentada como liquidação externa.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/controllers/pagamentos.controller.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/controllers/compras.controller.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-front-end/src/pages/Pagamento.jsx
+
+Commits:
+https://github.com/flavio-a-galvao/cinema-mobile/commit/58dda76
+https://github.com/flavio-a-galvao/cinema-mobile/commit/813897e
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","2","Highest","To Do","cinemax-gestao"
+"11","Story","[CMX-US05] Validar cancelamento e liberação do assento","ID local: US05; épico: EP02; ordem proposta: 13.
+
+Como cliente, quero cancelar meu ingresso antes da sessão para liberar a ocupação mantendo o histórico.
+
+Estado técnico: implementação/artefato observado; aceite Jira pendente.
+
+Prioridade proposta: P1. Estimativa proposta: 3 pontos de validação; Estado, autorização e consulta de ocupação precisam ser verificados juntos.
+
+Dependências locais: US03, US04.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. PATCH de ingresso próprio em sessão futura muda status para cancelado e preenche cancelado_em.
+2. O assento sai da ocupação ativa da sessão, preservando o ingresso e eventual pagamento.
+3. Cancelamento alheio recebe 403 e repetido/sessão iniciada recebe 409; não se promete estorno financeiro.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/controllers/ingressos.controller.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/tests/crud.ingressos.test.ts
+
+Commits:
+https://github.com/flavio-a-galvao/cinema-mobile/commit/cbb1a6e
+https://github.com/flavio-a-galvao/cinema-mobile/commit/58dda76
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","2","High","To Do","cinemax-gestao"
+"12","Story","[CMX-US06] Validar filmes e upload administrativo","ID local: US06; épico: EP03; ordem proposta: 7.
+
+Como administrador, quero manter filmes e pôsteres para publicar um catálogo consistente.
+
+Estado técnico: implementação/artefato observado; aceite Jira pendente.
+
+Prioridade proposta: P0. Estimativa proposta: 3 pontos de validação; CRUD e upload já existem; validação de segurança aumenta o esforço.
+
+Dependências locais: US01.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. CRUD exige admin; título inválido retorna 400 e filme com sessões impede exclusão com 409.
+2. Upload JPEG/PNG/WebP válido retorna 200 e poster_url local; arquivo acima de 5 MiB retorna 413.
+3. MIME/conteúdo inválidos recebem 400, sem persistir arquivo rejeitado; JSON de filme e cache são atualizados após sucesso.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/controllers/filmes.controller.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/controllers/posters.controller.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/tests/posters.test.ts
+
+Commits:
+https://github.com/flavio-a-galvao/cinema-mobile/commit/df3692a
+https://github.com/flavio-a-galvao/cinema-mobile/commit/58dda76
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","3","Highest","To Do","cinemax-gestao"
+"13","Story","[CMX-US07] Validar salas, mapa e programação","ID local: US07; épico: EP03; ordem proposta: 8.
+
+Como administrador, quero configurar salas e sessões para disponibilizar lugares e horários válidos.
+
+Estado técnico: implementação/artefato observado; aceite Jira pendente.
+
+Prioridade proposta: P0. Estimativa proposta: 3 pontos de validação; Três recursos relacionados e regras de preservação do histórico.
+
+Dependências locais: US06.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. Sala usa capacidade 48 e geração repetida completa A1–F8 sem duplicar assentos.
+2. Sessão exige filme/sala existentes, horário e preço válidos; mudanças impeditivas com ingressos retornam 409.
+3. Mapa incompatível é rejeitado sem apagar dados; consultas e CRUD respeitam JWT/admin.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/controllers/salasAssentos.controller.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/controllers/sessoes.controller.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/tests/geracao-assentos.test.ts
+
+Commits:
+https://github.com/flavio-a-galvao/cinema-mobile/commit/fa05b1a
+https://github.com/flavio-a-galvao/cinema-mobile/commit/f06d651
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","3","Highest","To Do","cinemax-gestao"
+"14","Story","[CMX-US08] Verificar execução do pipeline","ID local: US08; épico: EP04; ordem proposta: 6.
+
+Como mantenedor, quero validar testes e builds no CI para avaliar uma alteração antes da entrega.
+
+Estado técnico: implementação/artefato observado; aceite Jira pendente.
+
+Prioridade proposta: P0. Estimativa proposta: 2 pontos de validação; Workflow existe; falta confirmar execução remota e guardar evidência.
+
+Dependências locais: nenhuma.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. Há execução real do GitHub Actions identificada por URL/SHA, com testes e builds dos dois módulos web/API.
+2. Falha de teste/build é sinalizada; E2E fora do CI básico não é apresentado como executado.
+3. Job deploy-demo é identificado como demonstração e não como deploy de produção.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/.github/workflows/ci.yml
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/CI_DEPLOY.md
+
+Commits:
+https://github.com/flavio-a-galvao/cinema-mobile/commit/67645c9
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","4","Highest","To Do","cinemax-gestao"
+"15","Story","[CMX-US09] Validar cache e eventos Redis","ID local: US09; épico: EP04; ordem proposta: 9.
+
+Como mantenedor, quero reaproveitar catálogo e observar eventos para reduzir consultas e verificar circulação de alterações.
+
+Estado técnico: implementação/artefato observado; aceite Jira pendente.
+
+Prioridade proposta: P1. Estimativa proposta: 5 pontos de validação; Dois mecanismos com falhas/reconexão; diferenciar mocks e serviços reais.
+
+Dependências locais: US02, US08.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. Miss/hit, TTL e invalidação são verificáveis; falha de Redis mantém fallback ao MySQL.
+2. Seis tipos de eventos de filmes/sessões usam canais e envelope reais; published/consumed se correlacionam por eventId.
+3. Payload não contém JWT/dados pessoais; ausência de replay/durabilidade é explicitada e nenhuma escrita é repetida para repor evento.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/services/catalogCache.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/services/catalogEvents.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/evidencias/redis-infra.json
+
+Commits:
+https://github.com/flavio-a-galvao/cinema-mobile/commit/8893d86
+https://github.com/flavio-a-galvao/cinema-mobile/commit/5c6a580
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","4","High","To Do","cinemax-gestao"
+"16","Story","[CMX-US10] Revalidar ambiente integrado isolado","ID local: US10; épico: EP04; ordem proposta: 10.
+
+Como avaliador técnico, quero uma demonstração isolada de infraestrutura para conferir a comunicação entre componentes.
+
+Estado técnico: implementação/artefato observado; aceite Jira pendente.
+
+Prioridade proposta: P0. Estimativa proposta: 5 pontos de validação; Reprodução em outro host depende de Docker, certificados e configuração.
+
+Dependências locais: US08, US09.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. Ambiente isolado usa Compose principal com cinco serviços e par TLS válido; dados do projeto padrão ficam preservados.
+2. Verificador real registra resultado e ambiente/SHA, incluindo TLS, cache, fallback/recuperação e Pub/Sub.
+3. Evidência nova é distinguida do JSON histórico; não se usa Compose legado sem Redis como prova da topologia principal.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docker-compose.yml
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/scripts/verify-redis-infra.cjs
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/INFRAESTRUTURA_DOCKER.md
+
+Commits:
+https://github.com/flavio-a-galvao/cinema-mobile/commit/e23bd86
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","4","Highest","To Do","cinemax-gestao"
+"17","Story","[CMX-US11] Revisar arquitetura C4, ADRs e DDD","ID local: US11; épico: EP05; ordem proposta: 17.
+
+Como avaliador, quero consultar a arquitetura e suas decisões para relacionar modelos ao código.
+
+Estado técnico: implementação/artefato observado; aceite Jira pendente.
+
+Prioridade proposta: P1. Estimativa proposta: 3 pontos de validação; Artefatos existem; revisão semântica e apresentação ainda precisam de aceite.
+
+Dependências locais: TK02.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. C4 níveis 1/2 correspondem à topologia real; renderização GitHub fica registrada por TK02.
+2. Seis ADRs identificam caráter retrospectivo; DDD separa modelo conceitual de classes implementadas.
+3. Cenários de qualidade têm métricas e distinguem meta/evidência; links e fontes são verificáveis.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/arquitetura/README.md
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/arquitetura/DDD.md
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/arquitetura/QUALITY_SCENARIOS.md
+
+Commits:
+https://github.com/flavio-a-galvao/cinema-mobile/commit/5228fab
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","5","High","To Do","cinemax-gestao"
+"18","Story","[CMX-US12] Validar Swagger e cobertura OpenAPI","ID local: US12; épico: EP05; ordem proposta: 14.
+
+Como integrador, quero contratos navegáveis da API para usar corretamente rotas públicas e protegidas.
+
+Estado técnico: implementação/artefato observado; aceite Jira pendente.
+
+Prioridade proposta: P1. Estimativa proposta: 3 pontos de validação; Contrato já validado localmente; visualização e proxy real permanecem a verificar.
+
+Dependências locais: US01, US03, US04, US07.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. Validador e comparação de rotas aprovam 52 operações/34 caminhos na base c826368; alterações futuras atualizam a contagem.
+2. Swagger é acessível direto em /api-docs/ e no proxy em /api/api-docs/, com Try it out na raiz correta.
+3. Bearer, admin, corpos, erros e respostas não usuais estão descritos sem credenciais; verificação visual é registrada somente após ocorrer.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/src/docs/openapi.json
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/tests/openapi.test.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/API_OPENAPI.md
+
+Commits:
+https://github.com/flavio-a-galvao/cinema-mobile/commit/185f155
+https://github.com/flavio-a-galvao/cinema-mobile/commit/c826368
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","5","High","To Do","cinemax-gestao"
+"19","Story","[CMX-US13] Revisar telemetria, resiliência e incidentes","ID local: US13; épico: EP05; ordem proposta: 15.
+
+Como operador, quero correlacionar falhas e consultar SLIs para diagnosticar incidentes sem expor dados sensíveis.
+
+Estado técnico: implementação/artefato observado; aceite Jira pendente.
+
+Prioridade proposta: P1. Estimativa proposta: 3 pontos de validação; Revisão de segurança, semântica das métricas e procedimentos.
+
+Dependências locais: US09, US10, US12.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. X-Request-Id e logs JSON permitem correlacionar HTTP e erro sanitizado; /metrics exige admin.
+2. Testes confirmam fallback e retry limitado de startup, sem retry genérico de pagamento/emissão.
+3. Runbook preserva volumes; SLOs são metas propostas e o ensaio local não é apresentado como janela mensal. Medição prolongada fica em TK05.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/OBSERVABILIDADE_RESILIENCIA.md
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/RUNBOOK_INCIDENTES.md
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/evidencias/observabilidade-local.json
+
+Commits:
+https://github.com/flavio-a-galvao/cinema-mobile/commit/c826368
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","5","High","To Do","cinemax-gestao"
+"20","Story","[CMX-US14] Estabelecer gestão rastreável no Jira","ID local: US14; épico: EP06; ordem proposta: 3.
+
+Como participante confirmado do projeto, quero um backlog no Jira para tornar prioridades, dependências e aceite verificáveis.
+
+Estado: proposta ou achado estático; sem conclusão Jira comprovada.
+
+Prioridade proposta: P0. Estimativa proposta: 3 pontos de validação; Depende de acesso externo e revisão dos itens já existentes.
+
+Dependências locais: TK01.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. Projeto real é identificado por URL/key e acesso autorizado; itens existentes são conciliados antes de importar.
+2. Seis épicos e 24 itens executáveis são conciliados, preservando autoria/status reais e ligando IDs locais às chaves criadas.
+3. Quadro e permissões são verificados; capturas/URLs reais são registradas, sem retroagir datas ou simular movimentações.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/gestao/JIRA_GUIA.md
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/gestao/jira-import.csv
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","6","Highest","To Do","cinemax-gestao"
+"21","Story","[CMX-US15] Homologar o fluxo web e a integração crítica","ID local: US15; épico: EP06; ordem proposta: 20.
+
+Como avaliador, quero percorrer o fluxo web e verificar concorrência real para conferir a integridade da demonstração.
+
+Estado: proposta ou achado estático; sem conclusão Jira comprovada.
+
+Prioridade proposta: P0. Estimativa proposta: 5 pontos de validação; Aceite integrado depende de evidências externas às suítes unitárias.
+
+Dependências locais: US03, US04, US05, US07, US10, US12, TK03, TK04.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. E2E web e ensaio MySQL real de TK03/TK04 têm ambiente, SHA e resultado identificados; falhas viram bugs reproduzíveis.
+2. Cadastro/login, catálogo, emissão, pagamento/retomada e cancelamento são verificados com dados sintéticos.
+3. Relatório distingue cenário coberto, falha e não executado; o módulo mobile anterior permanece sem alteração.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/CI_DEPLOY.md
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-front-end/e2e/cinema.spec.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/tests/pagamentos.mysql.integration.cjs
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","6","Highest","To Do","cinemax-gestao"
+"22","Story","[CMX-US16] Qualificar uma release acadêmica","ID local: US16; épico: EP06; ordem proposta: 21.
+
+Como responsável pela entrega a ser confirmado, quero qualificar uma versão identificável para apresentar o escopo e seus limites.
+
+Estado: proposta ou achado estático; sem conclusão Jira comprovada.
+
+Prioridade proposta: P1. Estimativa proposta: 3 pontos de validação; Consolidação documental e aceite; sem estimar desenvolvimento histórico.
+
+Dependências locais: US11, US13, US14, US15.
+
+Versão proposta, não lançada: 1.0.0.
+
+Critérios de aceite:
+1. Checklist de rubrica, aceite e pendências é revisado por pessoas reais; notas da versão identificam SHA e limitações.
+2. Tag/release só é criada em ação futura autorizada após aceite e validações; pacote versionado não é confundido com release.
+3. Entrega registra o que foi demonstrado, autoria confirmada e procedimentos de recuperação, sem declarar SLO mensal ou Jira não comprovado.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/gestao/PLANEJAMENTO_AGIL.md
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/gestao/README.md
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","6","High","To Do","cinemax-gestao"
+"23","Task","[CMX-TK01] Confirmar projeto e configurar importação/quadros","ID local: TK01; épico: EP06; ordem proposta: 2.
+
+Configuração externa; estimativa pressupõe acesso de administrador disponível.
+
+Estado: proposta ou achado estático; sem conclusão Jira comprovada.
+
+Prioridade proposta: P0. Estimativa proposta: 2 horas; Configuração externa; estimativa pressupõe acesso de administrador disponível.
+
+Dependências locais: TK06.
+
+Stories associadas: US14.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. Registrar URL/key, tipo de projeto e permissões reais; procurar duplicados.
+2. Validar mapeamento CSV e workflow em amostra, sem alterar issues existentes indiscriminadamente.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/gestao/JIRA_GUIA.md
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","6","Highest","To Do","cinemax-gestao"
+"24","Task","[CMX-TK02] Conferir renderização dos diagramas no GitHub","ID local: TK02; épico: EP05; ordem proposta: 16.
+
+Inspeção focada dos diagramas existentes.
+
+Estado: proposta ou achado estático; sem conclusão Jira comprovada.
+
+Prioridade proposta: P1. Estimativa proposta: 1 horas; Inspeção focada dos diagramas existentes.
+
+Dependências locais: nenhuma.
+
+Stories associadas: US11.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. Abrir C4/Context Map e registrar URL/SHA e captura legível.
+2. Se houver erro, registrar localização e correção proposta; não declarar renderização só por inspeção de texto.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/arquitetura/README.md
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","5","High","To Do","cinemax-gestao"
+"25","Task","[CMX-TK03] Executar E2E web com evidências sanitizadas","ID local: TK03; épico: EP06; ordem proposta: 18.
+
+Preparar dados e executar/revisar fluxo em navegador, com ambiente já disponível.
+
+Estado: proposta ou achado estático; sem conclusão Jira comprovada.
+
+Prioridade proposta: P0. Estimativa proposta: 4 horas; Preparar dados e executar/revisar fluxo em navegador, com ambiente já disponível.
+
+Dependências locais: US10, US12.
+
+Stories associadas: US15.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. Executar a suíte configurada no ambiente descartável e registrar relatório, SHA e pré-condições.
+2. Registrar falhas e limites; não reutilizar resultado unitário como prova de navegador.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-front-end/e2e/cinema.spec.ts
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/CI_DEPLOY.md
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","6","Highest","To Do","cinemax-gestao"
+"26","Task","[CMX-TK04] Executar concorrência de ingresso/pagamento no MySQL real","ID local: TK04; épico: EP02; ordem proposta: 19.
+
+Preparação e interpretação de corrida real; duração não inclui solucionar eventual defeito.
+
+Estado: proposta ou achado estático; sem conclusão Jira comprovada.
+
+Prioridade proposta: P0. Estimativa proposta: 4 horas; Preparação e interpretação de corrida real; duração não inclui solucionar eventual defeito.
+
+Dependências locais: US10, US07, US01.
+
+Stories associadas: US03, US04, US15.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. Em ambiente isolado, registrar chamadas concorrentes e contagem SQL de ingressos ativos por sessão/assento.
+2. Verificar um pagamento por ingresso; registrar conflitos reais e preservar dados fora do ensaio.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-back-end/tests/pagamentos.mysql.integration.cjs
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/arquitetura/QUALITY_SCENARIOS.md
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","2","Highest","To Do","cinemax-gestao"
+"27","Task","[CMX-TK05] Planejar e iniciar coleta prolongada de SLIs","ID local: TK05; épico: EP05; ordem proposta: 24.
+
+6 h de preparação estimada, mais 30 dias decorridos para janela mensal; não é prova de medição existente.
+
+Estado: proposta ou achado estático; sem conclusão Jira comprovada.
+
+Prioridade proposta: P2. Estimativa proposta: 6 horas; 6 h de preparação estimada, mais 30 dias decorridos para janela mensal; não é prova de medição existente.
+
+Dependências locais: US13.
+
+Stories associadas: US13.
+
+Versão proposta, não lançada: 1.1.0.
+
+Critérios de aceite:
+1. Configurar coleta externa e registrar reinícios/lacunas, sem armazenar JWT nas amostras.
+2. Somente depois da janela observada avaliar SLOs; antes disso informar sem dados/série parcial.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/OBSERVABILIDADE_RESILIENCIA.md
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","5","Medium","To Do","cinemax-gestao"
+"28","Task","[CMX-TK06] Confirmar participantes, papéis e permissões","ID local: TK06; épico: EP06; ordem proposta: 1.
+
+Alinhamento curto, sujeito à disponibilidade real dos participantes.
+
+Estado: proposta ou achado estático; sem conclusão Jira comprovada.
+
+Prioridade proposta: P0. Estimativa proposta: 1 horas; Alinhamento curto, sujeito à disponibilidade real dos participantes.
+
+Dependências locais: nenhuma.
+
+Stories associadas: US14.
+
+Versão proposta, não lançada: 1.0.0-rc.1.
+
+Critérios de aceite:
+1. Obter lista confirmada de participantes/contas e acordo explícito sobre decisão de produto, execução e revisão.
+2. Manter não atribuídos os itens sem pessoa confirmada; não converter autores Git em assignees automaticamente.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/gestao/PLANEJAMENTO_AGIL.md
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","6","Highest","To Do","cinemax-gestao"
+"29","Bug","[CMX-BUG01] Conciliar Google Fonts com a CSP vigente","ID local: BUG01; épico: EP06; ordem proposta: 22.
+
+Incompatibilidade estática: HTML aponta Google Fonts e CSP aceita estilo/fonte da própria origem; efeito visual ainda não verificado.
+
+Estado: proposta ou achado estático; sem conclusão Jira comprovada.
+
+Prioridade proposta: P2. Estimativa proposta: 2 horas; Incompatibilidade estática: HTML aponta Google Fonts e CSP aceita estilo/fonte da própria origem; efeito visual ainda não verificado.
+
+Dependências locais: US10.
+
+Stories associadas: US02.
+
+Versão proposta, não lançada: 1.0.1.
+
+Critérios de aceite:
+1. Registrar reprodução da requisição de fonte/stylesheet sob a CSP do proxy.
+2. Escolher fonte local ou fallback aprovado e validar apresentação sem enfraquecer CSP/HSTS.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-front-end/public/index.html
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/nginx.conf
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/docs/arquitetura/C4_CONTEXTO.md
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","6","Medium","To Do","cinemax-gestao"
+"30","Bug","[CMX-BUG02] Alinhar idioma declarado do HTML web","ID local: BUG02; épico: EP06; ordem proposta: 23.
+
+Defeito estático observado: <html lang=""en""> na aplicação web com conteúdo em português; não é relatório de usuário nem teste assistivo executado.
+
+Estado: proposta ou achado estático; sem conclusão Jira comprovada.
+
+Prioridade proposta: P2. Estimativa proposta: 1 horas; Defeito estático observado: <html lang=""en""> na aplicação web com conteúdo em português; não é relatório de usuário nem teste assistivo executado.
+
+Dependências locais: US02.
+
+Stories associadas: US02.
+
+Versão proposta, não lançada: 1.0.1.
+
+Critérios de aceite:
+1. Confirmar conteúdo predominante em português e alterar lang do documento web para pt-BR em tarefa futura.
+2. Verificar atributo no HTML servido e ausência de alteração de contratos; documentar verificação de acessibilidade realizada.
+
+Fontes:
+https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-front-end/public/index.html
+
+To Do é sugestão de estado inicial para conciliação/aceite, não exportação de status real. Assignee/Reporter e datas não foram definidos.","6","Medium","To Do","cinemax-gestao"

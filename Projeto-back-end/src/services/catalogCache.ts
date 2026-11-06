@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { randomUUID } from 'node:crypto';
 import { createClient } from 'redis';
+import { log } from './logger';
 
 type Collection = 'filmes' | 'sessoes';
 export interface CacheStore {
@@ -19,7 +20,10 @@ export class CatalogCache {
 
   private warn(operation: string) {
     if (Date.now() - this.lastWarning >= 5000) {
-      console.warn(`[cache Redis] Falha em ${operation}; usando banco de dados. Cache pode permanecer desatualizado até o TTL.`);
+      log('warn', 'redis_cache', 'fallback', {
+        operation,
+        message: '[cache Redis] Falha; usando banco de dados. Cache pode permanecer desatualizado até o TTL.',
+      });
       this.lastWarning = Date.now();
     }
   }

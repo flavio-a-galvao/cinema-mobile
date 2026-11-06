@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response, Router } from 'express';
+import express, { Request, Response, Router } from 'express';
 import AuthController from './controllers/auth.controller';
 import UsersController from './controllers/users.controller';
 import { requireAdmin, requireAuth } from './middlewares/auth.middleware';
@@ -15,11 +15,15 @@ import PagamentosController from './controllers/pagamentos.controller';
 import { POSTER_DIRECTORY, receivePoster } from './middlewares/posterUpload';
 import { uploadPoster } from './controllers/posters.controller';
 import apiDocs from './docs/router';
+import { handleError, observationScope, observeHttp } from './middlewares/observability';
+import { httpMetrics } from './services/httpMetrics';
 
 const app = express();
+app.use(observeHttp());
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Request-Id');
+    res.header('Access-Control-Expose-Headers', 'X-Request-Id');
     res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
     if (req.method === 'OPTIONS') {
         return res.sendStatus(204);
@@ -27,8 +31,8 @@ app.use((req, res, next) => {
     next();
 });
 app.use(express.json());
-app.use('/api-docs', apiDocs);
-app.use('/posters', express.static(POSTER_DIRECTORY, {
+app.use('/api-docs', observationScope('/api-docs/*'), apiDocs);
+app.use('/posters', observationScope('/posters/*'), express.static(POSTER_DIRECTORY, {
     dotfiles: 'deny', index: false,
     setHeaders: (res) => { res.setHeader('X-Content-Type-Options', 'nosniff'); },
 }));
@@ -40,6 +44,10 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 router.post('/auth/login', AuthController.login);
+router.get('/metrics', requireAuth, requireAdmin, (_req: Request, res: Response) => {
+    res.setHeader('Cache-Control', 'no-store');
+    res.json(httpMetrics.snapshot());
+});
 
 router.get('/catalogo/filmes', FilmesController.findAll);
 router.get('/catalogo/filmes/:id', FilmesController.getById);
@@ -103,14 +111,6 @@ router.get('/pagamentos/:id', requireAuth, requireAdmin, PagamentosController.ge
 
 app.use(router);
 
-app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error(error);
-
-    if (res.headersSent) {
-        return next(error);
-    }
-
-    return res.status(500).json({ message: 'Erro interno do servidor.' });
-});
+app.use(handleError);
 
 export default app;

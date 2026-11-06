@@ -7,6 +7,8 @@ import { DataTypes } from "sequelize";
 import { ensureClientesEmailUnique } from "./utils/ensureClientesEmailUnique";
 import { catalogEvents } from './services/catalogEvents';
 import { catalogCache } from './services/catalogCache';
+import { errorMetadata, log } from './services/logger';
+import { waitForDatabase } from './services/databaseReadiness';
 
 const port = 3000;
 
@@ -47,39 +49,19 @@ async function ensureUsuariosCpfColumn() {
   }
 }
 
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function waitForDatabase(retries = 10, delayMs = 3000) {
-  for (let attempt = 1; attempt <= retries; attempt += 1) {
-    try {
-      await sequelize.authenticate();
-      console.log('Banco de dados disponível após', attempt, 'tentativa(s).');
-      return;
-    } catch (error) {
-      console.warn(`Tentativa ${attempt}/${retries} falhou: o banco ainda não está pronto.`);
-      if (attempt === retries) {
-        throw error;
-      }
-      await sleep(delayMs);
-    }
-  }
-}
-
 async function startServer() {
   try {
-    await waitForDatabase();
+    await waitForDatabase(() => sequelize.authenticate());
     await ensureUsuariosCpfColumn();
     await ensureClientesEmailUnique(sequelize.getQueryInterface());
     await ensureIngressosSchema(sequelize);
     await ensureTicketPaymentSchema(sequelize);
     await sequelize.sync();
     const roomReport = await normalizeRoomCapacity(sequelize);
-    if (roomReport.needsReview.length) console.warn('Salas com mais de 48 assentos preservadas; revisão manual necessária:', roomReport.needsReview);
+    if (roomReport.needsReview.length) log('warn', 'database', 'rooms_need_review', { count: roomReport.needsReview.length });
 
     const server = app.listen(port, () => {
-      console.log(`Servidor rodando na porta ${port}`);
+      log('info', 'runtime', 'http_started', { port });
     });
     catalogEvents.start();
 
@@ -87,7 +69,9 @@ async function startServer() {
     const shutdown = () => {
       if (shuttingDown) return;
       shuttingDown = true;
+      log('info', 'runtime', 'shutdown_started');
       const deadline = setTimeout(() => {
+        log('error', 'runtime', 'shutdown_deadline');
         catalogEvents.stop();
         catalogCache.close();
         process.exit(1);
@@ -97,14 +81,14 @@ async function startServer() {
         catalogEvents.stop();
         catalogCache.close();
         try { await sequelize.close(); }
-        catch { console.error('Falha ao encerrar conexão com o banco.'); process.exitCode = 1; }
+        catch (error) { log('error', 'database', 'shutdown_failed', errorMetadata(error)); process.exitCode = 1; }
         finally { clearTimeout(deadline); }
       });
     };
     process.once('SIGTERM', shutdown);
     process.once('SIGINT', shutdown);
   } catch (error) {
-    console.error("Falha ao iniciar o servidor:", error);
+    log('error', 'runtime', 'startup_failed', errorMetadata(error));
     process.exit(1);
   }
 }

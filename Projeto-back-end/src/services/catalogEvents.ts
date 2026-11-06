@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { randomUUID } from 'node:crypto';
 import { createClient } from 'redis';
+import { log } from './logger';
 
 export const EVENT_CHANNELS = {
   filme: 'cinemax:eventos:filmes',
@@ -61,7 +62,7 @@ export class CatalogEvents {
   }
 
   private log(level: 'info' | 'warn', action: string, fields: object = {}) {
-    console[level](JSON.stringify({ component: 'redis_pubsub', level, action, ...fields }));
+    log(level, 'redis_pubsub', action, fields);
   }
 
   private warn(action: string, fields: { connection?: string; type?: string } = {}) {

@@ -1,0 +1,691 @@
+{
+  "executedAt": "2026-11-06T00:11:48.755Z",
+  "baseCommit": "185f1556ed29beb76512ba8f5008e80c320cb532",
+  "testedState": "worktree desta etapa, build compilado antes do commit",
+  "scope": "HTTP local com controllers reais e falhas injetadas; sem servi?os MySQL/Redis/Nginx reais",
+  "result": "passed",
+  "httpChecks": [
+    {
+      "method": "GET",
+      "route": "/",
+      "status": 200,
+      "requestId": "b8461759-f9bd-4a97-9801-d983dae0219d",
+      "durationMs": 32.980999999999995
+    },
+    {
+      "method": "GET",
+      "route": "/api-docs/",
+      "status": 200,
+      "requestId": "95718540-17f7-4c09-8211-521888500865",
+      "durationMs": 4.415200000000027
+    },
+    {
+      "method": "GET",
+      "route": "/api-docs/assets/swagger-ui-bundle.js",
+      "status": 200,
+      "requestId": "e749c045-d7e3-49ba-b7db-1d4ea6c5528a",
+      "durationMs": 21.425700000000006
+    },
+    {
+      "method": "GET",
+      "route": "/api-docs/openapi.json",
+      "status": 200,
+      "requestId": "c4d355df-914e-47b0-a776-5452662caef5",
+      "durationMs": 3.5036999999999807
+    },
+    {
+      "method": "POST",
+      "route": "/auth/login",
+      "status": 400,
+      "requestId": "457d29e2-34c4-4559-9a34-01faca307852",
+      "durationMs": 15.646099999999933
+    },
+    {
+      "method": "GET",
+      "route": "/filmes",
+      "status": 401,
+      "requestId": "92e77592-bd84-4bd9-8b09-b5e1bc9ccdad",
+      "durationMs": 2.340400000000045
+    },
+    {
+      "method": "GET",
+      "route": "/metrics",
+      "status": 401,
+      "requestId": "02bd6eb6-72fe-405d-ba56-d91a56019354",
+      "durationMs": 1.8100999999999203
+    },
+    {
+      "method": "GET",
+      "route": "/metrics",
+      "status": 403,
+      "requestId": "5f96f667-8a67-4109-90fd-1d25b27cb590",
+      "durationMs": 3.9003000000000156
+    },
+    {
+      "method": "GET",
+      "route": "/metrics",
+      "status": 200,
+      "requestId": "cc1c248d-760f-4325-bc6f-4185af88fb87",
+      "durationMs": 5.044199999999819
+    }
+  ],
+  "faultInjection": {
+    "centralError": {
+      "status": 500,
+      "body": {
+        "message": "Erro interno do servidor."
+      },
+      "requestId": "164cc807-1b90-4d9d-85ed-f78b56585686"
+    },
+    "fixtureMetrics": {
+      "startedAt": "2026-11-06T00:11:48.745Z",
+      "uptimeSeconds": 0.009728700000000118,
+      "http": {
+        "completedRequests": 1,
+        "serverErrors": 1,
+        "clientErrors": 0,
+        "abortedRequests": 0,
+        "statusCodes": {
+          "500": 1
+        },
+        "latencyMs": {
+          "sum": 0.834400000000187,
+          "buckets": [
+            {
+              "le": "50",
+              "count": 1
+            },
+            {
+              "le": "100",
+              "count": 1
+            },
+            {
+              "le": "250",
+              "count": 1
+            },
+            {
+              "le": "500",
+              "count": 1
+            },
+            {
+              "le": "1000",
+              "count": 1
+            },
+            {
+              "le": "2000",
+              "count": 1
+            },
+            {
+              "le": "5000",
+              "count": 1
+            },
+            {
+              "le": "+Inf",
+              "count": 1
+            }
+          ]
+        }
+      },
+      "business": {
+        "completedRequests": 1,
+        "serverErrors": 1,
+        "clientErrors": 0,
+        "abortedRequests": 0,
+        "statusCodes": {
+          "500": 1
+        },
+        "latencyMs": {
+          "sum": 0.834400000000187,
+          "buckets": [
+            {
+              "le": "50",
+              "count": 1
+            },
+            {
+              "le": "100",
+              "count": 1
+            },
+            {
+              "le": "250",
+              "count": 1
+            },
+            {
+              "le": "500",
+              "count": 1
+            },
+            {
+              "le": "1000",
+              "count": 1
+            },
+            {
+              "le": "2000",
+              "count": 1
+            },
+            {
+              "le": "5000",
+              "count": 1
+            },
+            {
+              "le": "+Inf",
+              "count": 1
+            }
+          ]
+        }
+      },
+      "routes": [
+        {
+          "method": "GET",
+          "route": "/simulated-dependency-failure",
+          "business": true,
+          "stats": {
+            "completedRequests": 1,
+            "serverErrors": 1,
+            "clientErrors": 0,
+            "abortedRequests": 0,
+            "statusCodes": {
+              "500": 1
+            },
+            "latencyMs": {
+              "sum": 0.834400000000187,
+              "buckets": [
+                {
+                  "le": "50",
+                  "count": 1
+                },
+                {
+                  "le": "100",
+                  "count": 1
+                },
+                {
+                  "le": "250",
+                  "count": 1
+                },
+                {
+                  "le": "500",
+                  "count": 1
+                },
+                {
+                  "le": "1000",
+                  "count": 1
+                },
+                {
+                  "le": "2000",
+                  "count": 1
+                },
+                {
+                  "le": "5000",
+                  "count": 1
+                },
+                {
+                  "le": "+Inf",
+                  "count": 1
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "redisFallback": {
+      "transport": "store injetado que falha",
+      "result": [
+        "banco-simulado"
+      ]
+    },
+    "databaseStartup": {
+      "transport": "authenticate injetado, sem query real",
+      "attempts": 2,
+      "retryDelaysMs": [
+        500
+      ]
+    }
+  },
+  "metricsSnapshot": {
+    "startedAt": "2026-11-06T00:11:48.638Z",
+    "uptimeSeconds": 0.10383289999999999,
+    "http": {
+      "completedRequests": 8,
+      "serverErrors": 0,
+      "clientErrors": 4,
+      "abortedRequests": 0,
+      "statusCodes": {
+        "200": 4,
+        "400": 1,
+        "401": 2,
+        "403": 1
+      },
+      "latencyMs": {
+        "sum": 36.84650000000022,
+        "buckets": [
+          {
+            "le": "50",
+            "count": 8
+          },
+          {
+            "le": "100",
+            "count": 8
+          },
+          {
+            "le": "250",
+            "count": 8
+          },
+          {
+            "le": "500",
+            "count": 8
+          },
+          {
+            "le": "1000",
+            "count": 8
+          },
+          {
+            "le": "2000",
+            "count": 8
+          },
+          {
+            "le": "5000",
+            "count": 8
+          },
+          {
+            "le": "+Inf",
+            "count": 8
+          }
+        ]
+      }
+    },
+    "business": {
+      "completedRequests": 2,
+      "serverErrors": 0,
+      "clientErrors": 2,
+      "abortedRequests": 0,
+      "statusCodes": {
+        "400": 1,
+        "401": 1
+      },
+      "latencyMs": {
+        "sum": 12.887699999999995,
+        "buckets": [
+          {
+            "le": "50",
+            "count": 2
+          },
+          {
+            "le": "100",
+            "count": 2
+          },
+          {
+            "le": "250",
+            "count": 2
+          },
+          {
+            "le": "500",
+            "count": 2
+          },
+          {
+            "le": "1000",
+            "count": 2
+          },
+          {
+            "le": "2000",
+            "count": 2
+          },
+          {
+            "le": "5000",
+            "count": 2
+          },
+          {
+            "le": "+Inf",
+            "count": 2
+          }
+        ]
+      }
+    },
+    "routes": [
+      {
+        "method": "GET",
+        "route": "/",
+        "business": false,
+        "stats": {
+          "completedRequests": 1,
+          "serverErrors": 0,
+          "clientErrors": 0,
+          "abortedRequests": 0,
+          "statusCodes": {
+            "200": 1
+          },
+          "latencyMs": {
+            "sum": 3.6462000000000216,
+            "buckets": [
+              {
+                "le": "50",
+                "count": 1
+              },
+              {
+                "le": "100",
+                "count": 1
+              },
+              {
+                "le": "250",
+                "count": 1
+              },
+              {
+                "le": "500",
+                "count": 1
+              },
+              {
+                "le": "1000",
+                "count": 1
+              },
+              {
+                "le": "2000",
+                "count": 1
+              },
+              {
+                "le": "5000",
+                "count": 1
+              },
+              {
+                "le": "+Inf",
+                "count": 1
+              }
+            ]
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "route": "/api-docs/*",
+        "business": false,
+        "stats": {
+          "completedRequests": 3,
+          "serverErrors": 0,
+          "clientErrors": 0,
+          "abortedRequests": 0,
+          "statusCodes": {
+            "200": 3
+          },
+          "latencyMs": {
+            "sum": 17.633000000000038,
+            "buckets": [
+              {
+                "le": "50",
+                "count": 3
+              },
+              {
+                "le": "100",
+                "count": 3
+              },
+              {
+                "le": "250",
+                "count": 3
+              },
+              {
+                "le": "500",
+                "count": 3
+              },
+              {
+                "le": "1000",
+                "count": 3
+              },
+              {
+                "le": "2000",
+                "count": 3
+              },
+              {
+                "le": "5000",
+                "count": 3
+              },
+              {
+                "le": "+Inf",
+                "count": 3
+              }
+            ]
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "route": "/auth/login",
+        "business": true,
+        "stats": {
+          "completedRequests": 1,
+          "serverErrors": 0,
+          "clientErrors": 1,
+          "abortedRequests": 0,
+          "statusCodes": {
+            "400": 1
+          },
+          "latencyMs": {
+            "sum": 11.994500000000016,
+            "buckets": [
+              {
+                "le": "50",
+                "count": 1
+              },
+              {
+                "le": "100",
+                "count": 1
+              },
+              {
+                "le": "250",
+                "count": 1
+              },
+              {
+                "le": "500",
+                "count": 1
+              },
+              {
+                "le": "1000",
+                "count": 1
+              },
+              {
+                "le": "2000",
+                "count": 1
+              },
+              {
+                "le": "5000",
+                "count": 1
+              },
+              {
+                "le": "+Inf",
+                "count": 1
+              }
+            ]
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "route": "/filmes",
+        "business": true,
+        "stats": {
+          "completedRequests": 1,
+          "serverErrors": 0,
+          "clientErrors": 1,
+          "abortedRequests": 0,
+          "statusCodes": {
+            "401": 1
+          },
+          "latencyMs": {
+            "sum": 0.8931999999999789,
+            "buckets": [
+              {
+                "le": "50",
+                "count": 1
+              },
+              {
+                "le": "100",
+                "count": 1
+              },
+              {
+                "le": "250",
+                "count": 1
+              },
+              {
+                "le": "500",
+                "count": 1
+              },
+              {
+                "le": "1000",
+                "count": 1
+              },
+              {
+                "le": "2000",
+                "count": 1
+              },
+              {
+                "le": "5000",
+                "count": 1
+              },
+              {
+                "le": "+Inf",
+                "count": 1
+              }
+            ]
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "route": "/metrics",
+        "business": false,
+        "stats": {
+          "completedRequests": 2,
+          "serverErrors": 0,
+          "clientErrors": 2,
+          "abortedRequests": 0,
+          "statusCodes": {
+            "401": 1,
+            "403": 1
+          },
+          "latencyMs": {
+            "sum": 2.679600000000164,
+            "buckets": [
+              {
+                "le": "50",
+                "count": 2
+              },
+              {
+                "le": "100",
+                "count": 2
+              },
+              {
+                "le": "250",
+                "count": 2
+              },
+              {
+                "le": "500",
+                "count": 2
+              },
+              {
+                "le": "1000",
+                "count": 2
+              },
+              {
+                "le": "2000",
+                "count": 2
+              },
+              {
+                "le": "5000",
+                "count": 2
+              },
+              {
+                "le": "+Inf",
+                "count": 2
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "logs": [
+    {
+      "loggedAt": "2026-11-06T00:11:48.726Z",
+      "timestamp": "2026-11-06T00:11:48.726Z",
+      "service": "cinemax-backend",
+      "level": "warn",
+      "component": "http",
+      "action": "request_completed",
+      "requestId": "457d29e2-34c4-4559-9a34-01faca307852",
+      "method": "POST",
+      "route": "/auth/login",
+      "status": 400,
+      "durationMs": 11.994500000000016,
+      "aborted": false
+    },
+    {
+      "loggedAt": "2026-11-06T00:11:48.728Z",
+      "timestamp": "2026-11-06T00:11:48.728Z",
+      "service": "cinemax-backend",
+      "level": "warn",
+      "component": "http",
+      "action": "request_completed",
+      "requestId": "92e77592-bd84-4bd9-8b09-b5e1bc9ccdad",
+      "method": "GET",
+      "route": "/filmes",
+      "status": 401,
+      "durationMs": 0.8931999999999789,
+      "aborted": false
+    },
+    {
+      "loggedAt": "2026-11-06T00:11:48.752Z",
+      "timestamp": "2026-11-06T00:11:48.752Z",
+      "service": "cinemax-backend",
+      "level": "error",
+      "component": "http",
+      "action": "request_error",
+      "method": "GET",
+      "route": "/simulated-dependency-failure",
+      "errorType": "SequelizeConnectionError",
+      "code": "ECONNREFUSED",
+      "requestId": "164cc807-1b90-4d9d-85ed-f78b56585686"
+    },
+    {
+      "loggedAt": "2026-11-06T00:11:48.753Z",
+      "timestamp": "2026-11-06T00:11:48.753Z",
+      "service": "cinemax-backend",
+      "level": "error",
+      "component": "http",
+      "action": "request_completed",
+      "requestId": "164cc807-1b90-4d9d-85ed-f78b56585686",
+      "method": "GET",
+      "route": "/simulated-dependency-failure",
+      "status": 500,
+      "durationMs": 0.834400000000187,
+      "aborted": false
+    },
+    {
+      "loggedAt": "2026-11-06T00:11:48.754Z",
+      "timestamp": "2026-11-06T00:11:48.754Z",
+      "service": "cinemax-backend",
+      "level": "warn",
+      "component": "redis_cache",
+      "action": "fallback",
+      "operation": "leitura/conexão",
+      "message": "[cache Redis] Falha; usando banco de dados. Cache pode permanecer desatualizado até o TTL.",
+      "requestId": "1c86c1a2-9068-4ec8-a090-c767c0ce51f0"
+    },
+    {
+      "loggedAt": "2026-11-06T00:11:48.755Z",
+      "timestamp": "2026-11-06T00:11:48.755Z",
+      "service": "cinemax-backend",
+      "level": "warn",
+      "component": "database",
+      "action": "startup_retry",
+      "errorType": "Error",
+      "code": "ECONNREFUSED",
+      "attempt": 1,
+      "maxAttempts": 10,
+      "delayMs": 500
+    },
+    {
+      "loggedAt": "2026-11-06T00:11:48.755Z",
+      "timestamp": "2026-11-06T00:11:48.755Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "database",
+      "action": "ready",
+      "attempt": 2
+    }
+  ]
+}

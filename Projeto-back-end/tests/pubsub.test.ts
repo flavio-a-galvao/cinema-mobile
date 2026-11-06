@@ -48,8 +48,8 @@ it.each([
   expect(event).toEqual({ type, id: 7, timestamp: expect.any(String), eventId: expect.any(String) });
   expect(new Date(event.timestamp).toISOString()).toBe(event.timestamp);
   expect(event.eventId).toMatch(/^[a-f0-9-]{36}$/);
-  expect(info()).toContainEqual({ component: 'redis_pubsub', level: 'info', action: 'published', channel, ...event, subscribers: 1 });
-  expect(info()).toContainEqual({ component: 'redis_pubsub', level: 'info', action: 'consumed', channel, ...event });
+  expect(info()).toContainEqual(expect.objectContaining({ component: 'redis_pubsub', level: 'info', action: 'published', channel, ...event, subscribers: 1 }));
+  expect(info()).toContainEqual(expect.objectContaining({ component: 'redis_pubsub', level: 'info', action: 'consumed', channel, ...event }));
   events.stop();
 });
 

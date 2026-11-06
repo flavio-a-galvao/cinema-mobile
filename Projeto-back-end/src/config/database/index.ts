@@ -20,9 +20,14 @@ const sequelize = new Sequelize(
     host: dbHost,
     port: dbPort,
     dialect: 'mysql',
-    logging: console.log,
+    // SQL e parâmetros podem conter dados pessoais: não registrar consultas cruas.
+    logging: false,
+    pool: { max: 5, min: 0, acquire: 5000, idle: 10000 },
+    // Repetir uma escrita após timeout pode duplicar efeitos; retry só no startup seguro.
+    retry: { max: 0 },
     dialectOptions: {
       ssl: false,
+      connectTimeout: 5000,
     },
   }
 );

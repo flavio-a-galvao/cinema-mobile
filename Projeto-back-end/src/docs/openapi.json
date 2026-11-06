@@ -38,6 +38,10 @@
     },
     {
       "name": "Compras e pagamentos"
+    },
+    {
+      "name": "Observabilidade",
+      "description": "M?tricas operacionais agregadas, restritas a administradores."
     }
   ],
   "paths": {
@@ -60,12 +64,22 @@
                 },
                 "example": "Hello World (typescript)"
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "500": {
             "$ref": "#/components/responses/Erro500"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/auth/login": {
@@ -85,6 +99,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Login"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -107,7 +126,12 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/users": {
@@ -138,6 +162,11 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -149,7 +178,12 @@
           "500": {
             "$ref": "#/components/responses/Erro500"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       },
       "post": {
         "operationId": "post_users",
@@ -167,6 +201,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Usuario"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -189,7 +228,12 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/users/{id}": {
@@ -214,6 +258,11 @@
                   "$ref": "#/components/schemas/Usuario"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -239,6 +288,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       },
@@ -262,6 +314,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Usuario"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -294,6 +351,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ],
         "requestBody": {
@@ -336,6 +396,11 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -347,7 +412,12 @@
           "500": {
             "$ref": "#/components/responses/Erro500"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       },
       "post": {
         "operationId": "post_usuarios",
@@ -365,6 +435,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Usuario"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -387,7 +462,12 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/usuarios/{id}": {
@@ -412,6 +492,11 @@
                   "$ref": "#/components/schemas/Usuario"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -437,6 +522,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       },
@@ -460,6 +548,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Usuario"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -492,6 +585,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ],
         "requestBody": {
@@ -534,6 +630,11 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -545,7 +646,12 @@
           "500": {
             "$ref": "#/components/responses/Erro500"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       },
       "post": {
         "operationId": "post_clientes",
@@ -571,6 +677,11 @@
                   "$ref": "#/components/schemas/Cliente"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "201": {
@@ -580,6 +691,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Cliente"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -608,7 +724,12 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/clientes/{id}": {
@@ -636,6 +757,11 @@
                   "$ref": "#/components/schemas/Cliente"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -658,6 +784,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -684,6 +813,11 @@
                   "$ref": "#/components/schemas/Cliente"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -695,7 +829,12 @@
           "500": {
             "$ref": "#/components/responses/Erro500"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       },
       "post": {
         "operationId": "post_clientes_me",
@@ -718,6 +857,11 @@
                   "$ref": "#/components/schemas/Cliente"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "201": {
@@ -727,6 +871,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Cliente"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -752,7 +901,12 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/filmes": {
@@ -779,6 +933,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/FilmeLista"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -812,6 +971,9 @@
               "type": "number",
               "default": 10
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       },
@@ -839,6 +1001,11 @@
                   "$ref": "#/components/schemas/Filme"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "400": {
@@ -863,7 +1030,12 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/filmes/{id}": {
@@ -891,6 +1063,11 @@
                   "$ref": "#/components/schemas/Filme"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -916,6 +1093,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       },
@@ -942,6 +1122,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Filme"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -971,6 +1156,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ],
         "requestBody": {
@@ -1008,6 +1196,11 @@
                   "$ref": "#/components/schemas/Mensagem"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -1036,6 +1229,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -1057,6 +1253,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/FilmeLista"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -1084,6 +1285,9 @@
               "type": "number",
               "default": 10
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -1106,6 +1310,11 @@
                   "$ref": "#/components/schemas/Filme"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "404": {
@@ -1125,6 +1334,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -1154,6 +1366,11 @@
                   "$ref": "#/components/schemas/SessaoLista"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -1186,6 +1403,9 @@
               "type": "number",
               "default": 10
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       },
@@ -1212,6 +1432,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Sessao"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -1240,7 +1465,12 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/sessoes/{id}": {
@@ -1268,6 +1498,11 @@
                   "$ref": "#/components/schemas/Sessao"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -1293,6 +1528,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       },
@@ -1319,6 +1557,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Sessao"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -1351,6 +1594,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ],
         "requestBody": {
@@ -1388,6 +1634,11 @@
                   "$ref": "#/components/schemas/Mensagem"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -1416,6 +1667,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -1437,6 +1691,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/SessaoLista"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -1464,6 +1723,9 @@
               "type": "number",
               "default": 10
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -1486,6 +1748,11 @@
                   "$ref": "#/components/schemas/Sessao"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "404": {
@@ -1505,6 +1772,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -1533,6 +1803,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Filme"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -1565,6 +1840,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ],
         "requestBody": {
@@ -1614,6 +1892,11 @@
                   "$ref": "#/components/schemas/SalaLista"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -1646,6 +1929,9 @@
               "type": "number",
               "default": 10
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       },
@@ -1673,6 +1959,11 @@
                   "$ref": "#/components/schemas/Sala"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "400": {
@@ -1697,7 +1988,12 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/salas/{id}": {
@@ -1725,6 +2021,11 @@
                   "$ref": "#/components/schemas/Sala"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -1750,6 +2051,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       },
@@ -1776,6 +2080,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Sala"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -1808,6 +2117,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ],
         "requestBody": {
@@ -1845,6 +2157,11 @@
                   "$ref": "#/components/schemas/Mensagem"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -1873,6 +2190,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -1901,6 +2221,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/GeracaoAssentos"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -1933,6 +2258,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -1965,6 +2293,11 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -1976,7 +2309,12 @@
           "500": {
             "$ref": "#/components/responses/Erro500"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       },
       "post": {
         "operationId": "post_assentos",
@@ -2002,6 +2340,11 @@
                   "$ref": "#/components/schemas/Assento"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -2023,7 +2366,12 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/assentos/{id}": {
@@ -2051,6 +2399,11 @@
                   "$ref": "#/components/schemas/Assento"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -2076,6 +2429,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -2101,12 +2457,22 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "500": {
             "$ref": "#/components/responses/Erro500"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/catalogo/assentos/{id}": {
@@ -2127,6 +2493,11 @@
                   "$ref": "#/components/schemas/Assento"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "404": {
@@ -2146,6 +2517,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -2178,6 +2552,11 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -2189,7 +2568,12 @@
           "500": {
             "$ref": "#/components/responses/Erro500"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       },
       "post": {
         "operationId": "post_ingressos",
@@ -2211,6 +2595,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Ingresso"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -2239,7 +2628,12 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/ingressos/{id}": {
@@ -2267,6 +2661,11 @@
                   "$ref": "#/components/schemas/Ingresso"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -2289,6 +2688,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -2318,6 +2720,11 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "400": {
@@ -2345,7 +2752,12 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/ingressos/{id}/cancelar": {
@@ -2369,6 +2781,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Ingresso"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -2401,6 +2818,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -2427,6 +2847,11 @@
                   "$ref": "#/components/schemas/Ocupacao"
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "400": {
@@ -2449,6 +2874,9 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -2478,6 +2906,11 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -2486,7 +2919,12 @@
           "500": {
             "$ref": "#/components/responses/Erro500"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/pagamentos": {
@@ -2517,6 +2955,11 @@
                   }
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -2528,7 +2971,12 @@
           "500": {
             "$ref": "#/components/responses/Erro500"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       },
       "post": {
         "operationId": "post_pagamentos",
@@ -2550,6 +2998,11 @@
                 "schema": {
                   "$ref": "#/components/schemas/Pagamento"
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
               }
             }
           },
@@ -2581,7 +3034,12 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
       }
     },
     "/pagamentos/{id}": {
@@ -2653,6 +3111,11 @@
                   "nullable": true
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
             }
           },
           "401": {
@@ -2675,6 +3138,58 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "$ref": "#/components/parameters/RequestId"
+          }
+        ]
+      }
+    },
+    "/metrics": {
+      "get": {
+        "operationId": "get_metrics",
+        "tags": [
+          "Observabilidade"
+        ],
+        "summary": "Consultar m?tricas HTTP em mem?ria",
+        "description": "Somente admin. Contadores cumulativos por processo, reiniciados ao reiniciar a API; histograma de lat?ncia em milissegundos. business exclui health, documenta??o, est?ticos, coleta de m?tricas e rotas n?o casadas. A resposta n?o inclui a pr?pria coleta ainda em andamento. N?o ? endpoint de readiness e n?o consulta depend?ncias.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-roles": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Snapshot agregado; Cache-Control: no-store.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpMetrics"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/RequestId"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Erro401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Erro403"
+          },
+          "500": {
+            "$ref": "#/components/responses/Erro500"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestId"
           }
         ]
       }
@@ -3755,6 +4270,138 @@
             ]
           }
         ]
+      },
+      "MetricStats": {
+        "type": "object",
+        "required": [
+          "completedRequests",
+          "serverErrors",
+          "clientErrors",
+          "abortedRequests",
+          "statusCodes",
+          "latencyMs"
+        ],
+        "properties": {
+          "completedRequests": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "serverErrors": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "clientErrors": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "abortedRequests": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "statusCodes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "latencyMs": {
+            "type": "object",
+            "required": [
+              "sum",
+              "buckets"
+            ],
+            "properties": {
+              "sum": {
+                "type": "number",
+                "minimum": 0
+              },
+              "buckets": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "le",
+                    "count"
+                  ],
+                  "properties": {
+                    "le": {
+                      "type": "string",
+                      "enum": [
+                        "50",
+                        "100",
+                        "250",
+                        "500",
+                        "1000",
+                        "2000",
+                        "5000",
+                        "+Inf"
+                      ]
+                    },
+                    "count": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "HttpMetrics": {
+        "type": "object",
+        "required": [
+          "startedAt",
+          "uptimeSeconds",
+          "http",
+          "business",
+          "routes"
+        ],
+        "properties": {
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "uptimeSeconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "http": {
+            "$ref": "#/components/schemas/MetricStats"
+          },
+          "business": {
+            "$ref": "#/components/schemas/MetricStats"
+          },
+          "routes": {
+            "type": "array",
+            "maxItems": 256,
+            "items": {
+              "type": "object",
+              "required": [
+                "method",
+                "route",
+                "business",
+                "stats"
+              ],
+              "properties": {
+                "method": {
+                  "type": "string"
+                },
+                "route": {
+                  "type": "string",
+                  "description": "Template de rota; n?o cont?m par?metros ou query string."
+                },
+                "business": {
+                  "type": "boolean"
+                },
+                "stats": {
+                  "$ref": "#/components/schemas/MetricStats"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "responses": {
@@ -3766,6 +4413,11 @@
               "$ref": "#/components/schemas/Mensagem"
             }
           }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
         }
       },
       "Erro401": {
@@ -3775,6 +4427,11 @@
             "schema": {
               "$ref": "#/components/schemas/Mensagem"
             }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
           }
         }
       },
@@ -3786,6 +4443,11 @@
               "$ref": "#/components/schemas/Mensagem"
             }
           }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
         }
       },
       "Erro404": {
@@ -3795,6 +4457,11 @@
             "schema": {
               "$ref": "#/components/schemas/Mensagem"
             }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
           }
         }
       },
@@ -3806,6 +4473,11 @@
               "$ref": "#/components/schemas/Mensagem"
             }
           }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
         }
       },
       "Erro413": {
@@ -3815,6 +4487,11 @@
             "schema": {
               "$ref": "#/components/schemas/Mensagem"
             }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
           }
         }
       },
@@ -3826,6 +4503,32 @@
               "$ref": "#/components/schemas/Mensagem"
             }
           }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        }
+      }
+    },
+    "headers": {
+      "RequestId": {
+        "description": "UUID v4 de correla??o: aceita um UUID v4 v?lido recebido ou gera novo identificador. N?o ? credencial nem identificador de usu?rio.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "parameters": {
+      "RequestId": {
+        "name": "X-Request-Id",
+        "in": "header",
+        "required": false,
+        "description": "Correla??o opcional. Somente UUID v4 ? reutilizado; qualquer outro valor ? substitu?do. IDs n?o autorizam acesso.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
         }
       }
     }

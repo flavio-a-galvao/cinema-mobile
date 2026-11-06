@@ -4,6 +4,8 @@ Arquivos preparados para cobrir os itens de Engenharia/Análise e Evolução da 
 
 ## Entregáveis
 
+- [Observabilidade, resiliência, SLIs, SLOs e evidências locais](OBSERVABILIDADE_RESILIENCIA.md).
+- [Runbook de incidentes: diagnóstico, recuperação e rollback](RUNBOOK_INCIDENTES.md).
 - [APIs: OpenAPI 3.0.3, Swagger UI, contratos e validação](API_OPENAPI.md).
 - [Arquitetura de Software: guia de avaliação, C4, ADRs, DDD e Quality Scenarios](arquitetura/README.md).
 - [C4 — contexto](arquitetura/C4_CONTEXTO.md) e [containers](arquitetura/C4_CONTAINERS.md).

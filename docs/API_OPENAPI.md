@@ -3,19 +3,22 @@
 ## Artefatos e escopo
 
 A [especificação JSON](../Projeto-back-end/src/docs/openapi.json) descreve as
-**51 operações existentes em 33 caminhos**, incluindo a resposta básica `/` e
+**52 operações existentes em 34 caminhos**, incluindo a resposta básica `/` e
 os aliases `/users` e `/usuarios`. Documenta métodos, parâmetros, corpos,
 schemas, respostas, erros e Bearer JWT, a partir de
 [rotas](../Projeto-back-end/src/app.ts), controllers, models e middlewares.
 
 Não foram alterados endpoints, regras de negócio ou formatos existentes.
-Foram adicionadas apenas as rotas de documentação sob `/api-docs`. Os arquivos
+Na etapa OpenAPI foram adicionadas as rotas de documentação sob `/api-docs`;
+a etapa seguinte acrescentou `/metrics` e o header de correlação `X-Request-Id`,
+conforme [observabilidade](OBSERVABILIDADE_RESILIENCIA.md). Os arquivos
 estáticos de pôsteres e as próprias rotas do Swagger não são operações de
 negócio da especificação. `Projeto-mobile/` permanece intacto.
 
 | Grupo | Caminhos relativos à raiz da API | Operações |
 | --- | --- | --- |
 | Sistema e autenticação | `/`, `/auth/login` | GET básico; POST de login |
+| Observabilidade | `/metrics` | GET de métricas em memória, somente admin |
 | Usuários | `/users`, `/users/{id}`, `/usuarios`, `/usuarios/{id}` | GET/POST de coleção; GET/PUT individual |
 | Clientes | `/clientes`, `/clientes/{id}`, `/clientes/me` | GET/POST de coleção e perfil próprio; GET administrativo individual |
 | Filmes | `/catalogo/filmes`, `/catalogo/filmes/{id}`, `/filmes`, `/filmes/{id}`, `/filmes/{id}/poster` | GET público; GET/POST/PUT/DELETE administrativos; POST multipart de pôster |
@@ -137,7 +140,7 @@ npm --prefix Projeto-back-end run build
 
 ## Resultado desta etapa e limites
 
-Em 05/11/2026: parser aprovou 33 caminhos/51 operações; 138 testes OpenAPI e a
+Na etapa OpenAPI (commit `185f155`), em 05/11/2026: parser aprovou 33 caminhos/51 operações; 138 testes OpenAPI e a
 suíte completa de **392 testes em 25 arquivos** passaram; build backend aprovado.
 Um smoke test do build com controllers reais aprovou nove verificações HTTP
 (documentação, assets, resposta básica e rejeições de autenticação/entrada), sem

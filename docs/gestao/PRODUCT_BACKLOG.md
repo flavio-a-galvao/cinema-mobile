@@ -63,8 +63,8 @@ Tasks e Bugs são filhos do épico, no mesmo nível de Story; relação com uma 
 | 19 | TK04 | Task | EP02 | P0 | 4 h | US10, US07, US01 | 1.0.0-rc.1 |
 | 20 | US15 | Story | EP06 | P0 | 5 pt | US03, US04, US05, US07, US10, US12, TK03, TK04 | 1.0.0-rc.1 |
 | 21 | US16 | Story | EP06 | P1 | 3 pt | US11, US13, US14, US15 | 1.0.0 |
-| 22 | BUG01 | Bug | EP06 | P2 | 2 h | US10 | 1.0.1 |
-| 23 | BUG02 | Bug | EP06 | P2 | 1 h | US02 | 1.0.1 |
+| 22 | BUG01 | Bug | EP06 | P2 | 2 h | US10 | 1.0.0-rc.1 |
+| 23 | BUG02 | Bug | EP06 | P2 | 1 h | US02 | 1.0.0-rc.1 |
 | 24 | TK05 | Task | EP05 | P2 | 6 h | US13 | 1.1.0 |
 
 As 16 Stories somam 56 pontos de validação propostos; isso não é velocidade.
@@ -398,8 +398,8 @@ Fontes: [Projeto-front-end/public/index.html](../../Projeto-front-end/public/ind
 
 Aceite:
 
-1. Registrar reprodução da requisição de fonte/stylesheet sob a CSP do proxy.
-2. Escolher fonte local ou fallback aprovado e validar apresentação sem enfraquecer CSP/HSTS.
+1. Confrontar o achado histórico com o HTML servido atual, comprovando ausência das referências Google Fonts sob a CSP do proxy.
+2. Validar o fallback local já aplicado em d59723b e a apresentação sem enfraquecer CSP/HSTS; registrar aceite atual.
 
 ### BUG02 — Alinhar idioma declarado do HTML web
 
@@ -411,7 +411,7 @@ Fontes: [Projeto-front-end/public/index.html](../../Projeto-front-end/public/ind
 
 Aceite:
 
-1. Confirmar conteúdo predominante em português e alterar lang do documento web para pt-BR em tarefa futura.
+1. Confirmar o conteúdo em português e o lang=pt-BR já aplicado em d59723b, sem refazer a alteração.
 2. Verificar atributo no HTML servido e ausência de alteração de contratos; documentar verificação de acessibilidade realizada.
 
 ## Regras de refinamento

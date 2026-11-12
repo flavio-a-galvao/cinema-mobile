@@ -1,0 +1,641 @@
+{
+  "executedAt": "2026-11-12T00:04:29.080Z",
+  "sourceCommit": "d59723b90a8c738590627e551b5d4b3dc14438be",
+  "workingTreeChanges": true,
+  "sourceFiles": [
+    {
+      "file": "docker-compose.yml",
+      "sha256": "e098ea9ff3823586841c8fca0e98cbef3d5b2744edef9f9caf695844575c2eae"
+    },
+    {
+      "file": "docker-compose.rubrica.yml",
+      "sha256": "3176328c891d8cc46dc887509df0107873714e6df5ecf97ba73c3ad175b17f7d"
+    },
+    {
+      "file": "nginx.conf",
+      "sha256": "337655e62413da1025b3ddfc46326d4aed98d8e16148930f6fc7e3db4d6f4240"
+    },
+    {
+      "file": "scripts/prepare-infra-check.ps1",
+      "sha256": "7794dd8781bdb3f876559853a8b7b413337fa1918da8c7fc393f2f86d5937568"
+    },
+    {
+      "file": "scripts/verify-redis-infra.cjs",
+      "sha256": "9d025be191b8da68a86bfa313c3455ba4bd34f668ad10d3a27b6c41c76942a1d"
+    }
+  ],
+  "project": "cinemax-rubrica-1a9aa7106a28",
+  "result": "passed",
+  "services": [
+    {
+      "service": "backend",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "database",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "frontend",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "nginx",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "redis",
+      "state": "running",
+      "health": "healthy"
+    }
+  ],
+  "checks": [
+    {
+      "check": "nginx_tls_frontend",
+      "evidence": {
+        "redirect": 301,
+        "https": 200,
+        "spa": 200,
+        "tlsVerified": true,
+        "securityHeaders": true
+      }
+    },
+    {
+      "check": "observability_real",
+      "evidence": {
+        "metricsWithoutToken": 401,
+        "metricsWithAdmin": 200,
+        "correlationId": "c7d5ada4-9b54-4ddc-8f65-bbb278572538",
+        "businessRequestDelta": 1,
+        "sameProcess": true,
+        "metrics": {
+          "startedAt": "2026-11-12T00:01:25.254Z",
+          "uptimeSeconds": 17.159820553000003,
+          "http": {
+            "completedRequests": 7,
+            "serverErrors": 0,
+            "clientErrors": 2,
+            "abortedRequests": 0,
+            "statusCodes": {
+              "200": 5,
+              "401": 1,
+              "404": 1
+            },
+            "latencyMs": {
+              "sum": 34.21162199999617,
+              "buckets": [
+                {
+                  "le": "50",
+                  "count": 7
+                },
+                {
+                  "le": "100",
+                  "count": 7
+                },
+                {
+                  "le": "250",
+                  "count": 7
+                },
+                {
+                  "le": "500",
+                  "count": 7
+                },
+                {
+                  "le": "1000",
+                  "count": 7
+                },
+                {
+                  "le": "2000",
+                  "count": 7
+                },
+                {
+                  "le": "5000",
+                  "count": 7
+                },
+                {
+                  "le": "+Inf",
+                  "count": 7
+                }
+              ]
+            }
+          },
+          "business": {
+            "completedRequests": 1,
+            "serverErrors": 0,
+            "clientErrors": 0,
+            "abortedRequests": 0,
+            "statusCodes": {
+              "200": 1
+            },
+            "latencyMs": {
+              "sum": 18.86652099999992,
+              "buckets": [
+                {
+                  "le": "50",
+                  "count": 1
+                },
+                {
+                  "le": "100",
+                  "count": 1
+                },
+                {
+                  "le": "250",
+                  "count": 1
+                },
+                {
+                  "le": "500",
+                  "count": 1
+                },
+                {
+                  "le": "1000",
+                  "count": 1
+                },
+                {
+                  "le": "2000",
+                  "count": 1
+                },
+                {
+                  "le": "5000",
+                  "count": 1
+                },
+                {
+                  "le": "+Inf",
+                  "count": 1
+                }
+              ]
+            }
+          },
+          "routes": [
+            {
+              "method": "GET",
+              "route": "/",
+              "business": false,
+              "stats": {
+                "completedRequests": 3,
+                "serverErrors": 0,
+                "clientErrors": 0,
+                "abortedRequests": 0,
+                "statusCodes": {
+                  "200": 3
+                },
+                "latencyMs": {
+                  "sum": 5.745100000001003,
+                  "buckets": [
+                    {
+                      "le": "50",
+                      "count": 3
+                    },
+                    {
+                      "le": "100",
+                      "count": 3
+                    },
+                    {
+                      "le": "250",
+                      "count": 3
+                    },
+                    {
+                      "le": "500",
+                      "count": 3
+                    },
+                    {
+                      "le": "1000",
+                      "count": 3
+                    },
+                    {
+                      "le": "2000",
+                      "count": 3
+                    },
+                    {
+                      "le": "5000",
+                      "count": 3
+                    },
+                    {
+                      "le": "+Inf",
+                      "count": 3
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "method": "GET",
+              "route": "/posters/*",
+              "business": false,
+              "stats": {
+                "completedRequests": 1,
+                "serverErrors": 0,
+                "clientErrors": 1,
+                "abortedRequests": 0,
+                "statusCodes": {
+                  "404": 1
+                },
+                "latencyMs": {
+                  "sum": 4.6549119999981485,
+                  "buckets": [
+                    {
+                      "le": "50",
+                      "count": 1
+                    },
+                    {
+                      "le": "100",
+                      "count": 1
+                    },
+                    {
+                      "le": "250",
+                      "count": 1
+                    },
+                    {
+                      "le": "500",
+                      "count": 1
+                    },
+                    {
+                      "le": "1000",
+                      "count": 1
+                    },
+                    {
+                      "le": "2000",
+                      "count": 1
+                    },
+                    {
+                      "le": "5000",
+                      "count": 1
+                    },
+                    {
+                      "le": "+Inf",
+                      "count": 1
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "method": "GET",
+              "route": "/metrics",
+              "business": false,
+              "stats": {
+                "completedRequests": 2,
+                "serverErrors": 0,
+                "clientErrors": 1,
+                "abortedRequests": 0,
+                "statusCodes": {
+                  "200": 1,
+                  "401": 1
+                },
+                "latencyMs": {
+                  "sum": 4.945088999997097,
+                  "buckets": [
+                    {
+                      "le": "50",
+                      "count": 2
+                    },
+                    {
+                      "le": "100",
+                      "count": 2
+                    },
+                    {
+                      "le": "250",
+                      "count": 2
+                    },
+                    {
+                      "le": "500",
+                      "count": 2
+                    },
+                    {
+                      "le": "1000",
+                      "count": 2
+                    },
+                    {
+                      "le": "2000",
+                      "count": 2
+                    },
+                    {
+                      "le": "5000",
+                      "count": 2
+                    },
+                    {
+                      "le": "+Inf",
+                      "count": 2
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "method": "GET",
+              "route": "/catalogo/filmes",
+              "business": true,
+              "stats": {
+                "completedRequests": 1,
+                "serverErrors": 0,
+                "clientErrors": 0,
+                "abortedRequests": 0,
+                "statusCodes": {
+                  "200": 1
+                },
+                "latencyMs": {
+                  "sum": 18.86652099999992,
+                  "buckets": [
+                    {
+                      "le": "50",
+                      "count": 1
+                    },
+                    {
+                      "le": "100",
+                      "count": 1
+                    },
+                    {
+                      "le": "250",
+                      "count": 1
+                    },
+                    {
+                      "le": "500",
+                      "count": 1
+                    },
+                    {
+                      "le": "1000",
+                      "count": 1
+                    },
+                    {
+                      "le": "2000",
+                      "count": 1
+                    },
+                    {
+                      "le": "5000",
+                      "count": 1
+                    },
+                    {
+                      "le": "+Inf",
+                      "count": 1
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "check": "cache_miss_hit",
+      "evidence": {
+        "id": 11,
+        "key": "cinemax:catalogo:filmes:3a730ff7-973a-493c-b9ff-ec300c661db1:id:11",
+        "missSetDelta": 1,
+        "hitSetDelta": 0,
+        "pttl": 59081
+      }
+    },
+    {
+      "check": "cache_ttl",
+      "evidence": {
+        "expired": true,
+        "nextReadRepopulated": true
+      }
+    },
+    {
+      "check": "cache_invalidation",
+      "evidence": {
+        "versionChanged": true,
+        "updatedTitle": "Infra atualizado",
+        "mysqlPersistedTitle": "Infra atualizado",
+        "paginatedListCached": true
+      }
+    },
+    {
+      "check": "redis_fallback",
+      "evidence": {
+        "update": 200,
+        "read": 200,
+        "title": "Infra fallback",
+        "cacheAndPubsubWarnings": true
+      }
+    },
+    {
+      "check": "redis_recovery",
+      "evidence": {
+        "ping": "PONG",
+        "cacheRepopulated": true,
+        "subscriptionsRestored": true,
+        "ttlBypassRespected": true
+      }
+    },
+    {
+      "check": "crud_filmes_sessoes",
+      "evidence": {
+        "movieId": 11,
+        "sessionId": 8,
+        "created": 201,
+        "updated": 200,
+        "deleted": 200,
+        "deletedDetails": 404,
+        "errorsNotCached": true
+      }
+    },
+    {
+      "check": "pubsub_real",
+      "evidence": {
+        "types": [
+          "filme.created",
+          "filme.updated",
+          "filme.deleted",
+          "sessao.created",
+          "sessao.updated",
+          "sessao.deleted"
+        ],
+        "matchedPublicationAndConsumption": true
+      }
+    }
+  ],
+  "circulation": [
+    {
+      "loggedAt": "2026-11-12T00:01:43.980Z",
+      "timestamp": "2026-11-12T00:01:43.979Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "redis_pubsub",
+      "action": "published",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "c0d90605-c3b9-4a71-816f-115f5eb3d48a",
+      "type": "filme.created",
+      "id": 11,
+      "subscribers": 1,
+      "requestId": "9cd1e0e5-bd8f-41e4-8979-46f729627217"
+    },
+    {
+      "loggedAt": "2026-11-12T00:01:43.982Z",
+      "timestamp": "2026-11-12T00:01:43.979Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "redis_pubsub",
+      "action": "consumed",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "c0d90605-c3b9-4a71-816f-115f5eb3d48a",
+      "type": "filme.created",
+      "id": 11
+    },
+    {
+      "loggedAt": "2026-11-12T00:03:11.464Z",
+      "timestamp": "2026-11-12T00:03:11.463Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "redis_pubsub",
+      "action": "published",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "d6714e90-dc42-49fb-b1d5-c0dac1d4d5d4",
+      "type": "filme.updated",
+      "id": 11,
+      "subscribers": 1,
+      "requestId": "5f718cdd-a25e-4b34-abfb-2cba2a884b22"
+    },
+    {
+      "loggedAt": "2026-11-12T00:03:11.465Z",
+      "timestamp": "2026-11-12T00:03:11.463Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "redis_pubsub",
+      "action": "consumed",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "d6714e90-dc42-49fb-b1d5-c0dac1d4d5d4",
+      "type": "filme.updated",
+      "id": 11
+    },
+    {
+      "loggedAt": "2026-11-12T00:03:15.186Z",
+      "timestamp": "2026-11-12T00:03:15.185Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "redis_pubsub",
+      "action": "published",
+      "channel": "cinemax:eventos:sessoes",
+      "eventId": "fb712ba5-4376-41d0-bd0c-f0c71acbc6fc",
+      "type": "sessao.created",
+      "id": 8,
+      "subscribers": 1,
+      "requestId": "7c204e3d-e28c-4c12-8fe2-d587e72bd1b2"
+    },
+    {
+      "loggedAt": "2026-11-12T00:03:15.187Z",
+      "timestamp": "2026-11-12T00:03:15.185Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "redis_pubsub",
+      "action": "consumed",
+      "channel": "cinemax:eventos:sessoes",
+      "eventId": "fb712ba5-4376-41d0-bd0c-f0c71acbc6fc",
+      "type": "sessao.created",
+      "id": 8
+    },
+    {
+      "loggedAt": "2026-11-12T00:03:17.431Z",
+      "timestamp": "2026-11-12T00:03:17.430Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "redis_pubsub",
+      "action": "published",
+      "channel": "cinemax:eventos:sessoes",
+      "eventId": "1644afc2-3e6c-4b01-899c-6e18cf1b2dcc",
+      "type": "sessao.updated",
+      "id": 8,
+      "subscribers": 1,
+      "requestId": "9b135a09-2fbd-4c74-87ef-a130525be79b"
+    },
+    {
+      "loggedAt": "2026-11-12T00:03:17.433Z",
+      "timestamp": "2026-11-12T00:03:17.430Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "redis_pubsub",
+      "action": "consumed",
+      "channel": "cinemax:eventos:sessoes",
+      "eventId": "1644afc2-3e6c-4b01-899c-6e18cf1b2dcc",
+      "type": "sessao.updated",
+      "id": 8
+    },
+    {
+      "loggedAt": "2026-11-12T00:03:18.029Z",
+      "timestamp": "2026-11-12T00:03:18.029Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "redis_pubsub",
+      "action": "published",
+      "channel": "cinemax:eventos:sessoes",
+      "eventId": "29d2d9cd-d423-4f2c-a99b-4eb8478bb204",
+      "type": "sessao.deleted",
+      "id": 8,
+      "subscribers": 1,
+      "requestId": "51be0617-5e81-4d4a-b085-ea93af2bcf23"
+    },
+    {
+      "loggedAt": "2026-11-12T00:03:18.030Z",
+      "timestamp": "2026-11-12T00:03:18.029Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "redis_pubsub",
+      "action": "consumed",
+      "channel": "cinemax:eventos:sessoes",
+      "eventId": "29d2d9cd-d423-4f2c-a99b-4eb8478bb204",
+      "type": "sessao.deleted",
+      "id": 8
+    },
+    {
+      "loggedAt": "2026-11-12T00:03:31.192Z",
+      "timestamp": "2026-11-12T00:03:31.191Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "redis_pubsub",
+      "action": "published",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "11ae48e4-500c-444a-aa68-41840e2b3da2",
+      "type": "filme.updated",
+      "id": 11,
+      "subscribers": 1,
+      "requestId": "dd9a8f37-b089-4e89-bfb0-07df7bba820a"
+    },
+    {
+      "loggedAt": "2026-11-12T00:03:31.193Z",
+      "timestamp": "2026-11-12T00:03:31.191Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "redis_pubsub",
+      "action": "consumed",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "11ae48e4-500c-444a-aa68-41840e2b3da2",
+      "type": "filme.updated",
+      "id": 11
+    },
+    {
+      "loggedAt": "2026-11-12T00:04:01.301Z",
+      "timestamp": "2026-11-12T00:04:01.300Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "redis_pubsub",
+      "action": "published",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "d37b7279-b09c-4342-bbc2-97c35d16a0fb",
+      "type": "filme.deleted",
+      "id": 11,
+      "subscribers": 1,
+      "requestId": "979ffead-2daf-4b44-be33-ba70035de265"
+    },
+    {
+      "loggedAt": "2026-11-12T00:04:01.302Z",
+      "timestamp": "2026-11-12T00:04:01.300Z",
+      "service": "cinemax-backend",
+      "level": "info",
+      "component": "redis_pubsub",
+      "action": "consumed",
+      "channel": "cinemax:eventos:filmes",
+      "eventId": "d37b7279-b09c-4342-bbc2-97c35d16a0fb",
+      "type": "filme.deleted",
+      "id": 11
+    }
+  ],
+  "limits": [
+    "JWT sintetico de admin somente no ambiente descartavel; nao comprova login.",
+    "Ensaio curto nao comprova SLO de 30 dias nem E2E de navegador."
+  ]
+}

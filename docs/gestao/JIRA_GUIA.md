@@ -2,8 +2,8 @@
 
 ## Situação real
 
-Em 05/11/2026 foi localizado o plugin Atlassian, **não instalado/conectado** nesta
-sessão. Não houve acesso a um projeto Jira. Nenhuma issue foi criada, atribuída,
+Em 11/11/2026 o titular confirmou que **ainda não há projeto Jira configurado**,
+URL, chave ou tipo de projeto. Não houve acesso a um projeto Jira. Nenhuma issue foi criada, atribuída,
 movida, comentada ou marcada como concluída. O CSV é preparo local para futura
 importação, não exportação de dados reais. Sugerir a integração não a conecta.
 
@@ -46,9 +46,9 @@ depois de configurar o campo correto, o administrador pode transcrever pontos
 das Stories e horas estimadas de Tasks/Bugs, sem preencher tempo realizado.
 Versões descritas são propostas; não marcar versões como released.
 
-No Jira Cloud, a hierarquia deve ser importada pelo recurso administrativo de
-CSV com suporte a Parent, e não pelo importador simplificado que não preserva
-essa estrutura. Conferir opções/permissões da instância na
+No Jira Cloud, usar a experiência de importação que mapeia IDs/Parent/tipos,
+evitando o importador simplificado de criação em massa que não preserva
+essa hierarquia. Conferir opções/permissões da instância na
 [documentação do importador](https://support.atlassian.com/jira-software-cloud/docs/create-issues-using-the-csv-importer/).
 O [guia de hierarquia](https://support.atlassian.com/jira/kb/keep-issue-parent-child-mapping-during-csv-import-to-jira-cloud/)
 orienta IDs de pai e ordem das linhas em projetos company-managed. Se o destino
@@ -59,13 +59,15 @@ não se afirma compatibilidade universal com configuração desconhecida.
 
 1. Conciliar com issues reais. Se já existirem, retirar duplicatas do lote e
    ajustar referências em uma cópia; preservar este CSV como proposta original.
-2. Pedir ao administrador autorizado o fluxo **External System Import → CSV**,
-   selecionando explicitamente o projeto confirmado, UTF-8 e vírgula.
+2. Usar **Settings → System → External System Import → CSV**, selecionando o
+   projeto confirmado, UTF-8 e vírgula. Para team-managed sem admin, verificar
+   **Spaces → Create space → Import data** e as permissões efetivas da conta.
 3. Mapear as colunas, inclusive IDs/Parent e tipos. Configurar To Do e prioridades
    reais antes; o nome de campo pode variar com idioma/experiência da instância.
-4. Validar primeiro uma amostra de Epic/Story/Task/Bug num espaço autorizado para
-   teste. Conferir resultado/Parent; não reimportar a mesma amostra no destino.
-5. Após conciliação e validação, importar o restante e registrar IDs → chaves.
+4. Validar uma cópia de amostra Epic/Story/Task/Bug num espaço separado autorizado
+   para teste, com seus pais presentes. Conferir resultado/Parent. O espaço de
+   teste não é o destino final, e suas chaves não podem ser reutilizadas ali.
+5. Após conciliação, importar o lote final uma única vez no destino e registrar IDs → chaves.
    Confira responsáveis/relator aplicados por padrão; a omissão de Assignee no
    arquivo não impede atribuição automática do projeto. Não criar contas fictícias.
 6. Vincular dependências descritas usando as chaves reais. Description não cria
@@ -78,6 +80,40 @@ Importar sem pais e vinculá-los manualmente só é alternativa após confirmaç
 do administrador; mantenha registro da conciliação. O arquivo não contém chaves
 reais, portanto reimportá-lo pode duplicar issues. Não o use como atualização
 idempotente de projeto existente.
+
+### Validação local e diferenças no Jira Cloud (11/11/2026)
+
+Execute na raiz: `powershell -ExecutionPolicy Bypass -File scripts/validate-jira-csv.ps1`.
+O [resultado](../evidencias/complementacao/jira-csv.json) verifica UTF-8, cabeçalhos,
+30 registros (6/16/6/2), campos locais obrigatórios, IDs únicos, Summary até 255
+caracteres, épicos anteriores aos filhos, prioridades e consistência com a fila
+do backlog. As 42 dependências existem e não formam ciclos. Não valida o esquema
+de um Jira inexistente. Summary é obrigatório no importador; outros campos
+obrigatórios dependem da configuração real e precisam ser preenchidos antes da
+importação, sem criar pessoas ou datas fictícias.
+
+| Destino | Preparação e conferência |
+| --- | --- |
+| Cloud company-managed | Administrador de site/organização; conferir esquemas e campos. Mapear Work item ID (Issue ID na experiência antiga), Parent e tipos. A orientação de hierarquia da Atlassian para esse modelo exige pais antes dos filhos. |
+| Cloud team-managed | Tipos e campos pertencem ao projeto; criar/conferir Epic, Story, Task e Bug e suas configurações antes. A importação atual em projeto existente admite usuários sem admin conforme permissões. Mapear a hierarquia e testar Parent; não transportar IDs de tipos/esquemas company-managed nem assumir Epic Link. |
+
+Em ambos: conciliar Highest/High/Medium e To Do com valores existentes; conferir
+campos adicionais na validação do importador. Task/Bug continuam no nível de
+Story, com Epic como Parent. **Parent não cria links de bloqueio**: após importar,
+converter cada dependência local em `is blocked by` pela chave real (o pré-requisito
+`blocks` o dependente). Não usar a ordem das linhas como ordem de execução: ela
+preserva a hierarquia, enquanto a fila do backlog respeita dependências.
+
+Se Parent não for preservado, interromper o lote final e corrigir o mapeamento
+no espaço de teste. Vinculação manual de filhos já importados exige autorização
+e conferência, sem reimportar/duplicar as 30 issues. Guardar relatório de importação,
+contagens 6/16/6/2, pais de todos os 24 filhos e correspondências reais; depois
+atribuir contas reais e registrar somente os movimentos/aceites ocorridos.
+
+Fontes oficiais consultadas em 11/11/2026:
+[preparo e hierarquia](https://support.atlassian.com/jira-software-cloud/docs/prepare-a-csv-file-for-import/),
+[importação em company/team-managed](https://support.atlassian.com/jira-software-cloud/docs/import-issues-into-an-existing-space-in-jira-using-csv/),
+[hierarquia company-managed](https://support.atlassian.com/jira/kb/keep-issue-parent-child-mapping-during-csv-import-to-jira-cloud/).
 
 ## Workflow e responsabilidade
 

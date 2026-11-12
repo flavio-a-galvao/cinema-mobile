@@ -1,5 +1,16 @@
 # Observabilidade, resiliência, SLIs e SLOs
 
+## Complementação de 11/11/2026
+
+Os resultados da seção final são históricos. Nesta complementação passaram
+45 testes relevantes e a integração **real** por Nginx/HTTPS/MySQL/Redis, no projeto
+`cinemax-rubrica-1a9aa7106a28`. O check `observability_real` comprova métricas
+admin 200, sem token 401, delta de requisições no mesmo processo e UUID devolvido
+no header/encontrado nos logs. [Evidência nova](evidencias/complementacao/infra-cinemax-rubrica-1a9aa7106a28.json).
+O [ensaio MySQL](evidencias/complementacao/mysql-integracao.txt) passou seis
+verificações, incluindo operações críticas concorrentes. Não é medição mensal,
+teste de carga ou E2E completo de navegador; as metas de SLO continuam propostas.
+
 ## Implementação e escopo
 
 Instrumentação nativa de Node/Express, sem dependências novas. Os contratos de

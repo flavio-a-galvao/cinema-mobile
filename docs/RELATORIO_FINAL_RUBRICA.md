@@ -1,5 +1,98 @@
 # Relatório final da rubrica — Cinemax
 
+## Complementação de 11/11/2026 — base d59723b
+
+Estado inicial: `main` limpa e igual ao SHA remoto
+`d59723b90a8c738590627e551b5d4b3dc14438be`, confirmado por `ls-remote` antes
+das alterações. Trabalho limitado a evidências, preparo de entregas e gestão;
+sem reimplementar requisitos atendidos ou modificar `Projeto-mobile/`.
+
+### Lacunas e correções verificadas
+
+- **Back-end B1/B2/B3:** desconto original decorre da falta de repetição atual
+  de cache/TTL/invalidação/fallback, circulação Pub/Sub e Compose/MySQL/Nginx/HTTPS.
+  Docker CLI 27.4.0 estava sem Engine; iniciar o Desktop disponibilizou Engine
+  Linux 27.4.0. O ensaio foi preparado em projeto novo com volumes próprios e
+  portas 18080/18443, preservando o proxy existente na porta 80. **Integração real
+  aprovada**, com cinco serviços healthy e nove verificações, incluindo TLS,
+  persistência MySQL, miss/hit/TTL/invalidação, fallback/recuperação e seis tipos
+  Pub/Sub com publicação/consumo correlacionados por eventId.
+  [Evidência nova](evidencias/complementacao/infra-cinemax-rubrica-1a9aa7106a28.json);
+  prova histórica preservada sem alterações.
+- **Tech Forge T1:** titular confirmou inexistência de projeto Jira. Mantidos
+  **0/1**, sem criar/alterar dados externos. [CSV validado](evidencias/complementacao/jira-csv.json):
+  30 registros (6 Epic/16 Story/6 Task/2 Bug), 42 dependências existentes e sem
+  ciclos, IDs locais únicos, pais anteriores aos filhos, prioridades e fila
+  consistentes. Campos adicionais e mapeamento dependem do Jira real. O
+  [guia](gestao/JIRA_GUIA.md) cobre company-managed e team-managed Cloud.
+- **Tech Forge T3:** preparados três snapshots cumulativos de fontes dos SHAs
+  `e23bd86`, `c826368`, `d59723b`, gerados por `git archive` e conferidos por
+  SHA-256/bytes contra nova geração. [Manifesto](evidencias/complementacao/entregas.json)
+  e [plano revisado](gestao/PLANEJAMENTO_AGIL.md). Não são versões publicadas nem
+  aceite de entregas. Nenhuma tag remota encontrada na consulta; nenhuma tag/release
+  criada nesta etapa. Condução Jira, homologação e publicação continuam pendentes.
+  Mantida estimativa conservadora de **0,5/1** para T3.
+- Corrigidas contradições de BUG01/BUG02 no CSV/backlog/plano: correções já estão
+  em `d59723b`; conciliar aceite na baseline candidata, sem reservar um patch para
+  refazer código. Preservados IDs, 30 registros, status propostos e histórico Git.
+- Corrigido risco do ensaio: projeto fixo/volumes reutilizáveis e sobrescrita de
+  `redis-infra.json` foram substituídos por projeto aleatório, validação do mount,
+  arquivos locais exclusivos e evidência nova sem sobrescrita. Override de portas
+  permite ensaio sem parar os serviços existentes. Nenhuma alteração funcional
+  na API/web foi necessária.
+- Ajustado o verificador ao contrato de correlação UUID e à política existente
+  de bypass por TTL. Tentativas iniciais falharam com observação de cache expirada
+  e interferência do bypass nos casos seguintes; esses resultados não foram
+  contabilizados como aprovação. A execução completa final usa TTL padrão de
+  60 s, observa valor/prazo atomicamente e testa CRUD/cache saudável antes da
+  interrupção controlada. Nenhuma asserção de sucesso foi removida.
+
+### Validações desta complementação
+
+| Verificação | Resultado atual |
+| --- | --- |
+| CSV/backlog | Validador executado; 30 registros, 42 dependências, sem ciclos; destino Jira não validado |
+| Testes backend relevantes | **45/45, 6 arquivos**: cache, controllers de cache, Pub/Sub, controllers Pub/Sub, observabilidade e databaseReadiness; [JSON](evidencias/complementacao/backend-testes.json) |
+| Build TypeScript backend | `npm --prefix Projeto-back-end run build`: aprovado |
+| Compose principal + override rubrica | `config --quiet` aprovado: cinco serviços, backend sem porta pública, proxy em loopback, volumes com prefixo exclusivo |
+| Builds Docker backend/frontend | Aprovados com Node 24 e lockfiles existentes; containers iniciaram com imagens construídas nesta etapa |
+| Integração real | **9 verificações aprovadas**; cinco serviços healthy; `nginx -t`, TLS validado, Redis/MySQL/PubSub e métricas reais |
+| MySQL isolado | **6/6 verificações** (teste principal e cinco subtestes), zero falhas/skips; preço, titularidade, recuperação e concorrência pagamento/ingresso; [log](evidencias/complementacao/mysql-integracao.txt) |
+| HTML pelo proxy HTTPS | HTTP 200, `lang=pt-BR`, sem referências Google Fonts; [resultado](evidencias/complementacao/html-proxy.json). Não é teste visual de navegador |
+| Preservação de evidência | Segunda chamada com mesmo arquivo foi recusada antes de mutações; SHA-256 da evidência permaneceu igual |
+| Entregas parciais | Três ZIPs locais gerados, SHAs ancestrais de main e SHA-256 conferidos; não publicados |
+| Documentação | Links locais e cercas Markdown conferidos; `git diff --check` sem erros |
+
+A primeira tentativa de Vitest no sandbox foi bloqueada por EPERM no cache
+temporário (zero testes executados); a repetição fora dele aprovou os 45 testes.
+Dependências foram instaladas somente no backend, pelo lockfile, sem scripts de
+instalação nem mudanças de versões. Resultados de 420/5 testes e CI abaixo são
+históricos; não foram reapresentados como reexecução desta etapa.
+
+### Pendências do titular e apresentação
+
+Criar/configurar Jira, confirmar participantes, autorizar importação e registrar
+uso/aceite reais. Selecionar SHA/versão após homologação e autorizar tag/release
+verdadeiras. E2E completo de navegador e coleta prolongada de SLIs não foram
+executados nesta complementação; SLO de 30 dias não é requisito comprovado por
+ensaio curto. O [checklist final](CHECKLIST_APRESENTACAO_FINAL.md) lista comandos,
+telas e gates, separando integração técnica de gestão/publicação.
+
+**Estimativa potencial revisada:** Arquitetura **3,000/3** (escopo já atendido,
+preservado), Back-end **3,000/3** (B1=1,000; B2=0,500; B3=1,000; B4=0,500),
+Tech Forge **1,500/3** (T1=0,000; T2=1,000; T3=0,500); total **7,500/9**.
+Nenhum ponto adicional por CSV, ZIP local ou operação Jira não realizada.
+É estimativa de cobertura, não promessa de nota. Para atingir potencial de 9/9,
+faltam uso Jira comprovado e condução/aceite/entrega versionada reais, sujeitos
+à avaliação do professor. [Consolidado verificável](evidencias/complementacao/resumo.json).
+
+O ambiente de demonstração foi encerrado com `stop`, sem remover volumes; seu
+`run.json` permanece local em `.audit-tmp/infra/cinemax-rubrica-1a9aa7106a28/`.
+Tentativas interrompidas podem ter deixado dados sintéticos nesse banco novo;
+isso não é banco de produção. Credenciais/chaves são locais e ignoradas pelo Git.
+
+## Registro histórico da auditoria de 05/11/2026
+
 Auditoria realizada em **05/11/2026, horário de Brasília**, sobre `main`, base
 `8145040`. Os oito commits anteriores foram preservados. O estado inicial estava
 limpo e igual ao `origin/main` consultado. O escopo abrange web, API, infraestrutura

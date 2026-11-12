@@ -1,0 +1,136 @@
+{
+  "checkedAt": "2026-11-12T00:09:06.227Z",
+  "baseline": "d59723b90a8c738590627e551b5d4b3dc14438be",
+  "branch": "main",
+  "initialRemoteMain": "d59723b90a8c738590627e551b5d4b3dc14438be",
+  "backendTests": {
+    "passed": 45,
+    "files": 6,
+    "source": "backend-testes.json"
+  },
+  "mysql": {
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "source": "mysql-integracao.txt",
+    "scope": "1 teste principal + 5 subtestes; banco Docker novo"
+  },
+  "infra": {
+    "result": "passed",
+    "checks": 9,
+    "services": [
+      {
+        "service": "backend",
+        "state": "running",
+        "health": "healthy"
+      },
+      {
+        "service": "database",
+        "state": "running",
+        "health": "healthy"
+      },
+      {
+        "service": "frontend",
+        "state": "running",
+        "health": "healthy"
+      },
+      {
+        "service": "nginx",
+        "state": "running",
+        "health": "healthy"
+      },
+      {
+        "service": "redis",
+        "state": "running",
+        "health": "healthy"
+      }
+    ],
+    "project": "cinemax-rubrica-1a9aa7106a28",
+    "source": "infra-cinemax-rubrica-1a9aa7106a28.json",
+    "engine": "27.4.0",
+    "compose": "2.31.0",
+    "productionDataTouched": false,
+    "volumesRemoved": false
+  },
+  "executedBuilds": [
+    "npm --prefix Projeto-back-end run build",
+    "docker compose: backend e frontend com Node 24"
+  ],
+  "mobile": {
+    "unchanged": true,
+    "tree": "dfafc0aa9e0f1bb1741987243d040b9dc34426a9",
+    "trackedFiles": 77
+  },
+  "historicalEvidence": {
+    "unchanged": true,
+    "file": "docs/evidencias/redis-infra.json",
+    "sha256": "3e46ce04b320d0274801a4b14605d33831e4e6d2a3584a0846a51111ae156ba9"
+  },
+  "jira": {
+    "configured": false,
+    "createdIssues": 0,
+    "records": 30,
+    "dependencyEdges": 42,
+    "source": "jira-csv.json"
+  },
+  "releases": {
+    "published": 0,
+    "tagsCreated": 0,
+    "source": "entregas.json",
+    "snapshots": 3
+  },
+  "rubric": {
+    "architecture": 3,
+    "backend": 3,
+    "techForge": 1.5,
+    "total": 7.5,
+    "maximum": 9
+  },
+  "notExecuted": [
+    "E2E completo de navegador",
+    "SLO de 30 dias",
+    "Uso/aceite Jira",
+    "Publicacao de tags/releases"
+  ],
+  "verifierCorrections": [
+    "UUID conforme contrato existente",
+    "TTL padrao 60 s e leitura atomica valor/PTTL",
+    "CRUD saudavel antes da falha controlada",
+    "Espera limitada pelo bypass TTL",
+    "Projeto novo, mount validado e evidencia sem sobrescrita"
+  ],
+  "evidenceOverwriteGuard": "passed: segunda execucao recusada e SHA-256 preservado",
+  "documentation": {
+    "files": 7,
+    "localLinks": 152,
+    "brokenLinks": 0,
+    "markdownFences": "balanced",
+    "gitDiffCheck": "passed"
+  },
+  "artifacts": [
+    {
+      "file": "backend-testes.json",
+      "sha256": "759d7ee3fb39cf1cc16e9eda4889b232a2e716d8b62c7c43a6f224512d8472a6"
+    },
+    {
+      "file": "entregas.json",
+      "sha256": "3357a14330c43644cdc072d8e9ee03d87ce52a670f41af44b9f5a5f42e696fed"
+    },
+    {
+      "file": "html-proxy.json",
+      "sha256": "00a9e12c3d4053b7e2935bc4d3e86f57996286b40c4ddf6dbf7f68e87dbce9cb"
+    },
+    {
+      "file": "infra-cinemax-rubrica-1a9aa7106a28.json",
+      "sha256": "0e0503891b54e0d4d3090d9c72003066f5290bb8e90b74e98492a48c87d06c85"
+    },
+    {
+      "file": "jira-csv.json",
+      "sha256": "5a77c90026fc9468ec127f6ad11dbbb164cf7576757c6fb689687f8cf806be9f"
+    },
+    {
+      "file": "mysql-integracao.txt",
+      "sha256": "6c77e45c55d935a6b3bf4256119995a50a05fa942ae28453c6dc76bc7c133e55"
+    }
+  ]
+}

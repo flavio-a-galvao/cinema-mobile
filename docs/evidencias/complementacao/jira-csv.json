@@ -1,0 +1,48 @@
+{
+    "checkedAt":  "2026-11-12T00:05:45.4346330Z",
+    "file":  "docs/gestao/jira-import.csv",
+    "sha256":  "8b3236b3dfb0bc3f47ab6bd89f1f34b73dbc7fc1b92100bbca34d83623d1c0e3",
+    "records":  30,
+    "types":  {
+                  "Task":  6,
+                  "Bug":  2,
+                  "Epic":  6,
+                  "Story":  16
+              },
+    "dependencyEdges":  42,
+    "dependencyCycles":  0,
+    "validDependencyOrder":  [
+                                 "US01",
+                                 "US02",
+                                 "US06",
+                                 "US07",
+                                 "US03",
+                                 "US04",
+                                 "US05",
+                                 "US08",
+                                 "US09",
+                                 "US10",
+                                 "TK02",
+                                 "US11",
+                                 "US12",
+                                 "US13",
+                                 "TK06",
+                                 "TK01",
+                                 "US14",
+                                 "TK03",
+                                 "TK04",
+                                 "US15",
+                                 "US16",
+                                 "TK05",
+                                 "BUG01",
+                                 "BUG02"
+                             ],
+    "result":  "passed-local",
+    "destinationValidated":  false,
+    "issuesCreated":  0,
+    "limits":  [
+                   "Jira ainda nao configurado; campos adicionais obrigatorios, tipos, status e prioridades precisam ser conciliados no destino.",
+                   "Dependencias na Description nao criam links Jira.",
+                   "IDs e To Do sao propostas locais, nao chaves ou historico real."
+               ]
+}

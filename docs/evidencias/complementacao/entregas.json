@@ -1,0 +1,49 @@
+{
+  "checkedAt": "2026-11-11T23:29:26.935Z",
+  "baseline": "d59723b90a8c738590627e551b5d4b3dc14438be",
+  "tagsCreated": 0,
+  "releasesPublished": 0,
+  "artifacts": [
+    {
+      "name": "infra",
+      "sha": "e23bd866e658bde13e4de02f8565b92efe0c0703",
+      "commits": [
+        "8893d8674a97ea8522254c9504ee594037fb9892",
+        "5c6a580922213a8434f8773f214057e3f92113d1",
+        "e23bd866e658bde13e4de02f8565b92efe0c0703"
+      ],
+      "scope": "Cache, Pub/Sub e infraestrutura; prova historica Redis, sem homologacao atual inferida.",
+      "file": ".audit-tmp/entregas/cinemax-infra-e23bd86.zip",
+      "bytes": 656250,
+      "sha256": "f332b09b4b91dfa59375d619fde76a8f9bed8203984bb976a98fe48917f8a10c",
+      "state": "source-snapshot-not-released"
+    },
+    {
+      "name": "arquitetura-api-observabilidade",
+      "sha": "c8263684cf6c41cfd9aac669d17780ab9e7fdf8e",
+      "commits": [
+        "5228fab2b4bdd958c2ef2ec5ba835ca2d097d52b",
+        "185f1556ed29beb76512ba8f5008e80c320cb532",
+        "c8263684cf6c41cfd9aac669d17780ab9e7fdf8e"
+      ],
+      "scope": "C4/DDD/ADRs, OpenAPI e telemetria; testes historicos distintos de integracao real.",
+      "file": ".audit-tmp/entregas/cinemax-arquitetura-api-observabilidade-c826368.zip",
+      "bytes": 727626,
+      "sha256": "4ab500aa507ad0c002edb08bcf6481ac3734303811d1dbbbfa2746f0aeddf345",
+      "state": "source-snapshot-not-released"
+    },
+    {
+      "name": "gestao-auditoria",
+      "sha": "d59723b90a8c738590627e551b5d4b3dc14438be",
+      "commits": [
+        "8145040b756d327b288c4dbdf8761335a77ff79c",
+        "d59723b90a8c738590627e551b5d4b3dc14438be"
+      ],
+      "scope": "Backlog e auditoria final; Jira, aceite e publicacao continuam pendentes.",
+      "file": ".audit-tmp/entregas/cinemax-gestao-auditoria-d59723b.zip",
+      "bytes": 1164982,
+      "sha256": "aa176e0374317b35b26cd92b9da655dc1b5ac5f98494ffa183fa4d266f2d3678",
+      "state": "source-snapshot-not-released"
+    }
+  ]
+}

@@ -1,5 +1,10 @@
 # Infraestrutura Docker, HTTPS e integração Redis
 
+Em 11/11/2026 a integração foi repetida com Engine Linux 27.4.0 e Compose 2.31.0,
+em projeto novo, com cinco serviços healthy. [Resultado atual](evidencias/complementacao/infra-cinemax-rubrica-1a9aa7106a28.json)
+e [consolidado](evidencias/complementacao/resumo.json). A prova de 03/11 abaixo
+foi preservada; não foi sobrescrita nem confundida com a reexecução atual.
+
 ## Organização e correções
 
 O Compose principal contém MySQL, Redis, backend, frontend e proxy Nginx.
@@ -70,21 +75,31 @@ autoassinado gerado por seu script de preparação. Se já usa mkcert, configure
 
 ## Demonstração reproduzível e isolada ao professor
 
-Pré-requisitos: Docker Desktop com Linux containers, Node 24/npm, portas 80/443/3000
-livres e OpenSSL. Os comandos não alteram `.env`, usuários ou volumes do projeto
-padrão. Reserve o nome `cinemax-infra-check` para esta demonstração:
+Pré-requisitos: Docker Desktop com Linux containers e Server respondendo, Compose
+>= 2.24.4, Node/npm e OpenSSL. Reservar portas **18080/18443**; não parar serviços
+que já as ocupem. O override de demonstração remove a porta pública do backend
+e publica o proxy somente em loopback. Não usa o manifesto legado E2E.
 
 ```powershell
 npm --prefix Projeto-back-end ci
-powershell -ExecutionPolicy Bypass -File scripts/prepare-infra-check.ps1
-docker compose --env-file .env.infra-check -p cinemax-infra-check config --quiet
-docker compose --env-file .env.infra-check -p cinemax-infra-check up -d --build --wait --wait-timeout 240
-node scripts/verify-redis-infra.cjs
+$run = powershell -ExecutionPolicy Bypass -File scripts/prepare-infra-check.ps1 | ConvertFrom-Json
+if ($LASTEXITCODE -ne 0) { throw 'Preparacao falhou' }
+$compose = @('compose', '--env-file', $run.envFile, '-p', $run.project, '-f', 'docker-compose.yml', '-f', 'docker-compose.rubrica.yml')
+docker @compose config --quiet
+if ($LASTEXITCODE -ne 0) { throw 'Compose invalido' }
+if (docker volume ls -q --filter "label=com.docker.compose.project=$($run.project)") { throw 'Nao reutilizar volumes' }
+docker @compose up -d --build --wait --wait-timeout 240
+if ($LASTEXITCODE -ne 0) { throw 'Infraestrutura nao ficou saudavel' }
+node scripts/verify-redis-infra.cjs $run.project $run.envFile $run.evidence
 ```
 
-O script de preparação não sobrescreve arquivos existentes. Gera senhas e segredo
-JWT aleatórios em `.env.infra-check` e configura TTL de 3 s. O verificador só usa
-esse projeto e cria um token administrativo de curta duração com esse segredo
+Cada preparação cria `cinemax-rubrica-<identificador aleatório>` e arquivos em
+`.audit-tmp/infra/<projeto>/`, ignorados pelo Git. Gera senhas/JWT, certificado e
+TTL de 60 s (tolerando a latência do Docker CLI), preservando `.env` e volumes anteriores. Deriva `nginx.conf` apenas
+para redirecionar à porta 18443; mantém TLS/CSP/HSTS. Guarde o `run.json` para
+inspecionar/encerrar o ambiente certo; preparar novamente gera outro projeto.
+O verificador confere o marcador do ambiente e o mount MySQL antes de escrever.
+Cria um token administrativo de curta duração com esse segredo
 local; isso testa o CRUD autorizado sem alterar contas ou simular um login.
 Cria filme, sala e sessão de demonstração e remove esses registros após sucesso.
 Se falhar, pode deixar seus registros no banco isolado para diagnóstico.
@@ -96,23 +111,25 @@ por versão, listas/paginação, CRUD e 404 não cacheado. Para testar fallback,
 recuperação do cache e assinaturas. Confere os seis tipos Pub/Sub correlacionando
 `eventId` em `published` e `consumed` dos consumidores reais do backend.
 
-O resultado executado é salvo em `docs/evidencias/redis-infra.json`, sem senhas,
-tokens ou chaves. Uma falha retorna código diferente de zero, sem marcar sucesso.
+O resultado é salvo em `docs/evidencias/complementacao/infra-<projeto>.json`,
+sem sobrescrever resultados nem a prova histórica `redis-infra.json`. Registra
+data, SHA-base e mudanças locais, serviços, telemetria e pares Pub/Sub, sem senhas,
+tokens ou chaves. Falhas retornam código diferente de zero, sem marcar sucesso.
 
 Para acompanhar manualmente durante a execução:
 
 ```powershell
-docker compose --env-file .env.infra-check -p cinemax-infra-check logs -f backend nginx
-docker compose --env-file .env.infra-check -p cinemax-infra-check exec redis redis-cli SUBSCRIBE cinemax:eventos:filmes cinemax:eventos:sessoes
-docker compose --env-file .env.infra-check -p cinemax-infra-check exec redis redis-cli --scan --pattern 'cinemax:catalogo:*'
+docker @compose logs -f backend nginx
+docker @compose exec redis redis-cli SUBSCRIBE cinemax:eventos:filmes cinemax:eventos:sessoes
+docker @compose exec redis redis-cli --scan --pattern 'cinemax:catalogo:*'
 # Substitua pela chave observada; entradas antigas expiram pelo TTL.
-docker compose --env-file .env.infra-check -p cinemax-infra-check exec redis redis-cli TTL 'cinemax:catalogo:filmes:VERSAO:id:ID'
+docker @compose exec redis redis-cli TTL 'cinemax:catalogo:filmes:VERSAO:id:ID'
 ```
 
 Pub/Sub é efêmero: mensagens emitidas durante a indisponibilidade não são
 reenviadas. Consulte também [cache](CACHE_REDIS.md) e [Pub/Sub](REDIS_PUBSUB.md).
 
-## Evidências realmente executadas nesta etapa
+## Evidências históricas de 03/11/2026 (preservadas)
 
 Execução concluída em **2026-11-04T01:01:25.164Z** (03/11 no Brasil), Docker Engine
 29.5.2, projeto `cinemax-infra-check`. Resultado completo:
@@ -167,9 +184,9 @@ adicionados ao Git. Os cinco containers foram mantidos ativos para inspeção.
 
 ```powershell
 # Encerramento preservando os volumes (sem -v):
-docker compose --env-file .env.infra-check -p cinemax-infra-check stop --timeout 15
+docker @compose stop --timeout 15
 # Para remover apenas containers/redes desse projeto, mantendo dados:
-docker compose --env-file .env.infra-check -p cinemax-infra-check down --timeout 15
+docker @compose down --timeout 15
 ```
 
 O manifesto legado `docker-compose.test.yml` continua disponível para E2E e agora

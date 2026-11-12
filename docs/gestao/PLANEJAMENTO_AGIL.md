@@ -87,9 +87,10 @@ sem velocidade histórica; as 21 h de Tasks/Bugs não incluem esperas/ambiente n
 
 ### Situação comprovada
 
-A consulta de tags locais e `origin` não retornou tags. A análise não inspecionou
-GitHub Releases, publicação npm ou ambientes de produção. Portanto **nenhuma
-release é comprovada aqui**. Os manifests declaram raiz/backend `1.0.0` e
+Em 11/11/2026, `git ls-remote origin refs/heads/main 'refs/tags/*'` confirmou
+`main=d59723b` e nenhuma tag remota; nenhuma tag local foi criada. A auditoria
+anterior registra zero GitHub Releases; essa API não foi reconsultada nesta etapa.
+Portanto **nenhuma release é comprovada aqui**. Os manifests declaram raiz/backend `1.0.0` e
 frontend `0.1.0`; são metadados de pacotes distintos, não histórico de lançamento
 do produto. Commits `67645c9` a `c826368` são incrementos verificados, sem nomes
 de versão inferidos deles.
@@ -100,7 +101,7 @@ de versão inferidos deles.
 | --- | --- | --- |
 | `1.0.0-rc.1` | Baseline web/API, Redis, arquitetura, contratos, observabilidade e gestão organizada | US01–US15 e TK01/TK02/TK03/TK04/TK06 com aceite; execução CI e demonstração reais |
 | `1.0.0` | Entrega acadêmica da baseline qualificada | US16, notas da versão e aceite real; tag/release em ação futura autorizada |
-| `1.0.1` | Correções compatíveis BUG01/BUG02, se confirmadas no refinamento | Reprodução, correção e regressão; sem enfraquecer CSP nem alterar API |
+| `1.0.1` | Futuras correções compatíveis após a primeira entrega estável | Somente se surgirem defeitos confirmados; BUG01/BUG02 já foram corrigidos em d59723b e pertencem à baseline candidata |
 | `1.1.0` | Capacidade adicional de coleta operacional TK05 | Coleta configurada e evidência da janela observada; não declarar SLO cumprido antes dos dados |
 
 O contrato público de referência é o [OpenAPI](../API_OPENAPI.md), acrescido dos
@@ -113,10 +114,35 @@ exige planejamento de versão maior, não simples PATCH.
 Notas/artefato devem vincular versão a SHA exato e lista de itens realmente
 aceitos. Package versions só serão alinhadas em trabalho futuro autorizado.
 Tags e releases não são criadas por esta documentação, e Done de issue não
-implica implantação. BUG01/BUG02 são P2: podem constar como limitações conhecidas
-da candidata se o aceite real permitir; não é aprovação já dada. A coleta mensal
+implica implantação. BUG01/BUG02 são P2, corrigidos tecnicamente, com aceite Jira
+pendente; não são funcionalidades a reimplementar numa versão posterior. A coleta mensal
 TK05 não bloqueia a baseline apenas porque o SLO ainda não foi medido, mas essa
 limitação deve constar na entrega.
+
+### Entregas parciais de fontes preparadas em 11/11/2026
+
+`node scripts/prepare-partial-deliveries.cjs` gera três ZIPs em
+`.audit-tmp/entregas/` e um [manifesto com SHA e SHA-256](../evidencias/complementacao/entregas.json).
+Foram gerados e comparados byte a byte com novos `git archive` dos SHAs. São
+snapshots cumulativos dos commits existentes, sem tag, publicação, aceite ou
+homologação retroativos. Os ZIPs são locais e regeneráveis; o manifesto é versionado.
+
+| Entrega parcial | SHA de fontes | Incrementos verificáveis | Demonstração e limites |
+| --- | --- | --- | --- |
+| Infraestrutura | `e23bd86` | `8893d86` cache → `5c6a580` Pub/Sub → `e23bd86` Compose/HTTPS | Abrir serviços/scripts e prova Redis histórica contida no ZIP; não atribuir o ensaio atual a esse SHA antigo |
+| Arquitetura/API/observabilidade | `c826368` | `5228fab` C4/DDD → `185f155` OpenAPI → `c826368` telemetria | Abrir ADRs, contrato e testes; consultar o log/diff do intervalo `e23bd86..c826368` |
+| Gestão/auditoria | `d59723b` | `8145040` planejamento → `d59723b` auditoria/correções | Abrir CSV/relatório e testes históricos, mantendo Jira e releases como pendências |
+
+Comparar incrementos: `git log --oneline e23bd86..c826368` e
+`git diff --stat c826368..d59723b`. No notebook com erro de propriedade, usar
+`git -c safe.directory=C:/Users/Administrador/Documents/Faculdade/cinema-mobile ...`
+somente no comando necessário. Não reescrever commits nem criar versões por data.
+
+Para qualificar `1.0.0-rc.1`: selecionar um SHA imutável após as correções,
+executar os gates acima, registrar resultado/evidência por item e obter aceite
+real. Só então, em ação autorizada, criar a tag no SHA escolhido e a release com
+notas de escopo, artefatos/hashes, instruções e limitações. A entrega `1.0.0`
+depende de homologação/aceite, e não apenas da existência desses ZIPs.
 
 ## Riscos e controle de mudança
 

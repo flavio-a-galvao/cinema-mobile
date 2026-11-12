@@ -569,21 +569,21 @@ To Do é sugestão de estado inicial para conciliação/aceite, não exportaçã
 
 ID local: BUG01; épico: EP06; ordem proposta: 22.
 
-Incompatibilidade estática: HTML aponta Google Fonts e CSP aceita estilo/fonte da própria origem; efeito visual ainda não verificado.
+Achado histórico: Google Fonts conflitava com a CSP. Corrigido em d59723b com fallback local; evidência visual local existente, aceite Jira e demonstração pelo proxy pendentes.
 
 Estado: proposta ou achado estático; sem conclusão Jira comprovada.
 
-Prioridade proposta: P2. Estimativa proposta: 2 horas; Incompatibilidade estática: HTML aponta Google Fonts e CSP aceita estilo/fonte da própria origem; efeito visual ainda não verificado.
+Prioridade proposta: P2. Estimativa proposta: 2 horas; conciliar a correção existente e conferir a apresentação pelo proxy, sem reimplementar.
 
 Dependências locais: US10.
 
 Stories associadas: US02.
 
-Versão proposta, não lançada: 1.0.1.
+Versão proposta, não lançada: 1.0.0-rc.1. Correção já incluída na baseline d59723b; não reservar patch futuro para refazer este trabalho.
 
 Critérios de aceite:
-1. Registrar reprodução da requisição de fonte/stylesheet sob a CSP do proxy.
-2. Escolher fonte local ou fallback aprovado e validar apresentação sem enfraquecer CSP/HSTS.
+1. Confrontar o achado histórico com o HTML servido atual, comprovando ausência das referências Google Fonts sob a CSP do proxy.
+2. Validar o fallback local já aplicado e a apresentação sem enfraquecer CSP/HSTS; registrar aceite atual.
 
 Fontes:
 https://github.com/flavio-a-galvao/cinema-mobile/blob/main/Projeto-front-end/public/index.html
@@ -595,20 +595,20 @@ To Do é sugestão de estado inicial para conciliação/aceite, não exportaçã
 
 ID local: BUG02; épico: EP06; ordem proposta: 23.
 
-Defeito estático observado: <html lang=""en""> na aplicação web com conteúdo em português; não é relatório de usuário nem teste assistivo executado.
+Achado histórico: HTML declarava en. Corrigido para pt-BR em d59723b; não é relatório de usuário nem teste assistivo executado. Aceite Jira pendente.
 
 Estado: proposta ou achado estático; sem conclusão Jira comprovada.
 
-Prioridade proposta: P2. Estimativa proposta: 1 horas; Defeito estático observado: <html lang=""en""> na aplicação web com conteúdo em português; não é relatório de usuário nem teste assistivo executado.
+Prioridade proposta: P2. Estimativa proposta: 1 hora; conciliar a correção existente e conferir o HTML servido, sem reimplementar.
 
 Dependências locais: US02.
 
 Stories associadas: US02.
 
-Versão proposta, não lançada: 1.0.1.
+Versão proposta, não lançada: 1.0.0-rc.1. Correção já incluída na baseline d59723b; não reservar patch futuro para refazer este trabalho.
 
 Critérios de aceite:
-1. Confirmar conteúdo predominante em português e alterar lang do documento web para pt-BR em tarefa futura.
+1. Confirmar o conteúdo em português e o lang=pt-BR já aplicado, sem refazer a alteração.
 2. Verificar atributo no HTML servido e ausência de alteração de contratos; documentar verificação de acessibilidade realizada.
 
 Fontes:

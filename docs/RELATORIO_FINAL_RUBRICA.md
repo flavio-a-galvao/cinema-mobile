@@ -1,5 +1,7 @@
 # Relatório final da rubrica — Cinemax
 
+> **Atualização de 23/11/2026:** consulte [Entrega final](ENTREGA_FINAL.md) para a cobertura atual, Jira real e o PR #8 ainda em revisão. A pontuação abaixo documenta auditorias anteriores; não é uma reavaliação da entrega atual.
+
 ## Complementação de 11/11/2026 — base d59723b
 
 Estado inicial: `main` limpa e igual ao SHA remoto

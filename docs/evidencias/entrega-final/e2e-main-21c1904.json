@@ -1,0 +1,69 @@
+{
+  "sha": "21c1904d4c7ef3fce7bce361fb92005e0d61f7dc",
+  "checkedAt": "2026-11-23T17:58:19.011Z",
+  "scope": "Playwright Chromium em Chrome headless; SPA compilada, API Express real e MySQL Docker descartável; proxy HTTP de teste em loopback; sem Nginx, TLS nem Redis",
+  "mysql": "9.1.0",
+  "stats": {
+    "startTime": "2026-11-23T17:58:20.784Z",
+    "duration": 82621.351,
+    "expected": 11,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "cases": [
+    {
+      "title": "✅ Caso de sucesso: login com credenciais válidas",
+      "status": "passed"
+    },
+    {
+      "title": "❌ Caso de falha: login com email inválido",
+      "status": "passed"
+    },
+    {
+      "title": "❌ Caso de falha: login com senha vazia",
+      "status": "passed"
+    },
+    {
+      "title": "❌ Caso de falha: credenciais incorretas",
+      "status": "passed"
+    },
+    {
+      "title": "✅ Caso de sucesso: criar novo usuário com dados válidos",
+      "status": "passed"
+    },
+    {
+      "title": "❌ Caso de falha: cadastro com CPF inválido",
+      "status": "passed"
+    },
+    {
+      "title": "❌ Caso de falha: senhas não correspondem",
+      "status": "passed"
+    },
+    {
+      "title": "✅ Fluxo completo: criar, listar, editar e excluir filme",
+      "status": "passed"
+    },
+    {
+      "title": "❌ Falha: criar filme sem título",
+      "status": "passed"
+    },
+    {
+      "title": "✅ Fluxo completo: criar, listar e editar sala",
+      "status": "passed"
+    },
+    {
+      "title": "Mapa de sala mantém capacidade fixa de 48 lugares",
+      "status": "passed"
+    }
+  ],
+  "exitCode": 0,
+  "browser": "Chrome 158.0.8127.37",
+  "testSource": "Projeto-front-end/e2e/cinema.spec.ts",
+  "excludedScenarios": [
+    "Checkout e pagamento no navegador",
+    "Firefox e WebKit",
+    "Nginx/TLS",
+    "Redis neste ensaio"
+  ]
+}

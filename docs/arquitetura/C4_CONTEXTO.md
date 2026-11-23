@@ -5,8 +5,7 @@
 O **Cinemax web** permite consultar filmes e sessões, cadastrar/autenticar
 usuários, manter o perfil de cliente, selecionar assentos, emitir e cancelar
 ingressos, registrar pagamentos e consultar compras. Administradores mantêm
-filmes, pôsteres, salas, assentos e sessões. O contexto abaixo descreve o sistema
-existente, não uma distribuição em microsserviços.
+filmes, pôsteres, salas, assentos e sessões. O diagrama de contexto vale para a main; a auditoria independente é candidata no PR #8.
 
 ```mermaid
 flowchart LR
@@ -42,8 +41,9 @@ O model `User` também admite `funcionario`, mas `requireAdmin` aceita somente
 - **Imagens:** [Produtos](../../Projeto-front-end/src/pages/Produtos.jsx),
   [Home](../../Projeto-front-end/src/pages/Home.jsx) e a
   [lista administrativa](../../Projeto-front-end/src/pages/AdminFilmesList.tsx)
-  usam `poster_url` ou uma imagem substituta no Imgur. O navegador pode buscar
-  essas URLs; imagens enviadas ao Cinemax são servidas localmente por `/posters/`.
+  usam `poster_url`. Desde `21c1904`, Home e Produtos usam um [SVG local](../evidencias/kan-12-poster.md)
+  quando o pôster falta ou falha; a lista administrativa mantém o substituto
+  anterior. Imagens enviadas ao Cinemax são servidas por `/posters/`.
   A indisponibilidade do host externo pode afetar a imagem, sem substituir o
   catálogo no MySQL. Não foi testada a disponibilidade desses hosts nesta etapa.
 - **Fontes:** na base original, o HTML declarava Google Fonts, incompatível com
@@ -57,6 +57,6 @@ O model `User` também admite `funcionario`, mas `requireAdmin` aceita somente
   liquidação financeira**; não há gateway, banco externo ou webhook implementado.
 - Autenticação é interna (bcrypt/JWT); não há provedor de identidade externo,
   envio de e-mail ou serviço externo de notificações nos fluxos analisados.
-- MySQL e Redis são componentes internos, não sistemas externos de negócio.
+- MySQL e Redis são componentes internos. O [consumidor de auditoria](https://github.com/flavio-a-galvao/cinema-mobile/blob/18a1aed/docs/AUDITORIA.md) pertence ao candidato, fora da main.
   GitHub Actions pertence ao ciclo de desenvolvimento, não à execução dos casos
   de uso. O módulo mobile anterior não foi incluído nem modificado.

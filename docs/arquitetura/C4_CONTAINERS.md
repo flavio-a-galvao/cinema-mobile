@@ -1,5 +1,7 @@
 # C4 — Nível 2: containers
 
+> Este diagrama descreve a topologia da main com cinco serviços. A [captura do candidato PR #8](../evidencias/entrega-final/c4-containers.png) mostra a extensão opcional de auditoria, ainda fora da main.
+
 ## Visão da execução
 
 Este diagrama detalha o sistema do [nível 1](C4_CONTEXTO.md), tomando como

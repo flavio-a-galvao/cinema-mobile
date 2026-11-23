@@ -1,5 +1,7 @@
 # Checklist de apresentação — lacunas da rubrica
 
+> **Para a apresentação atual:** use o [roteiro curto](ENTREGA_FINAL.md#roteiro-de-5-a-7-minutos) e a separação entre main e PR #8. As tarefas abaixo são o checklist original e não substituem o estado real do Jira.
+
 Preparado em 11/11/2026. Usar o [relatório atualizado](RELATORIO_FINAL_RUBRICA.md)
 para distinguir resultado atual, evidência histórica e pendência. Não refazer o
 mobile nem apresentar mocks como integração real.

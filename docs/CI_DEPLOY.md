@@ -73,7 +73,7 @@ banco do ambiente de desenvolvimento. As portas 80/443 precisam estar livres.
 O `down` preserva o volume de testes; use um banco de testes limpo para repetir
 cenários. Não execute essa suíte contra dados reais. Para os três navegadores,
 instale-os com `playwright install` e omita `--project=chromium`.
-Os scripts visuais existentes continuam disponíveis por opção explícita.
+Os scripts visuais existentes continuam disponíveis por opção explícita. A [execução Chromium separada](evidencias/entrega-final/e2e-main-21c1904.json) sobre main 21c1904 passou nos 11 cenários existentes com API e MySQL descartáveis, em HTTP loopback. Não equivale a teste do proxy HTTPS ou de checkout.
 O navegador exige certificado confiável: `ignoreHTTPSErrors` permanece falso;
 instale/confie na CA local conforme a política do notebook, sem contornar avisos.
 
@@ -83,6 +83,8 @@ instale/confie na CA local conforme a política do notebook, sem contornar aviso
 Cada aplicação tem instalação reprodutível com `npm ci`, cache npm, testes e build
 em job separado. Falhas não são ignoradas. Os E2E ficam fora do CI básico porque
 exigem o ambiente completo acima; não são apresentados como testes executados.
+
+Na candidata do [PR #8](https://github.com/flavio-a-galvao/cinema-mobile/pull/8), o job adicional de auditoria verifica Node.js, SQLite e integração Docker em ambiente isolado. A [execução do HEAD 18a1aed](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45119133610) passou. Esse job não está na main de referência 21c1904 e não executa o E2E web ou deploy.
 Referência: [CI Node.js do GitHub](https://docs.github.com/en/actions/tutorials/build-and-test-code/nodejs).
 
 ## Deploy e rollback

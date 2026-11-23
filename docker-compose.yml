@@ -67,6 +67,7 @@ services:
     restart: on-failure
 
   auditoria:
+    profiles: [audit]
     build: ./Projeto-auditoria
     environment:
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}

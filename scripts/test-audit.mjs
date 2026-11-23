@@ -21,7 +21,7 @@ writeFileSync(override, 'services:\n  backend:\n    ports: !override ["127.0.0.1
 
 const docker = (args, stdio = ['ignore', 'pipe', 'inherit']) =>
   execFileSync('docker', args, { cwd: root, env: { ...process.env, ...config }, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024, stdio })?.trim();
-const prefix = ['compose', '-p', project, '--env-file', envFile, '-f', 'docker-compose.yml', '-f', override];
+const prefix = ['compose', '--profile', 'audit', '-p', project, '--env-file', envFile, '-f', 'docker-compose.yml', '-f', override];
 const compose = (...args) => docker([...prefix, ...args]);
 const channel = 'cinemax:eventos:filmes';
 const subscribers = () => Number(compose('exec', '-T', 'redis', 'redis-cli', '--raw', 'PUBSUB', 'NUMSUB', channel).split('\n').at(-1));

@@ -15,7 +15,7 @@ Somente os campos validados são gravados em SQLite no volume `audit-data`. A ch
 
 ## Execução e verificação
 
-- Em uma stack configurada, `docker compose up -d --build auditoria` inicia o consumidor e Redis. A API segue independente da auditoria. `docker compose logs auditoria` mostra assinatura, registros e duplicatas.
+- A topologia padrão mantém os cinco serviços existentes. Em uma stack configurada, `docker compose up -d --build auditoria` inicia o consumidor e Redis. A API segue independente da auditoria. `docker compose logs auditoria` mostra assinatura, registros e duplicatas.
 - Em Node.js 24, `npm --prefix Projeto-auditoria test` executa os testes da validação, persistência e idempotência.
 - `node scripts/test-audit.mjs` verifica Docker, Redis e MySQL reais num projeto Compose descartável, usando o Compose principal com porta da API alocada automaticamente. O script correlaciona publicação e registro pelo `eventId`, testa duplicata e payload inválido, para e recria o consumidor, verifica os PIDs e consulta a tabela SQLite. A limpeza remove apenas recursos com nome aleatório da execução.
 - O job de auditoria no GitHub Actions roda o ensaio Docker e imprime os resultados no log. A execução aprovada deve ser vinculada à [KAN-34](https://cinemax-projeto.atlassian.net/browse/KAN-34) com seu SHA. O ensaio real com Docker é distinto dos testes unitários do SQLite.

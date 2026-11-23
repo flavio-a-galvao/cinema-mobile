@@ -18,7 +18,7 @@ flowchart TB
         api["API: Node.js / Express / TypeScript<br/>Serviço backend:3000; regras, autorização e consumidor de eventos"]
         mysql[("Banco: MySQL 9.1<br/>Serviço database:3306; dados de negócio")]
         redis[("Cache e broker: Redis 7.4<br/>Serviço redis:6379; dados descartáveis e Pub/Sub")]
-        auditoria["Auditoria independente: Node.js<br/>Serviço auditoria, sem porta HTTP"]
+        auditoria["Auditoria independente: Node.js<br/>Serviço auditoria, perfil opcional audit, sem porta HTTP"]
         auditdb[("SQLite: volume audit-data<br/>Eventos recebidos")]
         posters[("Volume: posters-data<br/>Imagens enviadas à API")]
     end

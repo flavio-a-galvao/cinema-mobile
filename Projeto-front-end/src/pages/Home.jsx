@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../services/api";
+import CatalogPoster from "../componentes/common/CatalogPoster";
 import "./Home.css";
 
 function Home(){
@@ -44,7 +45,7 @@ function Home(){
                     classificacao: filme.classificacao_etaria || "Livre",
                     sinopse: filme.sinopse || "",
                     horarios: (sessoesPorFilme.get(Number(filme.id_filme)) || []).slice(0, 3),
-                    imagem: filme.poster_url || "https://i.imgur.com/8w1NikM.jpg",
+                    imagem: filme.poster_url,
                 }));
 
                 setFilmesDestaque(normalizados);
@@ -104,7 +105,7 @@ function Home(){
                     {filmesDestaque.map((filme) => (
                         <article className="card-destaque" key={filme.titulo}>
                             <div className="card-poster-wrap">
-                                <img src={filme.imagem} alt={filme.titulo} />
+                                <CatalogPoster src={filme.imagem} alt={filme.titulo} />
                                 <span className="card-genero-badge">{filme.genero}</span>
                                 <span className="card-class-badge">{filme.classificacao}</span>
                                 <div className="card-hover-overlay">

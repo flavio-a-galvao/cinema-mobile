@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { api } from "../services/api";
+import CatalogPoster from "../componentes/common/CatalogPoster";
 import "./Produtos.css";
 
 const MAX_INGRESSOS = 10;
@@ -68,7 +69,7 @@ function Produtos(){
           duracao: filme.duracao ? `${filme.duracao} min` : "--",
           genero: filme.genero || "Sem genero",
           sinopse: filme.sinopse || "Sem sinopse cadastrada.",
-          poster: filme.poster_url || "https://i.imgur.com/8w1NikM.jpg",
+          poster: filme.poster_url,
           classificacao: filme.classificacao_etaria || "Livre",
           sessoes: sessoesPorFilme.get(Number(filme.id_filme)) || [],
         }));
@@ -422,7 +423,7 @@ function Produtos(){
                 aria-pressed={ativo}
               >
                 <div className="filme-poster-wrap">
-                  <img src={filme.poster} alt={filme.titulo} />
+                  <CatalogPoster src={filme.poster} alt={filme.titulo} />
                   <span className="filme-class-badge">{filme.classificacao}</span>
                   {ativo && <span className="filme-ativo-tag">✓ Selecionado</span>}
                 </div>
@@ -448,7 +449,7 @@ function Produtos(){
         {filmeSelecionado ? (
           <div className="detalhes-grid">
             <div className="detalhes-poster-wrap">
-              <img src={filmeSelecionado.poster} alt={filmeSelecionado.titulo} className="detalhes-poster" />
+              <CatalogPoster src={filmeSelecionado.poster} alt={filmeSelecionado.titulo} className="detalhes-poster" />
             </div>
             <div className="detalhes-info">
               <h2>{filmeSelecionado.titulo}</h2>

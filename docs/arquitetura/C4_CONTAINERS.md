@@ -1,6 +1,6 @@
 # C4 — Nível 2: containers
 
-> Este diagrama descreve a topologia da main com cinco serviços. A [captura do candidato PR #8](../evidencias/entrega-final/c4-containers.png) mostra a extensão opcional de auditoria, ainda fora da main.
+> Na base 21c1904, a topologia padrão tem cinco serviços. Compare com a [captura do candidato PR #8](../evidencias/entrega-final/c4-containers.png), que mostra a extensão opcional de auditoria validada no CI.
 
 ## Visão da execução
 

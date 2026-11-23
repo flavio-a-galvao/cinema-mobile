@@ -9,7 +9,7 @@ código da branch `main`, base `e23bd86`. O escopo é a aplicação web e sua AP
 | Critério informado | Documento | Conteúdo para avaliação |
 | --- | --- | --- |
 | C4 nível 1 | [Contexto](C4_CONTEXTO.md) | Pessoas, fronteira do sistema e dependências externas reais |
-| C4 nível 2 | [Containers](C4_CONTAINERS.md) | React, Express, MySQL, Redis, Nginx e protocolos |
+| C4 nível 2 | [Containers](C4_CONTAINERS.md) | React, Express, MySQL, Redis, Nginx, auditoria independente e protocolos |
 | Decisões arquiteturais | [ADR-001](adrs/ADR-001-estilo-arquitetural.md), [ADR-002](adrs/ADR-002-organizacao-backend.md), [ADR-003](adrs/ADR-003-mysql-sequelize.md) | Estilo, organização interna e persistência |
 | Decisões de infraestrutura | [ADR-004](adrs/ADR-004-cache-aside.md), [ADR-005](adrs/ADR-005-pubsub.md), [ADR-006](adrs/ADR-006-compose-nginx.md) | Cache, mensageria e implantação local |
 | DDD estratégico | [Domínio e Context Map](DDD.md) | Subdomínios, Bounded Contexts, responsabilidades e relações |

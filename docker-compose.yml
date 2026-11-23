@@ -66,6 +66,19 @@ services:
       - cache-network
     restart: on-failure
 
+  auditoria:
+    build: ./Projeto-auditoria
+    environment:
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - audit-data:/data
+    networks:
+      - cache-network
+    restart: on-failure
+
   frontend:
     build:
       context: ./Projeto-front-end
@@ -104,6 +117,8 @@ services:
     restart: on-failure
 
 volumes:
+  audit-data:
+    driver: local
   posters-data:
     driver: local
   mysql-data:

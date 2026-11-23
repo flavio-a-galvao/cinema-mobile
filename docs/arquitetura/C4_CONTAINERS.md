@@ -18,6 +18,8 @@ flowchart TB
         api["API: Node.js / Express / TypeScript<br/>Serviço backend:3000; regras, autorização e consumidor de eventos"]
         mysql[("Banco: MySQL 9.1<br/>Serviço database:3306; dados de negócio")]
         redis[("Cache e broker: Redis 7.4<br/>Serviço redis:6379; dados descartáveis e Pub/Sub")]
+        auditoria["Auditoria independente: Node.js<br/>Serviço auditoria, sem porta HTTP"]
+        auditdb[("SQLite: volume audit-data<br/>Eventos recebidos")]
         posters[("Volume: posters-data<br/>Imagens enviadas à API")]
     end
     pessoa -->|"Interage com a interface no navegador"| spa
@@ -28,14 +30,18 @@ flowchart TB
     api -->|"Sequelize / mysql2: SQL e transações"| mysql
     api -->|"RESP: GET/SET; PUBLISH e SUBSCRIBE em conexões distintas"| redis
     redis -->|"Mensagens de filmes/sessões para consumidor na API"| api
+    auditoria -->|"SUBSCRIBE em conexão própria"| redis
+    redis -->|"Eventos de filmes e sessões"| auditoria
+    auditoria -->|"Grava por eventId único"| auditdb
     api -->|"Grava e serve arquivos de pôsteres"| posters
     spa -.->|"GET HTTPS opcional de imagens"| imagens
 ```
 
 **Legenda:** a fronteira reúne o software e seus armazenamentos; a SPA fica
 fisicamente no dispositivo do usuário. Setas indicam requisições, entrega do
-build ou eventos; respostas HTTP/SQL não são repetidas. Redis não é um processo
-de negócio separado: o consumidor executa no mesmo processo Express.
+build ou eventos; respostas HTTP/SQL não são repetidas. O consumidor interno
+da API mantém os logs; o serviço auditoria roda em processo independente e
+persiste os eventos que recebeu. Consulte [Auditoria](../AUDITORIA.md).
 
 ## Responsabilidades e comunicações
 
@@ -55,16 +61,16 @@ de negócio separado: o consumidor executa no mesmo processo Express.
   `127.0.0.1:3000` para acesso local direto, que contorna TLS e cabeçalhos do proxy.
   MySQL e Redis não publicam portas no host no Compose principal.
 - `app-network` conecta proxy, servidor estático, API e banco. `cache-network`
-  é interna e conecta somente API e Redis. TLS termina no proxy; HTTP interno,
+  é interna e conecta API, Redis e auditoria. TLS termina no proxy; HTTP interno,
   conexão MySQL com `ssl: false` e Redis `redis://` não são criptografados nessa
   configuração. Isolamento de rede não equivale a criptografia.
 - O backend aguarda MySQL saudável e executa ajustes de schema e `sequelize.sync`
   antes de ouvir HTTP. Redis não bloqueia a inicialização HTTP. Existem
-  healthchecks nos cinco serviços, mas o da API consulta `/` e o do proxy executa
+  healthchecks nos cinco serviços originais, mas o da API consulta `/` e o do proxy executa
   `nginx -t`; não comprovam a saúde de todos os fluxos de negócio.
 - Cache-aside e Pub/Sub usam o mesmo Redis, mas conexões independentes. A API
   invalida cache diretamente após mutações; o consumidor Pub/Sub apenas valida
-  e registra mensagens. Ele não invalida o cache nem processa pagamentos.
+  e registra mensagens. A auditoria independente também não invalida o cache nem processa pagamentos.
 - A aplicação tem um backend no Compose. Não há balanceamento entre réplicas,
   cluster Redis, réplica MySQL ou recuperação automática de dados comprovada.
 - O [Compose legado de E2E](../../docker-compose.test.yml) é outro ambiente:

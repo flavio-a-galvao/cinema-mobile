@@ -10,7 +10,11 @@ O [Cinemax KAN](https://cinemax-projeto.atlassian.net/jira/software/projects/KAN
 | KAN-12 | 23/11, 02h24, To Do → In Review | [Correção integrada e CI](https://cinemax-projeto.atlassian.net/browse/KAN-12?focusedCommentId=10002) |
 | KAN-34 | 23/11, 02h32, To Do → In Progress; 02h41, In Progress → In Review | [Prova Docker e PR #8](https://cinemax-projeto.atlassian.net/browse/KAN-34?focusedCommentId=10003) |
 
-Os três estados foram conferidos em In Review. A evidência de gestão e revisão está disponível; papéis em KAN-32 e aceites seguem pendentes. O material abaixo preserva o planejamento e a validação local anteriores à importação.
+Os três estados foram conferidos em In Review. Papéis em KAN-32 e aceites seguem pendentes.
+
+Em 24/11/2026, os comentários técnicos de bilheteria foram registrados em KAN-26, KAN-29 e KAN-30 após o squash do PR #10 e a validação do CI da main. As issues permaneceram em Tarefas pendentes. [Registros e dependências](ACEITES_TECNICOS.md#bilheteria--kan-29-kan-30-e-kan-26)
+
+O material abaixo preserva o planejamento e a validação local anteriores à importação.
 
 ## Situação em 11/11/2026 — registro histórico
 

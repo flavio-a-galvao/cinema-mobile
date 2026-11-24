@@ -1,12 +1,12 @@
 # Cinemax — evidências e roteiro de entrega
 
-Conferência em 23/11/2026, horário de São Paulo. Este registro separa código integrado, candidato a integração e resultados anteriores. A escala abaixo usa os 12 critérios A1–A5/B1–B4/T1–T3 transcritos no [relatório de avaliação](RELATORIO_FINAL_RUBRICA.md), sem atribuir nota. A cópia PDF encontrada em `referencias/` é a rubrica anterior de Mobile/Engenharia, com Tech Forge centrado em upload e papéis. Para confirmar pesos ou requisitos adicionais da etapa avançada, use a rubrica vigente da disciplina.
+Conferência em 24/11/2026, horário de São Paulo. Este registro separa código integrado, candidato a integração e resultados anteriores. A escala abaixo usa os 12 critérios A1–A5/B1–B4/T1–T3 transcritos no [relatório de avaliação](RELATORIO_FINAL_RUBRICA.md), sem atribuir nota. A cópia PDF encontrada em `referencias/` é a rubrica anterior de Mobile/Engenharia, com Tech Forge centrado em upload e papéis. Para confirmar pesos ou requisitos adicionais da etapa avançada, use a rubrica vigente da disciplina.
 
 | Versão | O que mostrar | Evidência |
 | --- | --- | --- |
-| `main` `21c1904` | API, React, pôster substituto local do PR #7, Redis, observabilidade, Swagger, CI e Compose padrão | [Main](https://github.com/flavio-a-galvao/cinema-mobile/commit/21c1904d4c7ef3fce7bce361fb92005e0d61f7dc), [CI da main](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45118101224), [pôster](evidencias/kan-12-poster.md) |
+| `main` `43380fe` | API, React, pôster substituto local do PR #7, bilheteria web corrigida pelo PR #10, Redis, observabilidade, Swagger, CI e Compose padrão | [SHA integrado](https://github.com/flavio-a-galvao/cinema-mobile/commit/43380fe32682d9b04de9f3db74617fc5bbfc6abc) · [CI da main](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45433562530) · [Evidência da bilheteria](https://github.com/flavio-a-galvao/cinema-mobile/blob/43380fe32682d9b04de9f3db74617fc5bbfc6abc/docs/evidencias/kan-26-correcao-web.md) |
 | PR #8 `18a1aed` | Candidato com processo Node.js de auditoria no perfil opcional `audit` e SQLite. PR aberto, sem conflitos, CI aprovado, sem aprovação humana registrada | [PR](https://github.com/flavio-a-galvao/cinema-mobile/pull/8), [CI](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45119133610), [prova Docker](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45119133610/job/137508631835) |
-| Branch `docs/cinemax-entrega-main` | Documentação sobre a main; a candidata do PR #8 é referenciada por evidências separadas | Este documento e o diff documental |
+| PR #9 | Documentação da entrega preparada para a main atual | [Diff documental](https://github.com/flavio-a-galvao/cinema-mobile/pull/9/files) |
 
 ## Cobertura da rubrica avançada
 
@@ -16,7 +16,7 @@ Conferência em 23/11/2026, horário de São Paulo. Este registro separa código
 | A2 — Estilos e DDD | [Context Map e modelo tático](arquitetura/DDD.md) documentam o backend monolítico de negócio. A auditoria consome metadados fora do fluxo transacional e não decompõe os contextos. |
 | A3 — Integração, APIs e dados | [OpenAPI/Swagger](API_OPENAPI.md) com 52 operações e 34 caminhos na prova anterior, mais ADR MySQL/Sequelize. O consumidor do PR não abre HTTP e não altera a API. O ensaio visual anterior de Swagger não substitui um teste no Nginx real do ambiente de apresentação. |
 | A4 — Qualidade, resiliência e observabilidade | [Logs, métricas e SLOs](OBSERVABILIDADE_RESILIENCIA.md) e [runbook](RUNBOOK_INCIDENTES.md). Há teste de correlação e fallback. As metas de 30 dias não são medição realizada, e os logs da auditoria não são métricas da API. |
-| A5 — Entrega contínua | [CI/CD e rollback](CI_DEPLOY.md). Testes/builds reais na main e no PR. O job demonstrativo de deploy foi pulado e não houve deploy de produção. |
+| A5 — Entrega contínua | Testes e builds de web/API aprovados no SHA integrado. O deploy demonstrativo ficou `skipped`. O checkout em Chromium foi verificado localmente com API e MySQL descartável. [CI da main](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45433562530) · [Reprodução](CI_DEPLOY.md#playwright-execução-explícita) |
 | B1 — Cache Redis | A [prova Docker anterior](evidencias/complementacao/resumo.json), base `d59723b`, registra miss/hit, TTL, invalidação e fallback. O job novo não re-testou toda a política de cache. |
 | B2 — Mensageria Pub/Sub | A main publica e consome internamente seis tipos. No PR #8, o Docker demonstrou `filme.created` entre processos, deduplicação, persistência, disponibilidade da API durante a parada e nova assinatura após recriar o consumidor. Os seis tipos têm cobertura unitária no serviço novo. Não há replay de mensagens perdidas. |
 | B3 — Docker e Nginx | O ensaio anterior verificou cinco serviços, MySQL, Redis e Nginx/HTTPS. O CI do PR verificou API, MySQL, Redis e auditoria reais, sem Nginx/HTTPS nessa execução. O perfil mantém a topologia padrão inalterada. |
@@ -27,12 +27,12 @@ Conferência em 23/11/2026, horário de São Paulo. Este registro separa código
 
 ## Roteiro de 5 a 7 minutos
 
-1. **Arquitetura.** Abra C4 Contexto e Contêineres, ADRs e DDD. Mostre a API de negócio no diagrama da main e use a captura do candidato para o consumidor opcional do PR #8. No [Swagger](API_OPENAPI.md), mostre o contrato e separe rotas públicas das administrativas. Na stack HTTPS configurada, abra `https://cinema.local/api/api-docs/`.
-2. **Redis e SQLite.** Na branch do PR, execute o comando abaixo. Destaque PIDs distintos e o `eventId` da API no SQLite. Mostre que duplicata e evento inválido não gravam, que o backend responde com o consumidor parado e que recriar somente a auditoria preserva o volume e recebe novos eventos. Mostre também a perda durante a parada, sem prometer replay.
-3. **Testes e CI.** Abra o CI da main e o do PR. O último registra 420 testes no backend, 3 na auditoria e a prova Docker. O E2E de navegador e o deploy real estão fora desses checks. A [execução local separada](evidencias/entrega-final/e2e-main-21c1904.json) passou nos 11 cenários da suíte Chromium em main 21c1904 com API e MySQL descartáveis, sem Nginx/TLS, Redis ou checkout no navegador.
-4. **Gestão.** Abra o Kanban e o histórico de [KAN-34](https://cinemax-projeto.atlassian.net/browse/KAN-34?focusedCommentId=10003). Mostre o vínculo com o épico KAN-9, o PR, o log de execução e as transições reais. Use KAN-12 e KAN-18 como outros casos em revisão. Nenhum aceite foi pressuposto.
+1. **Arquitetura e contrato (1 min).** Mostre os cinco serviços padrão da `main` no C4 e abra o Swagger para ilustrar rotas públicas e protegidas. Na stack HTTPS configurada, acesse `https://cinema.local/api/api-docs/`. [C4](arquitetura/C4_CONTAINERS.md) · [Swagger](API_OPENAPI.md)
+2. **Bilheteria web integrada (2 min).** Use uma sessão futura de teste e selecione B1. Emita o ingresso, saia antes de pagar, volte por **Minhas Compras** e recarregue o checkout. Demonstre Pix simulado, cancelamento com confirmação e liberação do assento. Mostre a prova de duas abas no relatório, com `201/409` e um pagamento por ingresso. [Evidência Chromium/MySQL](https://github.com/flavio-a-galvao/cinema-mobile/blob/43380fe32682d9b04de9f3db74617fc5bbfc6abc/docs/evidencias/kan-26-correcao-web.md)
+3. **Auditoria candidata (1–2 min).** Mostre o C4 do PR #8 e o `eventId` recebido em processo separado e gravado no SQLite. Use o ensaio já preparado ou o log do runner para mostrar deduplicação, API disponível com o consumidor parado, recebimento de evento novo após reconexão e perda sem replay durante a desconexão. [Prova Docker do PR #8](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45119133610/job/137508631835)
+4. **CI e Jira (1–2 min).** Mostre o CI aprovado do SHA integrado e o comentário da KAN-26. Diferencie os 11 cenários Chromium anteriores, o checkout local com MySQL e os testes e builds do GitHub Actions. Abra a KAN-34 para mostrar a revisão pendente e a relação com o épico KAN-9. [CI da main](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45433562530) · [KAN-26](https://cinemax-projeto.atlassian.net/browse/KAN-26?focusedCommentId=10006) · [KAN-34](https://cinemax-projeto.atlassian.net/browse/KAN-34?focusedCommentId=10003)
 
-Em **clone/worktree separado**, com Node.js 24, Docker Engine e Compose 2.24.4+:
+Para preparar o ensaio do **PR #8**, use um clone ou worktree separado com Node.js 24, Docker Engine e Compose 2.24.4+.
 
 ```powershell
 git fetch origin main feat/kan-34-auditoria-redis
@@ -50,13 +50,13 @@ O roteiro automatizado cria apenas uma stack Docker descartável própria, sem d
 - **O que o SQLite garante?** Preserva os eventos recebidos e gravados com o volume montado. A chave única por `eventId` evita duplicatas. O MySQL continua sendo a fonte de dados de negócio.
 - **O consumidor causa indisponibilidade da API?** No ensaio, a API permaneceu ativa e retornou 201 e 200 com a auditoria parada. Após recriá-la, ela recebeu um evento novo e manteve o registro anterior.
 - **O que é main e o que é candidato?** Main tem Redis e Subscriber interno. O PR #8 adiciona um processo separado no perfil opcional. A prova Docker foi executada no runner.
-- **O CI prova produção e SLO?** Comprova builds, testes e ensaio isolado do PR. A suíte web existente passou separadamente em Chromium. Checkout no navegador, deploy real e medição de 30 dias continuam fora dessa prova.
+- **O CI prova produção e SLO?** O CI da main cobre testes e builds de web/API. O checkout foi validado localmente em Chromium com API real e MySQL descartável. Deploy real e medição de 30 dias seguem sem evidência. [CI](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45433562530) · [Checkout](https://github.com/flavio-a-galvao/cinema-mobile/blob/43380fe32682d9b04de9f3db74617fc5bbfc6abc/docs/evidencias/kan-26-correcao-web.md)
 - **O Jira foi só importado?** Não. Mostre o histórico real da KAN-34 e os vínculos com CI e PR. As minutas e comentários técnicos não equivalem ao aceite.
 
-[Minutas KAN-12/18/24](gestao/ACEITES_TECNICOS.md) · [Notas e checklist da candidata](RELEASE_1.0.0-rc.1.md).
+[Minutas e registros técnicos do Jira](gestao/ACEITES_TECNICOS.md) · [Notas e checklist da candidata](RELEASE_1.0.0-rc.1.md).
 
 ## Fechamento
 
-- **Titular:** provisionar ambiente de demonstração quando disponível, confirmar os papéis reais em KAN-32 e decidir sobre publicação dos snapshots/versões e atualização documental. As evidências em KAN-19 e KAN-20 podem ser conciliadas com o ensaio anterior; KAN-28 depende de verificar a renderização no GitHub no SHA apresentado. KAN-29 já tem evidência da suíte Chromium. KAN-26 ainda requer validação dos fluxos de compra/retomada/cancelamento no navegador e conciliação com a prova separada de concorrência MySQL.
-- **Colega:** revisar o candidato no GitHub e registrar sua decisão real no PR. A aprovação formal ainda não foi registrada.
-- **Depois:** com autorização do titular e revisão, integrar por squash, conferir o SHA e o CI da main e anexá-los à KAN-34. Só mover para Done após aceite real dos 11 critérios. Sem isso, apresentar o microserviço como candidato testado.
+- **Titular.** Revisar o PR documental, confirmar papéis em KAN-32 e decidir sobre a publicação da pré-release. A bilheteria já está integrada e tem evidência técnica em KAN-26, KAN-29 e KAN-30. O aceite formal segue condicionado às dependências do Jira. [Registros e dependências](gestao/ACEITES_TECNICOS.md#bilheteria--kan-29-kan-30-e-kan-26)
+- **Colega.** Registrar a revisão humana do PR #8 quando disponível.
+- **Após autorização do PR #8.** Conferir o SHA integrado e seu CI, reconciliar os diagramas e registrar as evidências na KAN-34. [Reconciliação do C4](arquitetura/C4_CONTAINERS.md#reconciliação-após-o-pr-8)

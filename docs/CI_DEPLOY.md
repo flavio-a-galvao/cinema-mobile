@@ -35,10 +35,7 @@ npm --prefix Projeto-front-end test -- --watchAll=false --runInBand
 
 ## Playwright (execução explícita)
 
-Todos os testes existentes foram preservados. A suíte configurada seleciona
-`e2e/cinema.spec.ts`; os exemplos existentes não fazem parte dessa seleção.
-Ela depende da aplicação completa em `https://cinema.local`, com banco descartável,
-API, front-end, Nginx e certificados locais. Não aponta para produção.
+A seleção padrão inclui `e2e/cinema.spec.ts`. O cenário `e2e/bilheteria.spec.ts`, integrado pelo PR #10, entra na seleção quando `E2E_KAN26_MOVIE_ID` está definido. Execute em ambiente descartável, com API e front-end na mesma origem. A configuração abaixo usa `https://cinema.local` por padrão.
 
 Na auditoria, helpers foram alinhados à segurança da API: cadastro público nunca
 cria admin e não existe DELETE de usuário. Provisione conta administrativa
@@ -73,7 +70,7 @@ banco do ambiente de desenvolvimento. As portas 80/443 precisam estar livres.
 O `down` preserva o volume de testes; use um banco de testes limpo para repetir
 cenários. Não execute essa suíte contra dados reais. Para os três navegadores,
 instale-os com `playwright install` e omita `--project=chromium`.
-Os scripts visuais existentes continuam disponíveis por opção explícita. A [execução Chromium separada](evidencias/entrega-final/e2e-main-21c1904.json) sobre main 21c1904 passou nos 11 cenários existentes com API e MySQL descartáveis, em HTTP loopback. Não equivale a teste do proxy HTTPS ou de checkout.
+A suíte Chromium anterior passou nos 11 cenários em `21c1904` com API e MySQL descartáveis em HTTP loopback. O checkout foi verificado separadamente em Chromium com API real e MySQL 9.1 descartável. A árvore ensaiada em `5633ad8` corresponde ao squash `43380fe`. O relatório inclui como provisionar a sessão e executar somente o cenário de bilheteria. [Suíte anterior](evidencias/entrega-final/e2e-main-21c1904.json) · [Bilheteria e pré-condições](https://github.com/flavio-a-galvao/cinema-mobile/blob/43380fe32682d9b04de9f3db74617fc5bbfc6abc/docs/evidencias/kan-26-correcao-web.md)
 O navegador exige certificado confiável: `ignoreHTTPSErrors` permanece falso;
 instale/confie na CA local conforme a política do notebook, sem contornar avisos.
 
@@ -82,9 +79,9 @@ instale/confie na CA local conforme a política do notebook, sem contornar aviso
 `.github/workflows/ci.yml` executa em push, pull request e acionamento manual.
 Cada aplicação tem instalação reprodutível com `npm ci`, cache npm, testes e build
 em job separado. Falhas não são ignoradas. Os E2E ficam fora do CI básico porque
-exigem o ambiente completo acima; não são apresentados como testes executados.
+exigem o ambiente isolado descrito acima. Em `43380fe`, os testes e builds de web/API passaram. O deploy demonstrativo ficou `skipped`. [CI da main](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45433562530)
 
-Na candidata do [PR #8](https://github.com/flavio-a-galvao/cinema-mobile/pull/8), o job adicional de auditoria verifica Node.js, SQLite e integração Docker em ambiente isolado. A [execução do HEAD 18a1aed](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45119133610) passou. Esse job não está na main de referência 21c1904 e não executa o E2E web ou deploy.
+Na candidata do [PR #8](https://github.com/flavio-a-galvao/cinema-mobile/pull/8), o job adicional de auditoria verifica Node.js, SQLite e integração Docker em ambiente isolado. A [execução do HEAD 18a1aed](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45119133610) passou. Esse job não está na main de referência `43380fe` e não executa o E2E web ou deploy.
 Referência: [CI Node.js do GitHub](https://docs.github.com/en/actions/tutorials/build-and-test-code/nodejs).
 
 ## Deploy e rollback

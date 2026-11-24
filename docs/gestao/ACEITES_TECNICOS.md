@@ -1,6 +1,6 @@
 # Minutas de aceite técnico — Cinemax
 
-Conferência em 23/11/2026, com `main` em `21c1904`. Os textos abaixo são propostas para o titular revisar e publicar somente depois de confirmar o escopo aceito. Esta conferência não registra aceite, não altera status e não substitui a revisão humana do PR #8.
+Conferência inicial em 23/11/2026, com `main` em `21c1904`. A seção de bilheteria registra a atualização de 24/11/2026. Os textos abaixo são propostas para o titular revisar e publicar somente depois de confirmar o escopo aceito. Esta conferência não registra aceite, não altera status e não substitui a revisão humana do PR #8.
 
 ## KAN-12 — Catálogo público
 
@@ -39,3 +39,15 @@ Conferência em 23/11/2026, com `main` em `21c1904`. Os textos abaixo são propo
 **Minuta de aceite parcial, após conferência:** “Conferi o projeto KAN, a conciliação de 30 itens originais, a hierarquia, as dependências e o uso efetivo do Kanban. Aceito as evidências de implantação e rastreabilidade. A confirmação de participantes e papéis e o aceite de fechamento continuam pendentes.”
 
 Links: [KAN-12](https://cinemax-projeto.atlassian.net/browse/KAN-12), [KAN-18](https://cinemax-projeto.atlassian.net/browse/KAN-18), [KAN-24](https://cinemax-projeto.atlassian.net/browse/KAN-24).
+
+## Bilheteria — KAN-29, KAN-30 e KAN-26
+
+Os comentários técnicos abaixo foram registrados após o squash `43380fe` e o CI de push aprovado. As três issues seguem em Tarefas pendentes. [SHA integrado](https://github.com/flavio-a-galvao/cinema-mobile/commit/43380fe32682d9b04de9f3db74617fc5bbfc6abc) · [CI da main](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45433562530)
+
+| Issue | Evidência registrada | Dependências abertas |
+| --- | --- | --- |
+| KAN-29 | Os 11 cenários Chromium em `21c1904` e o cenário adicional de bilheteria em `5633ad8` foram executados localmente com API e MySQL descartáveis. [Comentário](https://cinemax-projeto.atlassian.net/browse/KAN-29?focusedCommentId=10007) | KAN-20 e KAN-23 |
+| KAN-30 | A emissão e o pagamento concorrentes retornaram `201/409` no ensaio com MySQL. Os registros confirmaram um ingresso ativo para o assento e um pagamento por ingresso. O ensaio de duas abas reconfirmou a contagem de pagamento. [Comentário](https://cinemax-projeto.atlassian.net/browse/KAN-30?focusedCommentId=10005) | KAN-10, KAN-17 e KAN-20 |
+| KAN-26 | O E2E cobriu cadastro, login, catálogo, seleção, emissão, retomada, Pix e cancelamento. O relatório registra os defeitos anteriores, a correção e os limites da validação. O squash preservou a árvore testada e o módulo mobile. [Comentário](https://cinemax-projeto.atlassian.net/browse/KAN-26?focusedCommentId=10006) · [Evidência técnica](https://github.com/flavio-a-galvao/cinema-mobile/blob/43380fe32682d9b04de9f3db74617fc5bbfc6abc/docs/evidencias/kan-26-correcao-web.md) | KAN-11, KAN-14, KAN-15, KAN-17, KAN-20, KAN-23, KAN-29 e KAN-30 |
+
+Os registros sustentam a revisão técnica. O aceite formal continua sujeito à decisão do responsável e às dependências.

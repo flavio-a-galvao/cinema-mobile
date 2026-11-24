@@ -80,6 +80,7 @@ export const api = {
       method: "PUT",
       body: JSON.stringify(body),
     }),
+  patch: <T>(path: string) => request<T>(path, { method: "PATCH" }),
   delete: <T>(path: string) =>
     request<T>(path, {
       method: "DELETE",

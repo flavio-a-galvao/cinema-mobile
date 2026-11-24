@@ -1,81 +1,94 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../services/api";
 import "./Pagamento.css";
 
 const OPCOES_PAGAMENTO = [
-  { valor: "pix", titulo: "Pix", descricao: "Aprovacao imediata" },
-  { valor: "cartao", titulo: "Cartao", descricao: "Credito ou debito" },
+  { valor: "pix", titulo: "Pix", descricao: "Aprovação imediata" },
+  { valor: "cartao", titulo: "Cartão", descricao: "Crédito ou débito" },
   { valor: "dinheiro", titulo: "Dinheiro", descricao: "Pagamento no caixa" },
 ];
 
-function Pagamento() {
+function ingressosPendentes(compras, ids) {
+  const selecionados = ids.map((id) => compras.find((compra) => compra.id === id));
+  if (selecionados.some((compra) => !compra || compra.status === "cancelado" || (!compra.pago && compra.podePagar !== true))) {
+    throw new Error("Um dos ingressos está indisponível para pagamento. Confira Minhas Compras.");
+  }
+  return selecionados.filter((compra) => !compra.pago);
+}
+
+function PagamentoPendente({ referencia }) {
   const navigate = useNavigate();
-  const location = useLocation();
+  const [ids] = useState(() => {
+    const valores = referencia.split(",");
+    if (valores.length > 10 || !valores.every((valor) => /^[1-9]\d*$/.test(valor) && Number.isSafeInteger(Number(valor)))) return [];
+    return [...new Set(valores.map(Number))];
+  });
   const [metodoPagamento, setMetodoPagamento] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [pendentes, setPendentes] = useState([]);
+  const [carregando, setCarregando] = useState(ids.length > 0);
+  const [pagando, setPagando] = useState(false);
   const [feedback, setFeedback] = useState({ tipo: "", texto: "" });
+  const enviando = useRef(false);
 
-  const dados = location.state || {};
-  const ingressosIds = Array.isArray(dados.ingressosIds) ? dados.ingressosIds : [];
-  const [purchases, setPurchases] = useState([]);
-  const [ready, setReady] = useState(false);
-  const ids = useMemo(() => Array.isArray(location.state?.ingressosIds) ? location.state.ingressosIds.map(Number) : [], [location.state]);
   useEffect(() => {
-    let active = true;
-    api.get('/me/compras').then(items => {
-      const own = items.filter(item => ids.includes(item.id));
-      if (own.length !== ids.length) throw new Error('Confira seus ingressos em Minhas Compras.');
-      if (active) { setPurchases(own); setReady(true); }
-    }).catch(error => { if (active) setFeedback({ tipo: 'erro', texto: error.message }); });
-    return () => { active = false; };
+    if (!ids.length) return;
+    let ativo = true;
+    api.get("/me/compras")
+      .then((compras) => {
+        const ingressos = ingressosPendentes(compras, ids);
+        if (ativo) setPendentes(ingressos);
+      })
+      .catch((error) => {
+        if (ativo) setFeedback({ tipo: "erro", texto: error.message });
+      })
+      .finally(() => {
+        if (ativo) setCarregando(false);
+      });
+    return () => { ativo = false; };
   }, [ids]);
-  const valorTotal = purchases.reduce((sum, item) => sum + Number(item.valor_unitario ?? item.valor), 0);
-  const totalIngressos = Number(dados.totalIngressos || 0);
-  const filmeTitulo = dados.filmeTitulo || "Filme";
-  const sessaoLabel = dados.sessaoLabel || "Sessao";
 
-
+  useEffect(() => {
+    if (feedback.tipo !== "sucesso") return;
+    const timer = setTimeout(() => navigate("/minhas-compras", { replace: true }), 1200);
+    return () => clearTimeout(timer);
+  }, [feedback.tipo, navigate]);
 
   async function confirmarPagamento() {
-    if (!ready || loading || ingressosIds.length === 0) {
-      setFeedback({ tipo: "erro", texto: "Nenhum ingresso pendente para pagamento." });
-      return;
-    }
-
+    if (enviando.current || !pendentes.length || feedback.tipo === "sucesso") return;
     if (!metodoPagamento) {
       setFeedback({ tipo: "erro", texto: "Selecione a forma de pagamento para continuar." });
       return;
     }
 
-    setLoading(true);
+    enviando.current = true;
+    setPagando(true);
     setFeedback({ tipo: "", texto: "" });
 
     try {
-      const own = await api.get('/me/compras');
-      for (const idIngresso of ingressosIds) {
-        const ticket = own.find(item => item.id === Number(idIngresso));
-        if (!ticket || ticket.status === 'cancelado') throw new Error('Ingresso indisponível.');
-        if (ticket.pago) continue;
-        if (!ticket.podePagar) throw new Error('Ingresso antigo sem preço registrado. Consulte Minhas Compras.');
+      const atuais = ingressosPendentes(await api.get("/me/compras"), ids);
+      setPendentes(atuais);
+      if (!atuais.length) {
+        return;
+      }
+      for (const ingresso of atuais) {
         await api.post("/pagamentos", {
-          id_ingresso: Number(idIngresso),
+          id_ingresso: ingresso.id,
           metodo_pagamento: metodoPagamento,
         });
+        setPendentes((itens) => itens.filter((item) => item.id !== ingresso.id));
       }
-
-      setFeedback({
-        tipo: "sucesso",
-        texto: "Pagamento confirmado com sucesso. Redirecionando para Minhas Compras...",
-      });
-
-      setTimeout(() => navigate("/minhas-compras"), 1200);
+      setFeedback({ tipo: "sucesso", texto: "Pagamento confirmado com sucesso. Redirecionando para Minhas Compras..." });
     } catch (error) {
       setFeedback({ tipo: "erro", texto: error.message || "Erro ao confirmar pagamento." });
     } finally {
-      setLoading(false);
+      setPagando(false);
+      enviando.current = false;
     }
   }
+
+  const primeiro = pendentes[0];
+  const valorTotal = pendentes.reduce((total, ingresso) => total + Number(ingresso.valor_unitario ?? ingresso.valor), 0);
 
   return (
     <main className="pagamento-page">
@@ -83,20 +96,21 @@ function Pagamento() {
         <h2>Finalizar Pagamento</h2>
         <p className="pagamento-subtitle">Confirme a forma de pagamento para concluir sua compra.</p>
 
-        {ingressosIds.length === 0 ? (
-          <p>
-            Nenhuma compra pendente encontrada. <Link to="/produtos">Voltar para Produtos</Link>
-          </p>
-        ) : (
+        {carregando && <p role="status">Carregando ingressos...</p>}
+        {!carregando && !primeiro && feedback.tipo !== "sucesso" && (
+          <p>Nenhuma compra pendente encontrada. <Link to="/minhas-compras">Ir para Minhas Compras</Link></p>
+        )}
+
+        {primeiro && (
           <>
             <div className="pagamento-resumo">
-              <p><strong>Filme:</strong> {filmeTitulo}</p>
-              <p><strong>Sessao:</strong> {sessaoLabel}</p>
-              <p><strong>Ingressos:</strong> {totalIngressos}</p>
+              <p><strong>Filme:</strong> {primeiro.filme}</p>
+              <p><strong>Sessão:</strong> {primeiro.horario ? new Date(primeiro.horario).toLocaleString("pt-BR") : "Horário indisponível"}</p>
+              <p><strong>Ingressos:</strong> {pendentes.length}</p>
+              <p><strong>Assentos:</strong> {pendentes.map((ingresso) => ingresso.assento).join(", ")}</p>
               <p><strong>Total:</strong> R$ {valorTotal.toFixed(2)}</p>
             </div>
 
-            <label>Forma de pagamento</label>
             <div className="pagamento-opcoes" role="radiogroup" aria-label="Forma de pagamento">
               {OPCOES_PAGAMENTO.map((opcao) => (
                 <button
@@ -104,7 +118,8 @@ function Pagamento() {
                   type="button"
                   role="radio"
                   aria-checked={metodoPagamento === opcao.valor}
-                  className={`pagamento-opcao ${metodoPagamento === opcao.valor ? "ativa" : ""}`}
+                  className={metodoPagamento === opcao.valor ? "pagamento-opcao ativa" : "pagamento-opcao"}
+                  disabled={pagando}
                   onClick={() => setMetodoPagamento(opcao.valor)}
                 >
                   <strong>{opcao.titulo}</strong>
@@ -113,16 +128,22 @@ function Pagamento() {
               ))}
             </div>
 
-            <button type="button" className="btn-pagar" onClick={confirmarPagamento} disabled={loading || !ready}>
-              {loading ? "Processando..." : "Confirmar pagamento"}
+            <button type="button" className="btn-pagar" onClick={confirmarPagamento} disabled={pagando}>
+              {pagando ? "Processando..." : "Confirmar pagamento"}
             </button>
           </>
         )}
 
-        {feedback.texto && <p className={`feedback ${feedback.tipo}`}>{feedback.texto}</p>}
+        {feedback.texto && (
+          <p className={`feedback ${feedback.tipo}`} role={feedback.tipo === "erro" ? "alert" : "status"}>{feedback.texto}</p>
+        )}
       </section>
     </main>
   );
 }
 
-export default Pagamento;
+export default function Pagamento() {
+  const [params] = useSearchParams();
+  const referencia = params.get("ingressos") || "";
+  return <PagamentoPendente key={referencia} referencia={referencia} />;
+}

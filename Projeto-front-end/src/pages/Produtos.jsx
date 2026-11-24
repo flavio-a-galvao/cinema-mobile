@@ -165,10 +165,10 @@ function Produtos(){
 
       const assentosSala = assentosApi
         .filter((assento) => Number(assento.id_sala) === Number(sessaoAlvo.id_sala))
-        .sort((a, b) => Number(a.numero) - Number(b.numero))
+        .sort((a, b) => String(a.fila).localeCompare(String(b.fila)) || Number(a.numero) - Number(b.numero))
         .map((assento) => ({
           id_assento: Number(assento.id_assento),
-          numero: Number(assento.numero),
+          codigo: `${assento.fila}${assento.numero}`,
           ocupado: assentosOcupados.has(Number(assento.id_assento)),
           selecionado: false,
         }));
@@ -360,7 +360,7 @@ function Produtos(){
       if (assentoConflitante) {
         setFeedback({
           tipo: "erro",
-          texto: `O assento ${assentoConflitante.numero} acabou de ser reservado nesta sessao. Escolha outro assento.`,
+          texto: `O assento ${assentoConflitante.codigo} acabou de ser reservado nesta sessao. Escolha outro assento.`,
         });
         await carregarAssentosSessao(idSessao);
         return;
@@ -372,15 +372,7 @@ function Produtos(){
         qtdInteira, qtdMeia,
       });
       const ingressosCriados = ingressos.map(ingresso => ingresso.id_ingresso);
-      navigate("/pagamento", {
-        state: {
-          ingressosIds: ingressosCriados,
-          valorTotal: ingressos.reduce((total, ingresso) => total + Number(ingresso.valor_unitario), 0),
-          totalIngressos,
-          filmeTitulo: filmeSelecionado.titulo,
-          sessaoLabel: String(sessaoSelecionada || "").split("#")[0],
-        },
-      });
+      navigate(`/pagamento?ingressos=${ingressosCriados.join(",")}`);
     } catch (error) {
       setFeedback({ tipo: "erro", texto: error.message || "Erro ao registrar compra na API." });
     }
@@ -540,10 +532,12 @@ function Produtos(){
             <div className="assentos-grid">
               {assentos.map((assento)=> (
                 <button key={assento.id_assento}
+                  type="button"
+                  aria-pressed={assento.selecionado}
                   disabled={assento.ocupado}
                   className={assento.ocupado ? 'ocupado' : assento.selecionado ? 'selecionado' : ''}
                   onClick={()=>toggleAssento(assento.id_assento)}>
-                  {assento.numero}
+                  {assento.codigo}
                 </button>
               ))}
             </div>
@@ -568,7 +562,7 @@ function Produtos(){
           <input value={String(sessaoSelecionada || "Nenhuma sessao").split("#")[0]} disabled />
 
           <label>Assentos selecionados</label>
-          <input value={assentosSelecionados.map((a)=>a.numero).join(', ') || 'Nenhum'} disabled />
+          <input value={assentosSelecionados.map((a)=>a.codigo).join(', ') || 'Nenhum'} disabled />
 
           <label>Total da compra</label>
           <input value={`R$ ${valorTotal.toFixed(2)} (${totalIngressos} ingresso(s))`} disabled />

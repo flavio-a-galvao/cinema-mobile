@@ -13,7 +13,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /.*cinema.spec.ts/,
+  testMatch: process.env.E2E_KAN26_MOVIE_ID ? /.*(?:cinema|bilheteria)\.spec\.ts/ : /.*cinema\.spec\.ts/,
   /* Run tests in files in parallel */
   fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */

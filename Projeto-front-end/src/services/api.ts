@@ -62,7 +62,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       message = dataMessage || "Voce nao tem permissao para esta acao.";
     }
 
-    throw new Error(message);
+    throw Object.assign(new Error(message), { status });
   }
 
   return data as T;
@@ -80,6 +80,7 @@ export const api = {
       method: "PUT",
       body: JSON.stringify(body),
     }),
+  patch: <T>(path: string) => request<T>(path, { method: "PATCH" }),
   delete: <T>(path: string) =>
     request<T>(path, {
       method: "DELETE",

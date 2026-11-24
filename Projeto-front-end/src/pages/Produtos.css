@@ -468,12 +468,12 @@
 
 .assentos-grid{
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: 0.4rem;
 }
 
 .assentos-grid button{
-  padding: 0.52rem 0.3rem;
+  padding: 0.52rem 0.15rem;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 6px;
   background: #1e293b;
@@ -740,7 +740,6 @@
 }
 
 @media (max-width: 768px){
-  .assentos-grid{ grid-template-columns: repeat(8, 1fr); }
   .filme-card h2{ font-size: 0.8rem; }
   .linha-ingressos{ grid-template-columns: 1fr; }
   .filtro-catalogo{ flex-direction: column; align-items: flex-start; }

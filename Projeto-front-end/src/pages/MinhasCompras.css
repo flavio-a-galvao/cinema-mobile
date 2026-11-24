@@ -89,3 +89,30 @@
     aspect-ratio: 1 / 1;
   }
 }
+
+.compra-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 8px;
+}
+
+.compra-acoes a {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.compra-acoes button {
+  padding: 6px 10px;
+  color: #991b1b;
+  background: #fff;
+  border: 1px solid #991b1b;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.compra-acoes button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}

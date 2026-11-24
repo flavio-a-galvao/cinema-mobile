@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import { useAuth } from "./context/AuthContext";
 import Header from "./componentes/Headers.jsx";
@@ -23,6 +23,7 @@ import Sobre from "./pages/Sobre.jsx";
 
 function App() {
   const { isLoggedIn, isAdmin } = useAuth();
+  const { pathname, search } = useLocation();
 
   const adminGuard = (element: ReactElement) => (isAdmin ? element : <Navigate to="/" replace />);
 
@@ -37,7 +38,10 @@ function App() {
           <Route path="/sobre" element={<Sobre />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
-          <Route path="/pagamento" element={<Pagamento />} />
+          <Route
+            path="/pagamento"
+            element={isLoggedIn ? <Pagamento /> : <Navigate to={`/login?redirect=${encodeURIComponent(pathname + search)}`} replace />}
+          />
 
           <Route
             path="/perfil"

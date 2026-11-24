@@ -1,5 +1,9 @@
 # Documentação acadêmica do Cinemax
 
+[Minutas de aceite](gestao/ACEITES_TECNICOS.md) · [Pré-release proposta](RELEASE_1.0.0-rc.1.md)
+
+Para a etapa avançada, consulte o [roteiro e as evidências da entrega](ENTREGA_FINAL.md).
+
 Arquivos preparados para cobrir os itens de Engenharia/Análise e Evolução da rubrica.
 
 ## Entregáveis

@@ -1,5 +1,7 @@
 # Relatório final da rubrica — Cinemax
 
+> **Atualização de 24/11/2026.** A bilheteria web do PR #10 está na main `43380fe`. O PR #8 continua em revisão. Consulte a entrega final para a cobertura atual e o andamento no Jira. As pontuações abaixo pertencem a auditorias anteriores. [Entrega final](ENTREGA_FINAL.md) · [Bilheteria](https://github.com/flavio-a-galvao/cinema-mobile/blob/43380fe32682d9b04de9f3db74617fc5bbfc6abc/docs/evidencias/kan-26-correcao-web.md)
+
 ## Complementação de 11/11/2026 — base d59723b
 
 Estado inicial: `main` limpa e igual ao SHA remoto

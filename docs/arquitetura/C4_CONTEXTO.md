@@ -42,8 +42,9 @@ O model `User` também admite `funcionario`, mas `requireAdmin` aceita somente
 - **Imagens:** [Produtos](../../Projeto-front-end/src/pages/Produtos.jsx),
   [Home](../../Projeto-front-end/src/pages/Home.jsx) e a
   [lista administrativa](../../Projeto-front-end/src/pages/AdminFilmesList.tsx)
-  usam `poster_url` ou uma imagem substituta no Imgur. O navegador pode buscar
-  essas URLs; imagens enviadas ao Cinemax são servidas localmente por `/posters/`.
+  usam `poster_url`. Desde `21c1904`, Home e Produtos usam um [SVG local](../evidencias/kan-12-poster.md)
+  quando o pôster falta ou falha; a lista administrativa mantém o substituto
+  anterior. Imagens enviadas ao Cinemax são servidas por `/posters/`.
   A indisponibilidade do host externo pode afetar a imagem, sem substituir o
   catálogo no MySQL. Não foi testada a disponibilidade desses hosts nesta etapa.
 - **Fontes:** na base original, o HTML declarava Google Fonts, incompatível com

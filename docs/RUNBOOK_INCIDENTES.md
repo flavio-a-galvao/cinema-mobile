@@ -108,6 +108,10 @@ mensagens para replay. Após recuperar Redis, verifique um **novo evento de test
 autorizado**. Reinicie só backend se a conexão continuar travada após diagnóstico.
 Registre mensagens potencialmente perdidas e limites de rastreabilidade.
 
+### Auditoria independente — perfil do PR #8
+
+Em uma execução com o perfil `audit`, verifique `docker compose --profile audit ps auditoria` e `docker compose --profile audit logs --since 10m auditoria`. Com uma API e uma auditoria conectadas, são esperados dois assinantes por canal. Compare `published` da API e `stored` da auditoria pelo mesmo `eventId`. `storage_error` exige conferir espaço, permissões, volume identificado e saúde do processo. Preserve `audit-data` e use backup consistente antes de intervenções. Reinicie apenas o serviço afetado e confira um evento novo em ambiente de teste. Mensagens publicadas durante a falha não são reenviadas pelo Pub/Sub.
+
 ## Erros Nginx/HTTPS
 
 ```powershell

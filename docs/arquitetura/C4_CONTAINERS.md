@@ -1,5 +1,7 @@
 # C4 — Nível 2: containers
 
+> Na main `43380fe`, a topologia padrão continua com cinco serviços. O PR #10 alterou a bilheteria web dentro da SPA e preservou os contêineres. A captura do PR #8 mostra a extensão opcional da auditoria. [PR #10](https://github.com/flavio-a-galvao/cinema-mobile/pull/10) · [Captura da candidata](../evidencias/entrega-final/c4-containers.png)
+
 ## Visão da execução
 
 Este diagrama detalha o sistema do [nível 1](C4_CONTEXTO.md), tomando como
@@ -73,3 +75,9 @@ de negócio separado: o consumidor executa no mesmo processo Express.
 
 O ambiente exige variáveis locais e um par TLS correspondente. Procedimentos,
 volumes e evidências anteriores constam em [Infraestrutura Docker](../INFRAESTRUTURA_DOCKER.md).
+
+## Reconciliação após o PR #8
+
+- No nível de contexto, mantenha o fallback SVG local no catálogo e os hosts de pôster como externos e opcionais. A auditoria pertence à fronteira do Cinemax.
+- No nível de contêineres, mantenha os cinco serviços padrão e o Subscriber interno da API. Represente o consumidor independente como sexto serviço opcional do perfil `audit`, sem porta HTTP, conectado ao Redis por `cache-network`, com SQLite no volume `audit-data`.
+- Após o squash autorizado, confira os diagramas na árvore integrada, atualize a referência a `docs/AUDITORIA.md` e renderize os níveis de contexto e contêineres. Identifique as capturas anteriores pelo SHA de origem. [C4 da candidata](https://github.com/flavio-a-galvao/cinema-mobile/blob/18a1aed36d3cfd5600e4cd98f26a2ddd3c92eda0/docs/arquitetura/C4_CONTAINERS.md)

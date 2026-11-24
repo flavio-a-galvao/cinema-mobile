@@ -1,5 +1,7 @@
 # Observabilidade, resiliência, SLIs e SLOs
 
+> **Escopo no PR #8:** a auditoria independente registra assinatura, eventos gravados, duplicatas e erros de armazenamento em logs JSON próprios. Ela não amplia o endpoint /metrics do backend e não produz medição mensal. Consulte [Auditoria](https://github.com/flavio-a-galvao/cinema-mobile/blob/18a1aed/docs/AUDITORIA.md).
+
 ## Complementação de 11/11/2026
 
 Os resultados da seção final são históricos. Nesta complementação passaram

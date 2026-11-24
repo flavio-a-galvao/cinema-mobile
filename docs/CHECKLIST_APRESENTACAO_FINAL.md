@@ -1,14 +1,14 @@
 # Checklist de apresentação — lacunas da rubrica
 
+> **Apresentação atual.** Use o roteiro curto, a prova da bilheteria integrada e os registros reais do Jira. Apresente o PR #8 como candidato. Os procedimentos operacionais abaixo complementam o roteiro. [Roteiro](ENTREGA_FINAL.md#roteiro-de-5-a-7-minutos) · [Bilheteria](https://github.com/flavio-a-galvao/cinema-mobile/blob/43380fe32682d9b04de9f3db74617fc5bbfc6abc/docs/evidencias/kan-26-correcao-web.md)
+
 Preparado em 11/11/2026. Usar o [relatório atualizado](RELATORIO_FINAL_RUBRICA.md)
 para distinguir resultado atual, evidência histórica e pendência. Não refazer o
 mobile nem apresentar mocks como integração real.
 
 ## Preparar a sessão
 
-- [ ] Terminal na raiz do repositório, `main`, SHA e estado visíveis. Neste notebook:
-  `git -c safe.directory=C:/Users/Administrador/Documents/Faculdade/cinema-mobile status -sb`
-  e o mesmo prefixo com `log -1 --oneline`.
+- [ ] Confira a raiz e a referência atual com `git status -sb` e `git log -1 --oneline origin/main`.
 - [ ] `docker version` mostra Server Linux. Conferir containers/volumes existentes
   com `docker ps` / `docker volume ls`; não remover nem parar ambientes alheios.
 - [ ] Abrir [infraestrutura](INFRAESTRUTURA_DOCKER.md) e executar seu bloco isolado.
@@ -53,15 +53,10 @@ docker @compose cp Projeto-back-end/tests/pagamentos.mysql.integration.cjs backe
 docker @compose exec -T -e CINEMAX_MYSQL_INTEGRATION_ISOLATED=1 backend node --test tests/pagamentos.mysql.integration.cjs
 ```
 
-## Tech Forge: depende de configuração e uso reais
+## Tech Forge — demonstração da gestão real
 
-- [ ] Titular cria/seleciona Jira Cloud, confirma URL/key/tipo e participantes reais.
-  Usar o [guia company/team-managed](gestao/JIRA_GUIA.md); nenhuma issue foi criada
-  por esta entrega. Validar localmente com
-  `powershell -ExecutionPolicy Bypass -File scripts/validate-jira-csv.ps1`.
-- [ ] Após autorização do titular, configurar tipos/status/prioridades e importar
-  uma única vez os 30 itens conciliados. Mostrar relatório com 6 Epic, 16 Story,
-  6 Task, 2 Bug e os pais dos 24 filhos. Registrar chaves reais sem duplicar amostras.
+- [ ] Abra o projeto Jira existente e demonstre o backlog conciliado, com os 30 itens originais e a Story de auditoria. Confira participantes e papéis que ainda dependem de confirmação. [Guia Jira](gestao/JIRA_GUIA.md)
+- [ ] Abra os comentários do PR #10 integrado e o CI correspondente. Identifique os aceites e dependências ainda pendentes. [Registros da bilheteria](gestao/ACEITES_TECNICOS.md#bilheteria--kan-29-kan-30-e-kan-26)
 - [ ] Abrir backlog, Epic com filhos e dependências vinculadas pelas chaves reais;
   mostrar responsável confirmado e critérios. Description não cria links Jira.
 - [ ] Abrir quadro com políticas/WIP e histórico de movimentos que efetivamente
@@ -77,7 +72,7 @@ docker @compose exec -T -e CINEMAX_MYSQL_INTEGRATION_ISOLATED=1 backend node --t
   Mostrar SHA, SHA-256, escopo e diferença entre snapshots. Não são releases.
 - [ ] Mostrar no GitHub commits `e23bd86`, `c826368` e `d59723b`, notas do
   [planejamento](gestao/PLANEJAMENTO_AGIL.md) e evidências correspondentes.
-- [ ] Antes de tag/release: homologar E2E de navegador, conferir CI no SHA escolhido,
+- [ ] Antes de tag/release, conferir o CI e o escopo da evidência E2E no SHA escolhido,
   resolver impeditivos, obter revisão/aceite e definir versão SemVer. As execuções
   de CI antigas não validam automaticamente um SHA novo.
 - [ ] Titular autoriza publicação verdadeira; então registrar tag/SHA, notas,

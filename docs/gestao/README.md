@@ -1,5 +1,9 @@
 # Tech Forge — gestão do Cinemax
 
+[Minutas de aceite técnico](ACEITES_TECNICOS.md) e [notas propostas da pré-release](../RELEASE_1.0.0-rc.1.md).
+
+> **Estado atual:** [KAN](https://cinemax-projeto.atlassian.net/jira/software/projects/KAN/boards/2) está em uso. As contagens, transições e pendências observadas estão no [Guia Jira](JIRA_GUIA.md#estado-conferido-em-23112026). Os dados abaixo registram o planejamento original de 05/11/2026.
+
 Levantamento de **05/11/2026**, base `c826368` na `main`, inicialmente limpa e
 sincronizada com a referência remota consultada. Esta entrega é documental:
 não altera aplicação, contratos da API ou `Projeto-mobile/`.
@@ -20,7 +24,7 @@ O mapa original cobriu os requisitos descritos no pedido. A auditoria posterior
 recebeu o PDF oficial; os pesos e a situação conferida constam no
 [relatório final](../RELATORIO_FINAL_RUBRICA.md).
 
-## Estado real e limites
+## Registro histórico e limites em 05/11/2026
 
 - **Jira:** plugin Atlassian localizado, mas não instalado/conectado nesta sessão.
   Nenhum projeto, usuário, issue, sprint ou workflow Jira foi consultado/alterado.
@@ -58,8 +62,4 @@ As evidências técnicas existentes incluem [integração Redis](../evidencias/r
 [OpenAPI](../API_OPENAPI.md), [arquitetura](../arquitetura/README.md) e
 [CI/deploy](../CI_DEPLOY.md). São fontes históricas, não evidências de gestão Jira.
 
-Para concluir a demonstração Tech Forge no serviço externo: habilitar acesso
-Atlassian/Jira, identificar o projeto real, confirmar participantes e papéis,
-conciliar itens existentes, importar/verificar a amostra e registrar a execução
-real do fluxo. Replanejar após conhecer capacidade e data de entrega; nenhuma
-sprint, velocidade ou aprovação da equipe foi presumida.
+Para completar a gestão atual, confirme participantes e papéis em KAN-32, registre os aceites efetivos e valide o fechamento da entrega conforme o [roteiro final](../ENTREGA_FINAL.md). Acesso, conciliação, importação e transições observadas estão registrados no guia. Nenhuma sprint ou aprovação foi inferida.

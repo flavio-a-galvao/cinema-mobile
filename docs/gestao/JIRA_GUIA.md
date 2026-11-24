@@ -1,6 +1,22 @@
 # Jira — configuração, importação e evidências
 
-## Situação real
+## Estado conferido em 23/11/2026
+
+O [Cinemax KAN](https://cinemax-projeto.atlassian.net/jira/software/projects/KAN/boards/2) é Jira Software team-managed. O quadro tem To Do, In Progress, In Review e Done. Os 30 itens originais foram conciliados (24 relações pai-filho e 42 Blocks). A Story [KAN-34](https://cinemax-projeto.atlassian.net/browse/KAN-34) acrescenta um item e uma relação com o épico KAN-9. O conjunto acadêmico tem 31 itens, 25 relações de pai e 42 Blocks; KAN-1, KAN-2 e KAN-3 são anteriores a esse conjunto.
+
+| Issue | Histórico real no Jira (São Paulo) | Evidência |
+| --- | --- | --- |
+| KAN-18 | 22/11, 22h01, To Do → In Review | [Verificação de CI](https://cinemax-projeto.atlassian.net/browse/KAN-18?focusedCommentId=10000) |
+| KAN-12 | 23/11, 02h24, To Do → In Review | [Correção integrada e CI](https://cinemax-projeto.atlassian.net/browse/KAN-12?focusedCommentId=10002) |
+| KAN-34 | 23/11, 02h32, To Do → In Progress; 02h41, In Progress → In Review | [Prova Docker e PR #8](https://cinemax-projeto.atlassian.net/browse/KAN-34?focusedCommentId=10003) |
+
+Os três estados foram conferidos em In Review. Papéis em KAN-32 e aceites seguem pendentes.
+
+Em 24/11/2026, os comentários técnicos de bilheteria foram registrados em KAN-26, KAN-29 e KAN-30 após o squash do PR #10 e a validação do CI da main. As issues permaneceram em Tarefas pendentes. [Registros e dependências](ACEITES_TECNICOS.md#bilheteria--kan-29-kan-30-e-kan-26)
+
+O material abaixo preserva o planejamento e a validação local anteriores à importação.
+
+## Situação em 11/11/2026 — registro histórico
 
 Em 11/11/2026 o titular confirmou que **ainda não há projeto Jira configurado**,
 URL, chave ou tipo de projeto. Não houve acesso a um projeto Jira. Nenhuma issue foi criada, atribuída,
@@ -129,7 +145,7 @@ existente. Depois de verificar os critérios e fontes, registrar o aceite atual
 e mover os itens que realmente o satisfizerem, sem datas retroativas ou falsas
 etapas intermediárias. Não reconstruir uma sprint passada a partir de commits.
 
-## Roteiro de evidências a produzir no Jira
+## Roteiro original para produzir evidências no Jira
 
 | Evidência futura | Demonstração necessária | Estado nesta entrega |
 | --- | --- | --- |
@@ -148,8 +164,4 @@ URLs, chaves ou responsáveis de exemplo que pareçam registros reais.
 
 ## Critério de conclusão no serviço externo
 
-Concluir US14 apenas após identificar o projeto, conciliar/importar itens,
-conferir hierarquia/permissões e produzir evidências reais. A preparação desta
-entrega atende ao caminho alternativo sem integração, mas a demonstração de uso
-do Jira permanece pendente. Nenhuma instalação de dependência ou alteração em
-código é necessária para preparar esse material.
+Projeto, importação, hierarquia e transições estão registrados acima e no [comentário da KAN-24](https://cinemax-projeto.atlassian.net/browse/KAN-24?focusedCommentId=10004). A validação de participantes e papéis em KAN-32 e o aceite de US14 permanecem pendentes.

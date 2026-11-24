@@ -1,5 +1,7 @@
 # DDD — análise estratégica e modelo tático
 
+> **Limite da auditoria na candidata do PR #8:** o consumidor independente observa metadados de catálogo. Ele não altera transações, entidades, Aggregates ou fronteiras de negócio descritos neste mapa.
+
 ## Natureza da análise
 
 O domínio é a **operação de um cinema com venda de ingressos**. Este documento

@@ -3,6 +3,8 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../services/api";
 import "./Pagamento.css";
 
+const PAGAMENTO_EXISTENTE = { tipo: "info", texto: "Os ingressos selecionados já estão pagos." };
+
 const OPCOES_PAGAMENTO = [
   { valor: "pix", titulo: "Pix", descricao: "Aprovação imediata" },
   { valor: "cartao", titulo: "Cartão", descricao: "Crédito ou débito" },
@@ -37,7 +39,10 @@ function PagamentoPendente({ referencia }) {
     api.get("/me/compras")
       .then((compras) => {
         const ingressos = ingressosPendentes(compras, ids);
-        if (ativo) setPendentes(ingressos);
+        if (ativo) {
+          setPendentes(ingressos);
+          if (!ingressos.length) setFeedback(PAGAMENTO_EXISTENTE);
+        }
       })
       .catch((error) => {
         if (ativo) setFeedback({ tipo: "erro", texto: error.message });
@@ -68,17 +73,25 @@ function PagamentoPendente({ referencia }) {
     try {
       const atuais = ingressosPendentes(await api.get("/me/compras"), ids);
       setPendentes(atuais);
-      if (!atuais.length) {
-        return;
-      }
+      let pagouNestaAba = false;
       for (const ingresso of atuais) {
-        await api.post("/pagamentos", {
-          id_ingresso: ingresso.id,
-          metodo_pagamento: metodoPagamento,
-        });
+        try {
+          await api.post("/pagamentos", {
+            id_ingresso: ingresso.id,
+            metodo_pagamento: metodoPagamento,
+          });
+          pagouNestaAba = true;
+        } catch (error) {
+          if (error.status !== 409) throw error;
+          const compras = await api.get("/me/compras").catch(() => []);
+          const jaPago = compras.some((compra) => compra.id === ingresso.id && compra.pago && compra.status !== "cancelado");
+          if (!jaPago) throw error;
+        }
         setPendentes((itens) => itens.filter((item) => item.id !== ingresso.id));
       }
-      setFeedback({ tipo: "sucesso", texto: "Pagamento confirmado com sucesso. Redirecionando para Minhas Compras..." });
+      setFeedback(pagouNestaAba
+        ? { tipo: "sucesso", texto: "Pagamento confirmado com sucesso. Redirecionando para Minhas Compras..." }
+        : PAGAMENTO_EXISTENTE);
     } catch (error) {
       setFeedback({ tipo: "erro", texto: error.message || "Erro ao confirmar pagamento." });
     } finally {
@@ -97,7 +110,7 @@ function PagamentoPendente({ referencia }) {
         <p className="pagamento-subtitle">Confirme a forma de pagamento para concluir sua compra.</p>
 
         {carregando && <p role="status">Carregando ingressos...</p>}
-        {!carregando && !primeiro && feedback.tipo !== "sucesso" && (
+        {!carregando && !primeiro && !["sucesso", "info"].includes(feedback.tipo) && (
           <p>Nenhuma compra pendente encontrada. <Link to="/minhas-compras">Ir para Minhas Compras</Link></p>
         )}
 
@@ -135,7 +148,10 @@ function PagamentoPendente({ referencia }) {
         )}
 
         {feedback.texto && (
-          <p className={`feedback ${feedback.tipo}`} role={feedback.tipo === "erro" ? "alert" : "status"}>{feedback.texto}</p>
+          <p className={`feedback ${feedback.tipo}`} role={feedback.tipo === "erro" ? "alert" : "status"}>
+            {feedback.texto}
+            {feedback.tipo === "info" && <> <Link to="/minhas-compras">Ir para Minhas Compras</Link></>}
+          </p>
         )}
       </section>
     </main>

@@ -121,3 +121,49 @@ it("na grade, distingue assentos da mesma posição em fileiras diferentes e man
   expect(screen.getByRole("button", { name: "B1" }).getAttribute("aria-pressed")).toBe("true");
   expect(screen.getByDisplayValue("B1")).toBeTruthy();
 });
+
+it("informa que a outra aba pagou antes da confirmação sem enviar POST", async () => {
+  mockSearch = "?ingressos=18";
+  const ingressoPago = { ...pendente, pago: true, podePagar: false };
+  api.get.mockResolvedValueOnce([pendente]).mockResolvedValueOnce([ingressoPago]);
+  render(<Pagamento />);
+
+  fireEvent.click(await screen.findByRole("radio", { name: /Pix/ }));
+  fireEvent.click(screen.getByRole("button", { name: "Confirmar pagamento" }));
+
+  expect(await screen.findByText("Os ingressos selecionados já estão pagos.")).toBeTruthy();
+  expect(screen.getByRole("link", { name: "Ir para Minhas Compras" })).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "Confirmar pagamento" })).toBeNull();
+  expect(api.post).not.toHaveBeenCalled();
+});
+
+it("confirma no histórico um pagamento de outra aba após conflito de concorrência", async () => {
+  mockSearch = "?ingressos=18";
+  const ingressoPago = { ...pendente, pago: true, podePagar: false };
+  api.get.mockResolvedValueOnce([pendente]).mockResolvedValueOnce([pendente]).mockResolvedValueOnce([ingressoPago]);
+  api.post.mockRejectedValue(Object.assign(new Error("Este ingresso já foi pago."), { status: 409 }));
+  render(<Pagamento />);
+
+  fireEvent.click(await screen.findByRole("radio", { name: /Pix/ }));
+  fireEvent.click(screen.getByRole("button", { name: "Confirmar pagamento" }));
+
+  expect(await screen.findByText("Os ingressos selecionados já estão pagos.")).toBeTruthy();
+  expect(screen.queryByRole("alert")).toBeNull();
+  expect(screen.queryByRole("button", { name: "Confirmar pagamento" })).toBeNull();
+  expect(api.post).toHaveBeenCalledTimes(1);
+});
+
+it("preserva o erro de conflito quando o histórico não confirma pagamento válido", async () => {
+  mockSearch = "?ingressos=18";
+  const ingressoCancelado = { ...pendente, status: "cancelado", podePagar: false, podeCancelar: false };
+  const mensagem = "Ingresso cancelado não pode receber pagamento.";
+  api.get.mockResolvedValueOnce([pendente]).mockResolvedValueOnce([pendente]).mockResolvedValueOnce([ingressoCancelado]);
+  api.post.mockRejectedValue(Object.assign(new Error(mensagem), { status: 409 }));
+  render(<Pagamento />);
+
+  fireEvent.click(await screen.findByRole("radio", { name: /Pix/ }));
+  fireEvent.click(screen.getByRole("button", { name: "Confirmar pagamento" }));
+
+  expect((await screen.findByRole("alert")).textContent).toBe(mensagem);
+  expect(screen.queryByText("Os ingressos selecionados já estão pagos.")).toBeNull();
+});

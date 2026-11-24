@@ -1,6 +1,6 @@
 # KAN-26 — Retomada, cancelamento e identificação dos assentos
 
-Em 24/11/2026, a validação usou a base `21c1904d4c7ef3fce7bce361fb92005e0d61f7dc` e a árvore web corrigida `7e2848340413909251a36a8380304952bb133caf` (`git rev-parse HEAD:Projeto-front-end`).
+Em 24/11/2026, a validação usou a base `21c1904d4c7ef3fce7bce361fb92005e0d61f7dc` e a árvore web corrigida `7e2848340413909251a36a8380304952bb133caf` (commit `5f71862`).
 
 ## Antes e depois
 
@@ -23,3 +23,12 @@ As reproduções originais e a captura foram preservadas na branch local `codex/
 Para reproduzir, inicie um ambiente descartável com API e web na mesma origem. Provisione uma sessão futura de R$ 25,01 em uma sala de 48 assentos, sem reservas para o filme de teste. Use `CINEMAX_E2E_ISOLATED=1`, `E2E_BASE_URL` da instância e `E2E_KAN26_MOVIE_ID` do filme. Com o Chromium do Playwright instalado, execute `npx playwright test e2e/bilheteria.spec.ts --project=chromium` no front-end. Para usar o Google Chrome instalado, defina `E2E_CHROMIUM_CHANNEL=chrome`. O relatório inclui os IDs do ensaio e os status HTTP.
 
 [Jira KAN-26](https://cinemax-projeto.atlassian.net/browse/KAN-26)
+
+## Revisão do PR #10 — pagamento em outra aba
+
+A revisão de 24/11/2026 partiu de `5f71862`. Na versão anterior, um pagamento já registrado em outra aba podia resultar em mensagem genérica ou deixar o botão de confirmação visível após um HTTP 409.
+
+- Aba A e aba B abertas no mesmo ingresso. Quando B pagou antes da confirmação em A, A exibiu “Os ingressos selecionados já estão pagos”, removeu a ação e não enviou POST. A recarga manteve o mesmo resultado.
+- Quando B pagou depois da última leitura de A, mas antes de o POST de A chegar ao servidor, a API real retornou 201 para B e 409 para A. A confirmou o pagamento em `/me/compras` e exibiu o aviso informativo. O Playwright controlou a ordem das requisições sem simular respostas da API.
+- Consultas SQL no MySQL 9.1.0 descartável confirmaram **um pagamento por ingresso** para os dois casos. Chromium 158.0.8127.88 headless e Express real em loopback.
+- O front-end da árvore `a4253dab69bd4b0e0ca31c59cfe8f4f01c332c9f` passou em **23 testes Jest** e no build. O E2E local do fluxo de bilheteria passou novamente, incluindo retomada e cancelamento de ingresso pago. A suíte de concorrência do backend não foi repetida nesta revisão.

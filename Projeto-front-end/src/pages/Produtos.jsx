@@ -489,9 +489,9 @@ function Produtos(){
             <label>Inteira</label>
             <p>R$ {precoInteira.toFixed(2)}</p>
             <div className="controle-qtd">
-              <button type="button" className="btn-qtd" onClick={()=>alterarQuantidade("inteira", "menos")}>-</button>
-              <span className="qtd-pill">{qtdInteira}</span>
               <button type="button" className="btn-qtd" onClick={()=>alterarQuantidade("inteira", "mais")}>+</button>
+              <span className="qtd-pill">{qtdInteira}</span>
+              <button type="button" className="btn-qtd" onClick={()=>alterarQuantidade("inteira", "menos")}>-</button>
             </div>
           </div>
 
@@ -500,9 +500,9 @@ function Produtos(){
             <label>Meia Entrada</label>
             <p>R$ {precoMeia.toFixed(2)}</p>
             <div className="controle-qtd">
-              <button type="button" className="btn-qtd" onClick={()=>alterarQuantidade("meia", "menos")}>-</button>
-              <span className="qtd-pill">{qtdMeia}</span>
               <button type="button" className="btn-qtd" onClick={()=>alterarQuantidade("meia", "mais")}>+</button>
+              <span className="qtd-pill">{qtdMeia}</span>
+              <button type="button" className="btn-qtd" onClick={()=>alterarQuantidade("meia", "menos")}>-</button>
             </div>
           </div>
         </div>

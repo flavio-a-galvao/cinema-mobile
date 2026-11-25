@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
 import Filme from "../models/Filme";
+import Sessao from '../models/Sessao';
+import sequelize from '../config/database';
+import { archiveSessions, CatalogSaleConflict, isCatalogLockConflict, publishArchivedSessions } from '../services/catalogArchive';
 import { catalogCache } from '../services/catalogCache';
 import { catalogEvents } from '../services/catalogEvents';
 
@@ -17,12 +20,6 @@ interface FilmePayload {
 
 class FilmesController {
   private static readonly NOT_FOUND_MESSAGE = "Filme nao encontrado.";
-
-  private static isForeignKeyConstraintError(error: unknown): boolean {
-    if (!error || typeof error !== "object") return false;
-    const err = error as { name?: string | null; original?: { code?: string } };
-    return err.name === "SequelizeForeignKeyConstraintError" || err.original?.code === "ER_ROW_IS_REFERENCED_2";
-  }
 
   private static parsePagination(query: Request["query"]) {
     const page = Math.max(Number(query.page || 1), 1);
@@ -113,18 +110,30 @@ class FilmesController {
   }
 
   static async delete(req: Request, res: Response) {
-    const filme = await FilmesController.findOrNotFound(Number(req.params.id), res);
-    if (!filme) return;
+    const id = Number(req.params.id);
     try {
-      await filme.destroy();
+      const sessionIds = await sequelize.transaction(async transaction => {
+        const filme = await Filme.findByPk(id, { transaction, lock: transaction.LOCK.UPDATE });
+        if (!filme) return null;
+        const sessions = await Sessao.findAll({
+          where: { id_filme: id },
+          order: [['id_sessao', 'ASC']],
+          transaction,
+          lock: transaction.LOCK.UPDATE,
+        });
+        const archived = await archiveSessions(sessions, transaction);
+        await filme.destroy({ transaction });
+        return archived;
+      });
+      if (!sessionIds) return res.status(404).json({ message: FilmesController.NOT_FOUND_MESSAGE });
       await catalogCache.invalidate('filmes');
-      await catalogEvents.publish('filme.deleted', filme.id_filme);
+      await catalogEvents.publish('filme.deleted', id);
+      await publishArchivedSessions(sessionIds);
       return res.status(200).json({ message: "Filme removido com sucesso." });
     } catch (error) {
-      if (FilmesController.isForeignKeyConstraintError(error)) {
-        return res.status(409).json({ message: "Nao e possivel remover filme com sessoes cadastradas." });
-      }
-      return res.status(500).json({ message: "Erro interno do servidor." });
+      if (error instanceof CatalogSaleConflict) return res.status(409).json({ message: 'Nao e possivel remover filme com ingressos comprados' });
+      if (isCatalogLockConflict(error)) return res.status(409).json({ message: 'O filme está em uso. Atualize e tente novamente.' });
+      throw error;
     }
   }
 }

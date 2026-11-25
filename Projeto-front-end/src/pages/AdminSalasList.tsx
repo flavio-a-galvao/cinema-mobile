@@ -50,7 +50,7 @@ function AdminSalasList() {
   }, []);
 
   async function remover(id: number) {
-    if (!window.confirm("Tem certeza que deseja remover esta sala?")) return;
+    if (!window.confirm("Remover esta sala, seus assentos e suas sessões? Reservas sem pagamento serão canceladas. Se houver ingressos vendidos, a remoção será bloqueada.")) return;
     try {
       await api.delete<void>(`/salas/${id}`);
       setFeedback("Sala removida com sucesso.");

@@ -41,7 +41,8 @@ CREATE TABLE filmes (
     duracao INT,
     sinopse TEXT,
     poster_url VARCHAR(255),
-    data_lancamento DATE
+    data_lancamento DATE,
+    excluido_em DATETIME NULL
 );
 
 -- =========================
@@ -50,7 +51,8 @@ CREATE TABLE filmes (
 CREATE TABLE salas (
     id_sala INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50),
-    capacidade INT NOT NULL DEFAULT 48
+    capacidade INT NOT NULL DEFAULT 48,
+    excluido_em DATETIME NULL
 );
 
 -- =========================
@@ -61,6 +63,7 @@ CREATE TABLE assentos (
     id_sala INT,
     numero VARCHAR(10),
     fila VARCHAR(5),
+    excluido_em DATETIME NULL,
     UNIQUE KEY assentos_sala_codigo_unique (id_sala,fila,numero),
     FOREIGN KEY (id_sala) REFERENCES salas(id_sala)
 );
@@ -74,6 +77,7 @@ CREATE TABLE sessoes (
     id_sala INT,
     horario DATETIME,
     preco DECIMAL(6,2),
+    excluido_em DATETIME NULL,
     FOREIGN KEY (id_filme) REFERENCES filmes(id_filme),
     FOREIGN KEY (id_sala) REFERENCES salas(id_sala)
 );

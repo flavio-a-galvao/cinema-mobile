@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Sessao from "../models/Sessao";
 import { catalogCache } from '../services/catalogCache';
 import { catalogEvents } from '../services/catalogEvents';
+import { archiveSessions, CatalogSaleConflict, isCatalogLockConflict, publishArchivedSessions } from '../services/catalogArchive';
 
 import Filme from '../models/Filme';
 import Sala from '../models/Sala';
@@ -36,12 +37,13 @@ class SessoesController {
     return { page, limit, offset: (page - 1) * limit };
   }
 
-  private static async validate(body: SessaoPayload | undefined, creating: boolean, transaction?: Transaction, previous?: Sessao) {
+  private static async validate(body: SessaoPayload | undefined, creating: boolean, transaction: Transaction, previous?: Sessao) {
     if (!body || typeof body !== 'object' || Array.isArray(body)) throw new SessionError(400, 'Informe os dados da sessão.');
     for (const key of ['id_filme', 'id_sala'] as const) {
       if (creating || body[key] !== undefined) {
         if (!Number.isSafeInteger(body[key]) || Number(body[key]) <= 0) throw new SessionError(400, 'Selecione um filme e uma sala válidos.');
-        const record = key === 'id_filme' ? await Filme.findByPk(body[key], { transaction }) : await Sala.findByPk(body[key], { transaction });
+        const options = { transaction, lock: transaction.LOCK.SHARE };
+        const record = key === 'id_filme' ? await Filme.findByPk(body[key], options) : await Sala.findByPk(body[key], options);
         if (!record) throw new SessionError(400, key === 'id_filme' ? 'Filme não encontrado.' : 'Sala não encontrada.');
       }
     }
@@ -62,6 +64,8 @@ class SessoesController {
 
   private static reply(error: unknown, res: Response) {
     if (error instanceof SessionError) return res.status(error.status).json({ message: error.message });
+    if (error instanceof CatalogSaleConflict) return res.status(409).json({ message: error.message });
+    if (isCatalogLockConflict(error)) return res.status(409).json({ message: 'A sessão está em uso. Atualize e tente novamente.' });
     if (SessoesController.isForeignKeyConstraintError(error)) return res.status(409).json({ message: 'Filme ou sala indisponível. Atualize as opções e tente novamente.' });
     throw error;
   }
@@ -69,15 +73,6 @@ class SessoesController {
   private static toPayload(body: SessaoPayload): SessaoPayload {
     const { id_filme, id_sala, horario, preco } = body;
     return { id_filme, id_sala, horario, preco };
-  }
-
-  private static async findOrNotFound(id: number, res: Response) {
-    const sessao = await Sessao.findByPk(id);
-    if (!sessao) {
-      res.status(404).json({ message: SessoesController.NOT_FOUND_MESSAGE });
-      return null;
-    }
-    return sessao;
   }
 
   static async findAll(req: Request, res: Response) {
@@ -106,8 +101,10 @@ class SessoesController {
 
   static async create(req: Request, res: Response) {
     try {
-      await SessoesController.validate(req.body, true);
-      const sessao = await Sessao.create(SessoesController.toPayload(req.body));
+      const sessao = await sequelize.transaction(async transaction => {
+        await SessoesController.validate(req.body, true, transaction);
+        return Sessao.create(SessoesController.toPayload(req.body), { transaction });
+      });
       await catalogCache.invalidate('sessoes');
       await catalogEvents.publish('sessao.created', sessao.id_sessao);
       return res.status(201).json(sessao);
@@ -135,19 +132,15 @@ class SessoesController {
   }
 
   static async delete(req: Request, res: Response) {
-    const sessao = await SessoesController.findOrNotFound(Number(req.params.id), res);
-    if (!sessao) return;
     try {
-      await sessao.destroy();
-      await catalogCache.invalidate('sessoes');
-      await catalogEvents.publish('sessao.deleted', sessao.id_sessao);
+      const ids = await sequelize.transaction(async transaction => {
+        const sessao = await Sessao.findByPk(Number(req.params.id), { transaction, lock: transaction.LOCK.UPDATE });
+        if (!sessao) throw new SessionError(404, SessoesController.NOT_FOUND_MESSAGE);
+        return archiveSessions([sessao], transaction);
+      });
+      await publishArchivedSessions(ids);
       return res.status(200).json({ message: "Sessao removida com sucesso." });
-    } catch (error) {
-      if (SessoesController.isForeignKeyConstraintError(error)) {
-        return res.status(409).json({ message: "Nao e possivel remover sessao com ingressos cadastrados." });
-      }
-      return res.status(500).json({ message: "Erro interno do servidor." });
-    }
+    } catch (error) { return SessoesController.reply(error, res); }
   }
 }
 

@@ -28,7 +28,12 @@ Assento.init(
   {
     sequelize,
     tableName: "assentos",
-    timestamps: false,
+    timestamps: true,
+    createdAt: false,
+    updatedAt: false,
+    paranoid: true,
+    deletedAt: "excluido_em",
+    defaultScope: { attributes: { exclude: ["excluido_em"] } },
     indexes: [{ unique: true, fields: ['id_sala', 'fila', 'numero'], name: 'assentos_sala_codigo_unique' }],
   },
 );

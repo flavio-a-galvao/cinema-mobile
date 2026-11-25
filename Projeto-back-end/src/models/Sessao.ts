@@ -32,7 +32,12 @@ Sessao.init(
   {
     sequelize,
     tableName: "sessoes",
-    timestamps: false,
+    timestamps: true,
+    createdAt: false,
+    updatedAt: false,
+    paranoid: true,
+    deletedAt: "excluido_em",
+    defaultScope: { attributes: { exclude: ["excluido_em"] } },
   },
 );
 

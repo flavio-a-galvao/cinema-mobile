@@ -50,7 +50,7 @@ function AdminFilmesList() {
   }, []);
 
   async function remover(id: number) {
-    if (!window.confirm("Tem certeza que deseja remover este filme?")) return;
+    if (!window.confirm("Remover este filme e suas sessões? Reservas sem pagamento serão canceladas. Se houver ingressos vendidos, a remoção será bloqueada.")) return;
     try {
       await api.delete<void>(`/filmes/${id}`);
       setFeedback("Filme removido com sucesso.");

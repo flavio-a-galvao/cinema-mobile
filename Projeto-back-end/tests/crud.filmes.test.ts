@@ -11,6 +11,16 @@ vi.mock("../src/models/Filme", () => ({
   },
 }));
 
+import { archiveSessions, CatalogSaleConflict } from '../src/services/catalogArchive';
+vi.mock('../src/services/catalogArchive', () => ({
+  archiveSessions: vi.fn().mockResolvedValue([]),
+  publishArchivedSessions: vi.fn(),
+  CatalogSaleConflict: class extends Error {},
+  isCatalogLockConflict: vi.fn().mockReturnValue(false),
+}));
+
+vi.mock('../src/config/database', () => ({ default: { transaction: vi.fn(async callback => callback({ LOCK: { UPDATE: 'UPDATE', SHARE: 'SHARE' } })) } }));
+vi.mock('../src/models/Sessao', () => ({ default: { findAll: vi.fn().mockResolvedValue([]) } }));
 function createResponse() {
   const res: any = {
     status: vi.fn().mockReturnThis(),
@@ -82,10 +92,13 @@ describe('Persistência do CRUD pelo model', () => {
     const res = createResponse(); await FilmesController.delete({ params: { id: '7' } } as any, res);
     expect(movie.destroy).toHaveBeenCalledTimes(1); expect(res.status).toHaveBeenCalledWith(200);
   });
-  it('preserva filme com sessões, retornando 409', async () => {
-    (Filme as any).findByPk.mockResolvedValue({ destroy: vi.fn().mockRejectedValue({ name: 'SequelizeForeignKeyConstraintError' }) });
+  it('preserva filme com ingressos vendidos, retornando 409', async () => {
+    const movie = { destroy: vi.fn() }; (Filme as any).findByPk.mockResolvedValue(movie);
+    vi.mocked(archiveSessions).mockRejectedValueOnce(new CatalogSaleConflict());
     const res = createResponse(); await FilmesController.delete({ params: { id: '7' } } as any, res);
     expect(res.status).toHaveBeenCalledWith(409);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Nao e possivel remover filme com ingressos comprados' });
+    expect(movie.destroy).not.toHaveBeenCalled();
   });
   it.each([{ titulo: '' }, { titulo: 'Teste', duracao: -1 }, { titulo: 'Teste', data_lancamento: '2026-02-30' }])('dados inválidos retornam 400', async body => {
     const res = createResponse(); await FilmesController.create({ body } as any, res);

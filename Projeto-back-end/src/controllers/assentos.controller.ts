@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import Assento from "../models/Assento";
+import Sala from "../models/Sala";
+import sequelize from "../config/database";
 
 class AssentosController {
   static async findAll(req: Request, res: Response) {
@@ -17,7 +19,11 @@ class AssentosController {
 
   static async create(req: Request, res: Response) {
     const { id_sala, numero, fila } = req.body;
-    const assento = await Assento.create({ id_sala, numero, fila });
+    const assento = await sequelize.transaction(async transaction => {
+      if (!await Sala.findByPk(id_sala, { transaction, lock: transaction.LOCK.SHARE })) return null;
+      return Assento.create({ id_sala, numero, fila }, { transaction });
+    });
+    if (!assento) return res.status(400).json({ message: 'Sala não encontrada.' });
     return res.status(201).json(assento);
   }
 }

@@ -1,3 +1,4 @@
+import { ensureCatalogArchiveSchema } from './utils/ensureCatalogArchiveSchema';
 import { normalizeRoomCapacity } from './utils/normalizeRoomCapacity';
 import { ensureTicketPaymentSchema } from './utils/ensureTicketPaymentSchema';
 import { ensureIngressosSchema } from './utils/ensureIngressosSchema';
@@ -56,6 +57,7 @@ async function startServer() {
     await ensureClientesEmailUnique(sequelize.getQueryInterface());
     await ensureIngressosSchema(sequelize);
     await ensureTicketPaymentSchema(sequelize);
+    await ensureCatalogArchiveSchema(sequelize.getQueryInterface());
     await sequelize.sync();
     const roomReport = await normalizeRoomCapacity(sequelize);
     if (roomReport.needsReview.length) log('warn', 'database', 'rooms_need_review', { count: roomReport.needsReview.length });

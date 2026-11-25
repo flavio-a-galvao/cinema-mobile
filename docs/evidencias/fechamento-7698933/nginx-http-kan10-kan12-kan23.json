@@ -1,0 +1,142 @@
+{
+  "sha": "7698933e2a6410d6f3adec1922dc6a962e408b51",
+  "project": "cinemax-rubrica-c4c1cc464e15",
+  "checkedAt": "2026-11-25T00:42:05.885Z",
+  "transport": "HTTPS com CA temporária explícita e hostname cinema.local",
+  "jsonCredentialFree": true,
+  "steps": [
+    {
+      "label": "Swagger pelo proxy",
+      "status": 200,
+      "method": "GET",
+      "route": "/api/api-docs/"
+    },
+    {
+      "label": "OpenAPI pelo proxy",
+      "status": 200,
+      "method": "GET",
+      "route": "/api/api-docs/openapi.json"
+    },
+    {
+      "label": "Lista pública bruta",
+      "status": 200,
+      "method": "GET",
+      "route": "/api/catalogo/filmes"
+    },
+    {
+      "label": "Lista pública paginada",
+      "status": 200,
+      "method": "GET",
+      "route": "/api/catalogo/filmes?page=1&limit=1"
+    },
+    {
+      "label": "Filme existente",
+      "status": 200,
+      "method": "GET",
+      "route": "/api/catalogo/filmes/1"
+    },
+    {
+      "label": "Filme inexistente",
+      "status": 404,
+      "method": "GET",
+      "route": "/api/catalogo/filmes/999999999"
+    },
+    {
+      "label": "Sessões públicas",
+      "status": 200,
+      "method": "GET",
+      "route": "/api/catalogo/sessoes"
+    },
+    {
+      "label": "Sessão existente",
+      "status": 200,
+      "method": "GET",
+      "route": "/api/catalogo/sessoes/1"
+    },
+    {
+      "label": "Sessão inexistente",
+      "status": 404,
+      "method": "GET",
+      "route": "/api/catalogo/sessoes/999999999"
+    },
+    {
+      "label": "Sessões públicas paginadas",
+      "status": 200,
+      "method": "GET",
+      "route": "/api/catalogo/sessoes?page=1&limit=1"
+    },
+    {
+      "label": "Cadastro com CPF inválido",
+      "status": 400,
+      "method": "POST",
+      "route": "/api/users"
+    },
+    {
+      "label": "Cadastro com e-mail inválido",
+      "status": 400,
+      "method": "POST",
+      "route": "/api/users"
+    },
+    {
+      "label": "Cadastro público mantém papel cliente",
+      "status": 201,
+      "method": "POST",
+      "route": "/api/users"
+    },
+    {
+      "label": "Cadastro de segunda conta de teste",
+      "status": 201,
+      "method": "POST",
+      "route": "/api/users"
+    },
+    {
+      "label": "Login emite JWT",
+      "status": 200,
+      "method": "POST",
+      "route": "/api/auth/login"
+    },
+    {
+      "label": "Sem JWT recebe 401",
+      "status": 401,
+      "method": "GET",
+      "route": "/api/users/:id_proprio"
+    },
+    {
+      "label": "Cliente recebe 403 em rota admin",
+      "status": 403,
+      "method": "GET",
+      "route": "/api/users"
+    },
+    {
+      "label": "Consulta de outra conta recebe 403",
+      "status": 403,
+      "method": "GET",
+      "route": "/api/users/:id_alheio"
+    },
+    {
+      "label": "Alteração de outra conta recebe 403",
+      "status": 403,
+      "method": "PUT",
+      "route": "/api/users/:id_alheio"
+    },
+    {
+      "label": "Troca de e-mail próprio é rejeitada",
+      "status": 400,
+      "method": "PUT",
+      "route": "/api/users/:id_proprio"
+    },
+    {
+      "label": "Alteração de conta própria",
+      "status": 200,
+      "method": "PUT",
+      "route": "/api/users/:id_proprio"
+    },
+    {
+      "label": "Consulta própria preserva e-mail",
+      "status": 200,
+      "method": "GET",
+      "route": "/api/users/:id_proprio"
+    }
+  ],
+  "sanitized": "IDs das contas sintéticas redigidos nas rotas. Resultados e métodos preservados."
+}

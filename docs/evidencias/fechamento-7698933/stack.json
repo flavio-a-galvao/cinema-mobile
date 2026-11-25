@@ -1,0 +1,112 @@
+{
+  "sha": "7698933e2a6410d6f3adec1922dc6a962e408b51",
+  "checkedAt": "2026-11-25T00:42:07.9587019Z",
+  "project": "cinemax-rubrica-c4c1cc464e15",
+  "engine": "29.5.3",
+  "compose": "5.1.4",
+  "nginx": "nginx version: nginx/1.28.3",
+  "nginxConfigTest": "pass",
+  "redisPing": "PONG",
+  "mysql": "mysql  Ver 9.1.0 for Linux on x86_64 (MySQL Community Server - GPL)",
+  "directSwagger": [
+    {
+      "route": "/api-docs/",
+      "status": 200
+    },
+    {
+      "route": "/api-docs/openapi.json",
+      "status": 200,
+      "server": "/"
+    }
+  ],
+  "services": [
+    {
+      "Service": "backend",
+      "Health": "healthy",
+      "State": "running",
+      "Image": "cinemax-rubrica-c4c1cc464e15-backend",
+      "Publishers": [
+        {
+          "URL": "",
+          "TargetPort": 3000,
+          "PublishedPort": 0,
+          "Protocol": "tcp"
+        }
+      ]
+    },
+    {
+      "Service": "database",
+      "Health": "healthy",
+      "State": "running",
+      "Image": "mysql:9.1.0",
+      "Publishers": [
+        {
+          "URL": "",
+          "TargetPort": 3306,
+          "PublishedPort": 0,
+          "Protocol": "tcp"
+        },
+        {
+          "URL": "",
+          "TargetPort": 33060,
+          "PublishedPort": 0,
+          "Protocol": "tcp"
+        }
+      ]
+    },
+    {
+      "Service": "frontend",
+      "Health": "healthy",
+      "State": "running",
+      "Image": "cinemax-rubrica-c4c1cc464e15-frontend",
+      "Publishers": [
+        {
+          "URL": "",
+          "TargetPort": 80,
+          "PublishedPort": 0,
+          "Protocol": "tcp"
+        },
+        {
+          "URL": "",
+          "TargetPort": 3000,
+          "PublishedPort": 0,
+          "Protocol": "tcp"
+        }
+      ]
+    },
+    {
+      "Service": "nginx",
+      "Health": "healthy",
+      "State": "running",
+      "Image": "nginx:1.28-alpine",
+      "Publishers": [
+        {
+          "URL": "127.0.0.1",
+          "TargetPort": 80,
+          "PublishedPort": 18080,
+          "Protocol": "tcp"
+        },
+        {
+          "URL": "127.0.0.1",
+          "TargetPort": 443,
+          "PublishedPort": 18443,
+          "Protocol": "tcp"
+        }
+      ]
+    },
+    {
+      "Service": "redis",
+      "Health": "healthy",
+      "State": "running",
+      "Image": "redis:7.4-alpine",
+      "Publishers": [
+        {
+          "URL": "",
+          "TargetPort": 6379,
+          "PublishedPort": 0,
+          "Protocol": "tcp"
+        }
+      ]
+    }
+  ]
+}

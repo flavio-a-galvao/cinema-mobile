@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-11-25T00:42:04.260Z",
+  "sha": "7698933e2a6410d6f3adec1922dc6a962e408b51",
+  "project": "cinemax-rubrica-c4c1cc464e15",
+  "browser": "Chrome 158.0.8127.88",
+  "transport": "HTTPS em 127.0.0.1, hostname cinema.local, chave temporária fixada no processo do Chromium",
+  "swagger": {
+    "url": "https://cinema.local:18443/api/api-docs/",
+    "status": 200
+  },
+  "openapi": {
+    "url": "https://cinema.local:18443/api/api-docs/openapi.json",
+    "status": 200,
+    "version": "3.0.3",
+    "server": "https://cinema.local:18443/api/"
+  },
+  "execute": {
+    "url": "https://cinema.local:18443/api/catalogo/filmes?page=1&limit=10",
+    "method": "GET",
+    "status": 200,
+    "authenticated": false,
+    "rows": 2,
+    "responseFormat": "data/pagination",
+    "firstFilmId": 1,
+    "responseStatusShown": true
+  },
+  "outOfScope": [
+    "Swagger de rotas mutáveis ou autenticadas",
+    "Firefox/WebKit"
+  ]
+}

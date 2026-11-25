@@ -1,0 +1,8 @@
+{
+  "redirect": "301 https://cinema.local:18443/catalogo",
+  "spa": "200 0",
+  "activeRedisChannels": [
+    "cinemax:eventos:sessoes",
+    "cinemax:eventos:filmes"
+  ]
+}

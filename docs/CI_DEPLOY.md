@@ -81,7 +81,7 @@ Cada aplicação tem instalação reprodutível com `npm ci`, cache npm, testes 
 em job separado. Falhas não são ignoradas. Os E2E ficam fora do CI básico porque
 exigem o ambiente isolado descrito acima. Em `43380fe`, os testes e builds de web/API passaram. O deploy demonstrativo ficou `skipped`. [CI da main](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45433562530)
 
-Na candidata do [PR #8](https://github.com/flavio-a-galvao/cinema-mobile/pull/8), o job adicional de auditoria verifica Node.js, SQLite e integração Docker em ambiente isolado. A [execução do HEAD 18a1aed](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45119133610) passou. Esse job não está na main de referência `43380fe` e não executa o E2E web ou deploy.
+O [PR #8](https://github.com/flavio-a-galvao/cinema-mobile/pull/8) foi integrado na main. O job adicional de auditoria verifica Node.js, SQLite e integração Docker em ambiente isolado. O [CI da combinação 670c95f](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45710972344) passou nos três jobs, e a árvore do squash é idêntica à testada. O ensaio não executa E2E web nem deploy produtivo.
 Referência: [CI Node.js do GitHub](https://docs.github.com/en/actions/tutorials/build-and-test-code/nodejs).
 
 ## Deploy e rollback

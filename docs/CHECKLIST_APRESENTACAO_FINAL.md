@@ -1,6 +1,6 @@
 # Checklist de apresentação — lacunas da rubrica
 
-> **Apresentação atual.** Use o roteiro curto, a prova da bilheteria integrada e os registros reais do Jira. Apresente o PR #8 como candidato. Os procedimentos operacionais abaixo complementam o roteiro. [Roteiro](ENTREGA_FINAL.md#roteiro-de-5-a-7-minutos) · [Bilheteria](https://github.com/flavio-a-galvao/cinema-mobile/blob/43380fe32682d9b04de9f3db74617fc5bbfc6abc/docs/evidencias/kan-26-correcao-web.md)
+> **Apresentação atual.** PR #8 integrado em 25/11/2026. Mostre a auditoria na main e o [CI da árvore combinada](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45710972344). A integração foi autorizada sem revisão humana independente. Veja o [roteiro atualizado](ENTREGA_FINAL.md). A bilheteria e as demais evidências anteriores conservam seus SHAs.
 
 Preparado em 11/11/2026. Usar o [relatório atualizado](RELATORIO_FINAL_RUBRICA.md)
 para distinguir resultado atual, evidência histórica e pendência. Não refazer o

@@ -1,6 +1,6 @@
 # Infraestrutura Docker, HTTPS e integração Redis
 
-> **Candidata do PR #8:** o perfil `audit` adiciona um sexto serviço opcional e o volume `audit-data`. O [ensaio da auditoria](https://github.com/flavio-a-galvao/cinema-mobile/blob/18a1aed/docs/AUDITORIA.md) executou MySQL, Redis, API e consumidor em Docker no CI. As evidências de cinco serviços, Nginx e TLS abaixo pertencem ao ensaio anterior.
+> **Auditoria integrada pelo PR #8 (25/11/2026):** o perfil `audit` adiciona um sexto serviço opcional e o volume `audit-data`. O [ensaio da auditoria](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45710972344/job/139544975385) executou MySQL, Redis, API e consumidor em Docker no CI. As evidências de cinco serviços, Nginx e TLS abaixo pertencem ao ensaio anterior.
 
 Em 11/11/2026 a integração foi repetida com Engine Linux 27.4.0 e Compose 2.31.0,
 em projeto novo, com cinco serviços healthy. [Resultado atual](evidencias/complementacao/infra-cinemax-rubrica-1a9aa7106a28.json)

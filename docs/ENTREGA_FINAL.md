@@ -1,5 +1,9 @@
 # Cinemax — evidências e roteiro de entrega
 
+> **Atualização de 25/11/2026:** [PR #8](https://github.com/flavio-a-galvao/cinema-mobile/pull/8) integrado à main no [commit 9b460a4](https://github.com/flavio-a-galvao/cinema-mobile/commit/9b460a4200ff2991abefaf747c260413dcc5b5be), após revisão técnica assistida e autorização explícita do responsável, sem revisão humana independente. A árvore integrada é idêntica à validada no [CI da combinação 670c95f](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45710972344): testes/builds web e API, três testes de auditoria e [integração Docker real](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45710972344/job/139544975385) aprovados. Cinco serviços padrão; auditoria opcional como sexto serviço, SQLite no volume audit-data. Sem deploy de produção ou medição mensal de SLO. Os registros anteriores abaixo são históricos.
+
+**Para a apresentação atual:** mostre o diretório `Projeto-auditoria/` na main e execute `docker compose up -d --build auditoria` na stack configurada. Para a prova isolada, use `node scripts/test-audit.mjs` com Node 24 e Docker. O PR #8 não é mais candidato; a revisão humana independente e a homologação final de entrega permanecem não comprovadas. O roteiro e os hashes históricos abaixo foram preservados como registro da conferência anterior.
+
 Conferência em 24/11/2026, horário de São Paulo. Este registro separa código integrado, candidato a integração e resultados anteriores. A escala abaixo usa os 12 critérios A1–A5/B1–B4/T1–T3 transcritos no [relatório de avaliação](RELATORIO_FINAL_RUBRICA.md), sem atribuir nota. A cópia PDF encontrada em `referencias/` é a rubrica anterior de Mobile/Engenharia, com Tech Forge centrado em upload e papéis. Para confirmar pesos ou requisitos adicionais da etapa avançada, use a rubrica vigente da disciplina.
 
 | Versão | O que mostrar | Evidência |

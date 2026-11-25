@@ -1,6 +1,6 @@
 # ADR-006 — Composição local com Docker Compose e proxy Nginx
 
-> **Complemento do PR #8, ainda em revisão.** Os cinco serviços padrão e o Nginx permanecem. O perfil opcional `audit` adiciona um consumidor sem portas, restrito à rede de cache, e o volume SQLite `audit-data`. Veja a [prova e seus limites](https://github.com/flavio-a-galvao/cinema-mobile/blob/18a1aed/docs/AUDITORIA.md).
+> **Complemento do PR #8, integrado em 25/11/2026.** Os cinco serviços padrão e o Nginx permanecem. O perfil opcional `audit` adiciona um consumidor sem portas, restrito à rede de cache, e o volume SQLite `audit-data`. Veja a [prova e seus limites](../../AUDITORIA.md).
 
 - **Status:** adotada no código para ambiente local/acadêmico; registro retrospectivo.
 - **Data do registro:** 05/11/2026; base `e23bd86`.

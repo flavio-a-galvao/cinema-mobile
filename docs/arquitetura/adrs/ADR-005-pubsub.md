@@ -1,6 +1,6 @@
 # ADR-005 — Eventos operacionais de catálogo por Redis Pub/Sub
 
-> **Complemento do PR #8, ainda em revisão.** O Subscriber interno descrito neste ADR permanece. A [auditoria independente](https://github.com/flavio-a-galvao/cinema-mobile/blob/18a1aed/docs/AUDITORIA.md) assina os mesmos canais em conexão própria e grava os eventos recebidos em SQLite com unicidade por `eventId`. Isso não altera a semântica de entrega do Redis Pub/Sub.
+> **Complemento do PR #8, integrado em 25/11/2026.** O Subscriber interno descrito neste ADR permanece. A [auditoria independente](../../AUDITORIA.md) assina os mesmos canais em conexão própria e grava os eventos recebidos em SQLite com unicidade por `eventId`. Isso não altera a semântica de entrega do Redis Pub/Sub.
 
 - **Status:** adotada no código; registro retrospectivo.
 - **Data do registro:** 05/11/2026; base `e23bd86`.

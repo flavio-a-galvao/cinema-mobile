@@ -1,6 +1,6 @@
 # DDD — análise estratégica e modelo tático
 
-> **Limite da auditoria na candidata do PR #8:** o consumidor independente observa metadados de catálogo. Ele não altera transações, entidades, Aggregates ou fronteiras de negócio descritos neste mapa.
+> **Limite da auditoria integrada pelo PR #8:** o consumidor independente observa metadados de catálogo. Ele não altera transações, entidades, Aggregates ou fronteiras de negócio descritos neste mapa.
 
 ## Natureza da análise
 

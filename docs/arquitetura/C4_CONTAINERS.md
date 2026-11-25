@@ -1,6 +1,6 @@
 # C4 — Nível 2: containers
 
-> Na main `43380fe`, a topologia padrão continua com cinco serviços. O PR #10 alterou a bilheteria web dentro da SPA e preservou os contêineres. A captura do PR #8 mostra a extensão opcional da auditoria. [PR #10](https://github.com/flavio-a-galvao/cinema-mobile/pull/10) · [Captura da candidata](../evidencias/entrega-final/c4-containers.png)
+> **Integração em 25/11/2026:** a main inclui a auditoria opcional (PR #8), com cinco serviços padrão e um sexto no perfil `audit`. [CI da árvore integrada](https://github.com/flavio-a-galvao/cinema-mobile/actions/runs/45710972344) · [Captura histórica da candidata](../evidencias/entrega-final/c4-containers.png). O Mermaid abaixo corresponde à topologia integrada; não foi gerada nova captura nesta conferência.
 
 ## Visão da execução
 
@@ -82,8 +82,6 @@ persiste os eventos que recebeu. Consulte [Auditoria](../AUDITORIA.md).
 O ambiente exige variáveis locais e um par TLS correspondente. Procedimentos,
 volumes e evidências anteriores constam em [Infraestrutura Docker](../INFRAESTRUTURA_DOCKER.md).
 
-## Reconciliação após o PR #8
+## Reconciliação da integração
 
-- No nível de contexto, mantenha o fallback SVG local no catálogo e os hosts de pôster como externos e opcionais. A auditoria pertence à fronteira do Cinemax.
-- No nível de contêineres, mantenha os cinco serviços padrão e o Subscriber interno da API. Represente o consumidor independente como sexto serviço opcional do perfil `audit`, sem porta HTTP, conectado ao Redis por `cache-network`, com SQLite no volume `audit-data`.
-- Após o squash autorizado, confira os diagramas na árvore integrada, atualize a referência a `docs/AUDITORIA.md` e renderize os níveis de contexto e contêineres. Identifique as capturas anteriores pelo SHA de origem. [C4 da candidata](https://github.com/flavio-a-galvao/cinema-mobile/blob/18a1aed36d3cfd5600e4cd98f26a2ddd3c92eda0/docs/arquitetura/C4_CONTAINERS.md)
+O C4 de contexto mantém os atores e hosts externos opcionais. O diagrama de contêineres acima inclui o Subscriber interno, o processo de auditoria, a rede `cache-network` e o volume SQLite. A conferência da árvore integrada e do Compose foi estática; a captura PNG anterior permanece histórica, sem nova renderização nesta revisão.

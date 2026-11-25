@@ -19,11 +19,7 @@ Chamadas repetidas de `start()` não adicionam conexões nem listeners. O client
 Redis restaura as assinaturas após reconectar; uma assinatura inicial que falhar
 é tentada novamente, sem executar múltiplas tentativas simultâneas.
 
-O Subscriber interno roda dentro de cada processo backend. O [serviço independente de auditoria](AUDITORIA.md) assina os mesmos canais e persiste os eventos recebidos em SQLite. Valida canal, tipo,
-identificador, UUID e timestamp; descarta mensagens inválidas e processa as válidas
-como registros de auditoria operacional em JSON no console. Não atualiza o banco
-nem republica mensagens, evitando ciclos. Cada instância assinante recebe sua
-própria cópia: Pub/Sub não distribui trabalho entre consumidores como uma fila.
+O Subscriber interno roda dentro de cada processo backend. Valida canal, tipo, identificador, UUID e timestamp; descarta mensagens inválidas e registra as válidas em logs JSON, sem alterar o MySQL. O [serviço independente de auditoria](AUDITORIA.md), integrado pelo PR #8, assina os mesmos canais em conexão própria, valida eventos e persiste os recebidos em SQLite com unicidade por eventId. Nenhum dos dois republica mensagens. Cada assinante recebe sua própria cópia: Pub/Sub não distribui trabalho entre consumidores como uma fila.
 
 ## Canais e eventos
 

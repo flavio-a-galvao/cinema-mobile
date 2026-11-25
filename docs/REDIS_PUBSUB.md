@@ -19,7 +19,7 @@ Chamadas repetidas de `start()` não adicionam conexões nem listeners. O client
 Redis restaura as assinaturas após reconectar; uma assinatura inicial que falhar
 é tentada novamente, sem executar múltiplas tentativas simultâneas.
 
-O consumidor real roda dentro de cada processo backend. Valida canal, tipo,
+O Subscriber interno roda dentro de cada processo backend. O [serviço independente de auditoria](AUDITORIA.md) assina os mesmos canais e persiste os eventos recebidos em SQLite. Valida canal, tipo,
 identificador, UUID e timestamp; descarta mensagens inválidas e processa as válidas
 como registros de auditoria operacional em JSON no console. Não atualiza o banco
 nem republica mensagens, evitando ciclos. Cada instância assinante recebe sua

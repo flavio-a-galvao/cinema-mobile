@@ -11,9 +11,18 @@ vi.mock("../src/models/Sala", () => ({
   },
 }));
 
-vi.mock('../src/models/Assento', () => ({ default: { count: vi.fn().mockResolvedValue(0) } }));
+vi.mock('../src/models/Assento', () => ({ default: { count: vi.fn().mockResolvedValue(0), destroy: vi.fn() } }));
 vi.mock('../src/config/database', () => ({ default: { transaction: vi.fn(async callback => callback({ LOCK: { UPDATE: 'UPDATE' } })) } }));
 
+import { archiveSessions, CatalogSaleConflict } from '../src/services/catalogArchive';
+vi.mock('../src/services/catalogArchive', () => ({
+  archiveSessions: vi.fn().mockResolvedValue([]),
+  publishArchivedSessions: vi.fn(),
+  CatalogSaleConflict: class extends Error {},
+  isCatalogLockConflict: vi.fn().mockReturnValue(false),
+}));
+
+vi.mock('../src/models/Sessao', () => ({ default: { findAll: vi.fn().mockResolvedValue([]) } }));
 function createResponse() {
   const res: any = {
     status: vi.fn().mockReturnThis(),
@@ -84,10 +93,13 @@ describe('Validação e integridade de salas', () => {
     const res = createResponse(); await SalasController.delete({ params: { id: '1' } } as any, res);
     expect(room.destroy).toHaveBeenCalledOnce(); expect(res.status).toHaveBeenCalledWith(200);
   });
-  it('dependência impede exclusão com 409', async () => {
-    (Sala.findByPk as any).mockResolvedValue({ destroy: vi.fn().mockRejectedValue({ name: 'SequelizeForeignKeyConstraintError' }) });
+  it('venda impede exclusão com 409', async () => {
+    const room = { destroy: vi.fn() }; (Sala.findByPk as any).mockResolvedValue(room);
+    vi.mocked(archiveSessions).mockRejectedValueOnce(new CatalogSaleConflict());
     const res = createResponse(); await SalasController.delete({ params: { id: '1' } } as any, res);
     expect(res.status).toHaveBeenCalledWith(409);
+    expect(room.destroy).not.toHaveBeenCalled();
+    expect(Assento.destroy).not.toHaveBeenCalled();
   });
   it('não reduz capacidade abaixo dos assentos existentes', async () => {
     const room = { id_sala: 1, update: vi.fn() }; (Sala.findByPk as any).mockResolvedValue(room); (Assento.count as any).mockResolvedValue(49);

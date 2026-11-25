@@ -10,6 +10,9 @@ vi.mock("../src/models/Assento", () => ({
   },
 }));
 
+vi.mock('../src/config/database', () => ({ default: { transaction: vi.fn(async callback => callback({ LOCK: { UPDATE: 'UPDATE', SHARE: 'SHARE' } })) } }));
+vi.mock('../src/models/Sala', () => ({ default: { findByPk: vi.fn().mockResolvedValue({}) } }));
+
 function createResponse() {
   const res: any = {
     status: vi.fn().mockReturnThis(),

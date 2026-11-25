@@ -29,7 +29,12 @@ Sala.init(
   {
     sequelize,
     tableName: "salas",
-    timestamps: false,
+    timestamps: true,
+    createdAt: false,
+    updatedAt: false,
+    paranoid: true,
+    deletedAt: "excluido_em",
+    defaultScope: { attributes: { exclude: ["excluido_em"] } },
   },
 );
 

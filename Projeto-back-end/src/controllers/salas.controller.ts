@@ -3,6 +3,8 @@ import { Request, Response } from "express";
 import Sala from "../models/Sala";
 
 import Assento from '../models/Assento';
+import Sessao from '../models/Sessao';
+import { archiveSessions, CatalogSaleConflict, isCatalogLockConflict, publishArchivedSessions } from '../services/catalogArchive';
 import sequelize from '../config/database';
 class RoomConflict extends Error {}
 
@@ -16,11 +18,6 @@ class SalasController {
 
   private static readonly NOT_FOUND_MESSAGE = "Sala nao encontrada.";
 
-  private static isForeignKeyConstraintError(error: unknown): boolean {
-    if (!error || typeof error !== "object") return false;
-    const err = error as { name?: string; original?: { code?: string } };
-    return err.name === "SequelizeForeignKeyConstraintError" || err.original?.code === "ER_ROW_IS_REFERENCED_2";
-  }
 
   private static parsePagination(query: Request["query"]) {
     const page = Math.max(Number(query.page || 1), 1);
@@ -85,16 +82,26 @@ class SalasController {
   }
 
   static async delete(req: Request, res: Response) {
-    const sala = await SalasController.findOrNotFound(Number(req.params.id), res);
-    if (!sala) return;
+    const id = Number(req.params.id);
     try {
-      await sala.destroy();
+      const sessionIds = await sequelize.transaction(async transaction => {
+        const sala = await Sala.findByPk(id, { transaction, lock: transaction.LOCK.UPDATE });
+        if (!sala) return null;
+        const sessions = await Sessao.findAll({
+          where: { id_sala: id }, order: [['id_sessao', 'ASC']], transaction, lock: transaction.LOCK.UPDATE,
+        });
+        const archived = await archiveSessions(sessions, transaction);
+        await Assento.destroy({ where: { id_sala: id }, transaction });
+        await sala.destroy({ transaction });
+        return archived;
+      });
+      if (!sessionIds) return res.status(404).json({ message: SalasController.NOT_FOUND_MESSAGE });
+      await publishArchivedSessions(sessionIds);
       return res.status(200).json({ message: "Sala removida com sucesso." });
     } catch (error) {
-      if (SalasController.isForeignKeyConstraintError(error)) {
-        return res.status(409).json({ message: "Nao e possivel remover sala com sessoes ou assentos cadastrados." });
-      }
-      return res.status(500).json({ message: "Erro interno do servidor." });
+      if (error instanceof CatalogSaleConflict) return res.status(409).json({ message: error.message });
+      if (isCatalogLockConflict(error)) return res.status(409).json({ message: 'A sala está em uso. Atualize e tente novamente.' });
+      throw error;
     }
   }
 }

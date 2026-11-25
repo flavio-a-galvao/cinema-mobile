@@ -26,6 +26,14 @@ beforeEach(() => {
 });
 const future = () => new Date(Date.now() + 86400000).toISOString();
 
+import { archiveSessions, CatalogSaleConflict } from '../src/services/catalogArchive';
+vi.mock('../src/services/catalogArchive', () => ({
+  archiveSessions: vi.fn().mockResolvedValue([]),
+  publishArchivedSessions: vi.fn(),
+  CatalogSaleConflict: class extends Error {},
+  isCatalogLockConflict: vi.fn().mockReturnValue(false),
+}));
+
 function createResponse() {
   const res: any = {
     status: vi.fn().mockReturnThis(),
@@ -100,12 +108,13 @@ describe('Validação e integridade de sessões', () => {
     expect(res.status).toHaveBeenCalledWith(409); expect(session.update).not.toHaveBeenCalled();
   });
   it('exclui sessão sem ingressos', async () => {
-    const session = { destroy: vi.fn() }; (Sessao.findByPk as any).mockResolvedValue(session);
+    const session = { id_sessao: 1 }; (Sessao.findByPk as any).mockResolvedValue(session);
     const res = createResponse(); await SessoesController.delete({ params: { id: '1' } } as any, res);
-    expect(res.status).toHaveBeenCalledWith(200); expect(session.destroy).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200); expect(archiveSessions).toHaveBeenCalledWith([session], expect.anything());
   });
-  it('dependências retornam 409, sem apagar ingressos', async () => {
-    (Sessao.findByPk as any).mockResolvedValue({ destroy: vi.fn().mockRejectedValue({ name: 'SequelizeForeignKeyConstraintError' }) });
+  it('venda retorna 409, preservando o histórico', async () => {
+    (Sessao.findByPk as any).mockResolvedValue({ id_sessao: 1 });
+    vi.mocked(archiveSessions).mockRejectedValueOnce(new CatalogSaleConflict());
     const res = createResponse(); await SessoesController.delete({ params: { id: '1' } } as any, res);
     expect(res.status).toHaveBeenCalledWith(409);
   });

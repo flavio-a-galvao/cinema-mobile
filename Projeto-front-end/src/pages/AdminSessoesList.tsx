@@ -65,7 +65,7 @@ function AdminSessoesList() {
   }, []);
 
   async function remover(id: number) {
-    if (!window.confirm("Tem certeza que deseja remover esta sessao?")) return;
+    if (!window.confirm("Remover esta sessão? Reservas sem pagamento serão canceladas. Se houver ingressos vendidos, a remoção será bloqueada.")) return;
     try {
       await api.delete<void>(`/sessoes/${id}`);
       setFeedback("Sessao removida com sucesso.");

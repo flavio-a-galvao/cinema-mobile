@@ -48,12 +48,12 @@ class ComprasController {
     const assentoIds = [...new Set(ingressos.map((i) => Number(i.get("id_assento"))))];
     const [pagamentos, sessoes, assentos] = await Promise.all([
       Pagamento.findAll({ where: { id_ingresso: { [Op.in]: ingressoIds } } }),
-      Sessao.findAll({ where: { id_sessao: { [Op.in]: sessaoIds } } }),
-      Assento.findAll({ where: { id_assento: { [Op.in]: assentoIds } } }),
+      Sessao.findAll({ where: { id_sessao: { [Op.in]: sessaoIds } }, paranoid: false }),
+      Assento.findAll({ where: { id_assento: { [Op.in]: assentoIds } }, paranoid: false }),
     ]);
     const filmeIds = [...new Set(sessoes.map((s) => Number(s.get("id_filme"))))];
-    const salas = await Sala.findAll({ where: { id_sala: { [Op.in]: [...new Set(sessoes.map(s => Number(s.get('id_sala'))))] } } });
-    const filmes = await Filme.findAll({ where: { id_filme: { [Op.in]: filmeIds } } });
+    const salas = await Sala.findAll({ where: { id_sala: { [Op.in]: [...new Set(sessoes.map(s => Number(s.get('id_sala'))))] } }, paranoid: false });
+    const filmes = await Filme.findAll({ where: { id_filme: { [Op.in]: filmeIds } }, paranoid: false });
     return {
       salasMap: new Map(salas.map(s => [Number(s.get('id_sala')), s])),
       pagamentosMap: new Map(pagamentos.map((p) => [Number(p.get("id_ingresso")), p])),

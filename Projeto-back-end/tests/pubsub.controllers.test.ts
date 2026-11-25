@@ -7,15 +7,16 @@ import sequelize from '../src/config/database';
 import { catalogEvents } from '../src/services/catalogEvents';
 
 vi.mock('../src/models/Filme', () => ({ default: { findByPk: vi.fn(), create: vi.fn() } }));
-vi.mock('../src/models/Sessao', () => ({ default: { findByPk: vi.fn(), create: vi.fn() } }));
+vi.mock('../src/models/Sessao', () => ({ default: { findByPk: vi.fn(), create: vi.fn(), findAll: vi.fn().mockResolvedValue([]), destroy: vi.fn().mockResolvedValue(1) } }));
 vi.mock('../src/models/Sala', () => ({ default: { findByPk: vi.fn(async () => ({})) } }));
-vi.mock('../src/models/Ingresso', () => ({ default: { count: vi.fn(async () => 0) } }));
+vi.mock('../src/models/Ingresso', () => ({ default: { count: vi.fn(async () => 0), findAll: vi.fn().mockResolvedValue([]) } }));
+vi.mock('../src/models/Pagamento', () => ({ default: { findOne: vi.fn() } }));
 vi.mock('../src/config/database', () => ({ default: { transaction: vi.fn() } }));
 const publish = vi.spyOn(catalogEvents, 'publish');
 beforeEach(() => {
   vi.clearAllMocks();
   publish.mockResolvedValue(false); // Redis indisponível: resposta HTTP continua normal.
-  vi.mocked(sequelize.transaction).mockImplementation(async (callback: any) => callback({ LOCK: { UPDATE: 'UPDATE' } }));
+  vi.mocked(sequelize.transaction).mockImplementation(async (callback: any) => callback({ LOCK: { UPDATE: 'UPDATE', SHARE: 'SHARE' } }));
 });
 
 it.each([
@@ -38,14 +39,14 @@ it.each([
   expect(res.status).toHaveBeenLastCalledWith(200);
   await controller.delete(req, res);
   expect(publish).toHaveBeenLastCalledWith(`${entity}.deleted`, 7);
-  expect(record.destroy.mock.invocationCallOrder[0]).toBeLessThan(publish.mock.invocationCallOrder[2]);
+  expect((entity === 'sessao' ? vi.mocked(Sessao.destroy) : record.destroy).mock.invocationCallOrder[0]).toBeLessThan(publish.mock.invocationCallOrder[2]);
   expect(res.status).toHaveBeenLastCalledWith(200);
   expect(publish).toHaveBeenCalledTimes(3);
 
-  record.destroy.mockRejectedValue(new Error('banco'));
-  await controller.delete(req, res);
+  const destroy = controller === SessoesController ? vi.mocked(Sessao.destroy) : record.destroy;
+  destroy.mockRejectedValueOnce(new Error('banco'));
+  await expect(controller.delete(req, res)).rejects.toThrow('banco');
   expect(publish).toHaveBeenCalledTimes(3);
-  expect(res.status).toHaveBeenLastCalledWith(500);
   record.update.mockRejectedValue(new Error('banco'));
   await expect(controller.update(req, res)).rejects.toThrow('banco');
   vi.mocked(model.create).mockRejectedValue(new Error('banco'));

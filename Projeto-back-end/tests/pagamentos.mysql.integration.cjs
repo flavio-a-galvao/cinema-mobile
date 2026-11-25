@@ -10,6 +10,7 @@ const app = require('../dist/app').default;
 const { JWT_SECRET } = require('../dist/config/auth');
 const { ensureTicketPaymentSchema } = require('../dist/utils/ensureTicketPaymentSchema');
 const { ensureIngressosSchema } = require('../dist/utils/ensureIngressosSchema');
+const { ensureCatalogArchiveSchema } = require('../dist/utils/ensureCatalogArchiveSchema');
 const models = Object.fromEntries(['Cliente','User','Sala','Assento','Filme','Sessao','Ingresso','Pagamento'].map(name=>[name,require('../dist/models/'+name).default]));
 db.options.logging=false;
 
@@ -19,6 +20,8 @@ test('Integração MySQL: isolamento, preço, recuperação e concorrência', as
  try {
   await db.authenticate();
   await ensureIngressosSchema(db);
+  await ensureCatalogArchiveSchema(db.getQueryInterface());
+  await ensureCatalogArchiveSchema(db.getQueryInterface());
   await ensureTicketPaymentSchema(db); await ensureTicketPaymentSchema(db);
   const tag=randomUUID();
   const user=await fixture('User',{nome:'Teste de segurança',email:tag+'@test.invalid',senha:'HASH_TESTE_NAO_RETORNAR',tipo_usuario:'cliente'});
@@ -76,11 +79,74 @@ test('Integração MySQL: isolamento, preço, recuperação e concorrência', as
    assert.equal(await models.Ingresso.count({where:{id_sessao:session.id_sessao,id_assento:seat.id_assento,status:'ativo'}}),0);
    assert.equal((await call('/ingressos','POST',payload)).status,201);
   });
+  await t.test('venda, inclusive após cancelamento, bloqueia filme, sala e sessão', async () => {
+    const paidTicket = tickets[1].id_ingresso;
+   assert.equal((await call('/ingressos/'+paidTicket+'/cancelar','PATCH')).status,200);
+   const resources = ['/filmes/'+movie.id_filme, '/salas/'+room.id_sala, '/sessoes/'+session.id_sessao];
+   for (const resource of resources) {
+    const blocked = await call(resource,'DELETE',undefined,admin);
+    assert.equal(blocked.status,409);
+    if (resource.startsWith('/filmes/')) {
+     assert.equal(blocked.body.message,'Nao e possivel remover filme com ingressos comprados');
+    } else {
+     assert.match(blocked.body.message,/ingressos vendidos/);
+    }
+    assert.equal((await call(resource,'GET',undefined,admin)).status,200);
+   }
+   assert.equal(await models.Pagamento.count({where:{id_ingresso:paidTicket}}),1);
+  });
+
+  await t.test('remove sessão vazia, filme com sessão pendente e sala com assentos', async () => {
+   const emptyMovie = await fixture('Filme',{titulo:'Filme sem venda'});
+   const emptyRoom = await fixture('Sala',{nome:'Sala sem venda',capacidade:48});
+   const seat = await fixture('Assento',{id_sala:emptyRoom.id_sala,fila:'A',numero:'1'});
+   const newSession = () => fixture('Sessao',{id_filme:emptyMovie.id_filme,id_sala:emptyRoom.id_sala,horario:new Date('2099-02-01T22:00:00Z'),preco:25});
+   const emptySession = await newSession();
+   const sessionPath = '/sessoes/'+emptySession.id_sessao;
+   assert.equal((await call(sessionPath,'DELETE')).status,403);
+   assert.equal((await call(sessionPath,'DELETE',undefined,admin)).status,200);
+   assert.equal((await call('/catalogo'+sessionPath)).status,404);
+
+   const pendingSession = await newSession();
+   const pending = await call('/ingressos','POST',{id_sessao:pendingSession.id_sessao,id_cliente:client.id_cliente,id_assento:seat.id_assento});
+   assert.equal(pending.status,201);
+   const filmPath = '/filmes/'+emptyMovie.id_filme;
+   assert.equal((await call(filmPath,'DELETE',undefined,admin)).status,200);
+   assert.equal((await call('/catalogo'+filmPath)).status,404);
+   assert.equal((await call('/catalogo/sessoes/'+pendingSession.id_sessao)).status,404);
+   assert.equal((await call('/pagamentos','POST',{id_ingresso:pending.body.id_ingresso,metodo_pagamento:'pix'})).status,409);
+   assert.equal((await call('/salas/'+emptyRoom.id_sala,'DELETE',undefined,admin)).status,200);
+   assert.equal((await call('/catalogo/assentos/'+seat.id_assento)).status,404);
+   assert.equal((await call('/assentos','POST',{id_sala:emptyRoom.id_sala,fila:'A',numero:'2'},admin)).status,400);
+   assert.equal((await call('/sessoes','POST',{id_filme:emptyMovie.id_filme,id_sala:room.id_sala,horario:'2099-02-01T22:00:00Z',preco:25},admin)).status,400);
+
+   const purchase = (await call('/me/compras')).body.find(item=>item.id===pending.body.id_ingresso);
+   assert.equal(purchase.status,'cancelado');
+   assert.equal(purchase.podePagar,false);
+   assert.equal(purchase.filme,emptyMovie.titulo);
+   assert.equal(purchase.sala,emptyRoom.nome);
+   assert.equal(purchase.assento,'A1');
+  });
+
+  await t.test('pagamento concorrente e exclusão mantêm resultado consistente', async () => {
+   const candidate = await fixture('Sessao',{id_filme:movie.id_filme,id_sala:room.id_sala,horario:new Date('2099-03-01T22:00:00Z'),preco:25});
+   const seat = await models.Assento.findOne({where:{id_sala:room.id_sala}});
+   const pending = await call('/ingressos','POST',{id_sessao:candidate.id_sessao,id_cliente:client.id_cliente,id_assento:seat.id_assento});
+   assert.equal(pending.status,201);
+   const purchaseId = pending.body.id_ingresso;
+   const [removed,paid] = await Promise.all([
+    call('/sessoes/'+candidate.id_sessao,'DELETE',undefined,admin),
+    call('/pagamentos','POST',{id_ingresso:purchaseId,metodo_pagamento:'pix'}),
+   ]);
+   assert([200,409].includes(removed.status));
+   assert.equal(paid.status,removed.status===200 ? 409 : 201);
+   assert.equal(await models.Pagamento.count({where:{id_ingresso:purchaseId}}),paid.status===201 ? 1 : 0);
+  });
  } finally {
   if(server)await new Promise(resolve=>server.close(resolve));
   // Apaga exclusivamente os registros criados por este teste, preservando dados anteriores.
   if(client){const records=await models.Ingresso.findAll({where:{id_cliente:client.id_cliente}});for(const record of records){await models.Pagamento.destroy({where:{id_ingresso:record.id_ingresso}});await record.destroy();}}
-  for(const record of fixtures.reverse())await record.destroy();
+  for(const record of fixtures.reverse())await record.destroy({force:true});
   await db.close();
  }
 });

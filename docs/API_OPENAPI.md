@@ -153,8 +153,12 @@ Essas demonstrações visuais/reais permanecem para o ambiente operacional.
 Atualização na auditoria final: o Swagger foi renderizado e inspecionado em
 Chrome headless, com 52 operações e sem erro de CSP no servidor HTTP local que
 reproduz a política do proxy. Veja [captura](evidencias/auditoria/swagger-local.png)
-e [registro](evidencias/auditoria/local.json). Isso não substitui teste do Nginx
-ou HTTPS reais, ainda dependentes de daemon Docker funcional neste notebook.
+e [registro](evidencias/auditoria/local.json). Naquele ensaio, o Nginx
+e o HTTPS reais ficaram fora do escopo.
+
+## Validação pelo Nginx real em 24/11/2026
+
+Na main `7698933`, a UI e o JSON do Swagger retornaram HTTP 200 no acesso direto e pelo Nginx com TLS. No Chromium, **Try it out** resolveu a raiz `/api/` e executou `GET /api/catalogo/filmes?page=1&limit=10` sem JWT. A interface exibiu HTTP 200, dois filmes e metadados de paginação. A stack descartável tinha os cinco serviços saudáveis. O ensaio visual exerceu uma operação pública de leitura. [Evidência e registro complementar da KAN-23](evidencias/fechamento-7698933/FECHAMENTO.md)
 
 Referências técnicas: [OpenAPI 3.0.3](https://spec.openapis.org/oas/v3.0.3.html),
 [Swagger UI](https://swagger.io/docs/open-source-tools/swagger-ui/usage/installation/)

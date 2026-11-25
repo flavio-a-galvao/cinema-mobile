@@ -1,0 +1,36 @@
+{
+  "issue": "KAN-28",
+  "reviewedOnSaoPaulo": "2026-11-24",
+  "main": "7698933e2a6410d6f3adec1922dc6a962e408b51",
+  "method": "Conferência visual na aba Preview do GitHub, com nós e relações renderizados. Os PNGs de apoio são os históricos versionados e correspondem aos mesmos blocos Mermaid.",
+  "browserCaptures": "Capturas GitHub da conferência aparecem na conversa. O manifesto aponta às imagens históricas legíveis e aos previews fixados pelo SHA.",
+  "records": [
+    {
+      "title": "C4 Contexto",
+      "githubPreview": "https://github.com/flavio-a-galvao/cinema-mobile/blob/7698933e2a6410d6f3adec1922dc6a962e408b51/docs/arquitetura/C4_CONTEXTO.md#escopo-e-responsabilidades",
+      "observedRenderedOnGithub": true,
+      "mermaidBlockSha256": "f2bcdb460a07178f61dfd197c58541880cd7e7694b6a7b7db4748e3245b0125d",
+      "historicalImage": "https://github.com/flavio-a-galvao/cinema-mobile/blob/d59723b90a8c738590627e551b5d4b3dc14438be/docs/evidencias/auditoria/c4_contexto.png",
+      "historicalImageSha256": "766016e94f6d559b3b5fbafcc59a2b15886108518b8129ea9f0a5621e4216802",
+      "mermaidBlockMatchesHistoricalImageSource": true
+    },
+    {
+      "title": "C4 Contêineres",
+      "githubPreview": "https://github.com/flavio-a-galvao/cinema-mobile/blob/7698933e2a6410d6f3adec1922dc6a962e408b51/docs/arquitetura/C4_CONTAINERS.md#vis%C3%A3o-da-execu%C3%A7%C3%A3o",
+      "observedRenderedOnGithub": true,
+      "mermaidBlockSha256": "2e88efbcc67183261096fe424b211a5cb4430d063603172dd61592cef89a7c05",
+      "historicalImage": "https://github.com/flavio-a-galvao/cinema-mobile/blob/d59723b90a8c738590627e551b5d4b3dc14438be/docs/evidencias/auditoria/c4_containers.png",
+      "historicalImageSha256": "cb9ccb1ba07b337b39633ad89f0f9d8c543ff82c71f35df896fac667d8cad7ea",
+      "mermaidBlockMatchesHistoricalImageSource": true
+    },
+    {
+      "title": "Context Map",
+      "githubPreview": "https://github.com/flavio-a-galvao/cinema-mobile/blob/7698933e2a6410d6f3adec1922dc6a962e408b51/docs/arquitetura/DDD.md#context-map-conceitual",
+      "observedRenderedOnGithub": true,
+      "mermaidBlockSha256": "117227fd37e447e818cc8d5c304abf442cb6b35db5f28fb61f8c84cca3e07bcb",
+      "historicalImage": "https://github.com/flavio-a-galvao/cinema-mobile/blob/d59723b90a8c738590627e551b5d4b3dc14438be/docs/evidencias/auditoria/ddd.png",
+      "historicalImageSha256": "8b589bf74b9af91fc0c88148c10590b950b1a8e41ce09d98921cfaf014393ca2",
+      "mermaidBlockMatchesHistoricalImageSource": true
+    }
+  ]
+}

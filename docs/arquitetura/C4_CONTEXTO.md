@@ -5,8 +5,8 @@
 O **Cinemax web** permite consultar filmes e sessões, cadastrar/autenticar
 usuários, manter o perfil de cliente, selecionar assentos, emitir e cancelar
 ingressos, registrar pagamentos e consultar compras. Administradores mantêm
-filmes, pôsteres, salas, assentos e sessões. O contexto abaixo descreve o sistema
-existente, não uma distribuição em microsserviços.
+filmes, pôsteres, salas, assentos e sessões. A auditoria do catálogo é interna
+ao sistema e aparece como processo independente no nível de contêineres.
 
 ```mermaid
 flowchart LR
@@ -58,6 +58,6 @@ O model `User` também admite `funcionario`, mas `requireAdmin` aceita somente
   liquidação financeira**; não há gateway, banco externo ou webhook implementado.
 - Autenticação é interna (bcrypt/JWT); não há provedor de identidade externo,
   envio de e-mail ou serviço externo de notificações nos fluxos analisados.
-- MySQL e Redis são componentes internos, não sistemas externos de negócio.
+- MySQL, Redis e o [serviço de auditoria](../AUDITORIA.md) são componentes internos.
   GitHub Actions pertence ao ciclo de desenvolvimento, não à execução dos casos
   de uso. O módulo mobile anterior não foi incluído nem modificado.

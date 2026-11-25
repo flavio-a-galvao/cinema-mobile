@@ -1,0 +1,15 @@
+{
+  "name": "cinemax-auditoria",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --test",
+    "start": "node subscriber.js"
+  },
+  "dependencies": {
+    "@redis/client": "5.12.1"
+  }
+}
